@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>683</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Управление персоналом</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #f8f9fa;
+}
+QPushButton {
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    min-height: 30px;
+    font-size: 11px;
+}
+QPushButton:hover {
+    background-color: #3a5a80;
+}
+QPushButton:pressed {
+    background-color: #2a4a70;
+}
+QLabel {
+    font-size: 11px;
+    color: #2c3e50;
+}
+QLineEdit {
+    padding: 4px 8px;
+    border: 1px solid #e1e5eb;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 11px;
+    height: 25px;
+}
+QLineEdit:focus {
+    border-color: #4a6fa5;
+    background-color: #fafbfc;
+}
+QScrollBar:vertical {
+    border: none;
+    background-color: #f1f3f4;
+    width: 8px;
+    margin: 0px;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical {
+    background-color: #c1c7d0;
+    border-radius: 4px;
+    min-height: 12px;
+}
+QScrollBar::handle:vertical:hover {
+    background-color: #a5adba;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>15</number>
+    </property>
+    <property name="leftMargin">
+     <number>15</number>
+    </property>
+    <property name="topMargin">
+     <number>15</number>
+    </property>
+    <property name="rightMargin">
+     <number>15</number>
+    </property>
+    <property name="bottomMargin">
+     <number>15</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="header_layout">
+      <item>
+       <widget class="QLabel" name="title_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50;</string>
+        </property>
+        <property name="text">
+         <string>Управление персоналом</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="current_date_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+        </property>
+        <property name="text">
+         <string>Текущая дата</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="search_add_layout">
+      <property name="spacing">
+       <number>20</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="search_layout">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="search_label">
+          <property name="styleSheet">
+           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50;</string>
+          </property>
+          <property name="text">
+           <string>Поиск сотрудников</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>🔍 Введите ФИО для поиска...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>46</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>➕ Добавить сотрудника</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="main_content_layout">
+      <property name="spacing">
+       <number>20</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="employees_list_layout">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="styleSheet">
+           <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50;</string>
+          </property>
+          <property name="text">
+           <string>Уволить сотрудника</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="employees_frame">
+          <property name="styleSheet">
+           <string notr="true">background-color: white; 
+            border-radius: 6px; 
+            padding: 15px;
+            border: 1px solid #e1e8ed;</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="styleSheet">
+              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 6px 10px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>Регистратура</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_3">
+             <property name="styleSheet">
+              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 6px 10px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>Персонал</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="pushButton_5">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="pushButton_4">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="pushButton_6">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="pushButton_14">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QPushButton" name="pushButton_15">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QPushButton" name="pushButton_12">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QPushButton" name="pushButton_13">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QPushButton" name="pushButton_10">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="pushButton_11">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QPushButton" name="pushButton_9">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QPushButton" name="pushButton_8">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QPushButton" name="pushButton_7">
+             <property name="styleSheet">
+              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
