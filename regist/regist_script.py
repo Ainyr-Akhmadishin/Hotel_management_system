@@ -2,6 +2,8 @@ from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtCore import pyqtSignal
 from PyQt6 import uic
 
+from regist.guest_registration_window import GuestRegistrationWindow
+
 
 class RegistrarWindow(QMainWindow):
     closed = pyqtSignal()
@@ -14,7 +16,17 @@ class RegistrarWindow(QMainWindow):
         uic.loadUi('UI/Reg/Регистратор итог.ui', self)
         self.setWindowTitle(f"Регистратор - {self.full_name}")
 
+        self.book_button.clicked.connect(self.guest_registration)
 
-    def closeEvent(self, event):
-        self.closed.emit()
-        event.accept()
+
+    def guest_registration(self):
+
+
+
+        self.guest_window = GuestRegistrationWindow(self)
+
+
+
+        self.guest_window.show()
+
+

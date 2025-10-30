@@ -21,6 +21,44 @@ def create_database():
             position TEXT NOT NULL
         )
     ''')
+    cursor.execute('''
+            CREATE TABLE IF NOT EXISTS rooms (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                room_number VARCHAR(10) UNIQUE NOT NULL
+            )
+        ''')
+
+    # Создаем таблицу гостей (ТОЛЬКО ТО, ЧТО ВВОДИТСЯ В ОКНЕ ЗАСЕЛЕНИЯ)
+    cursor.execute('''
+            CREATE TABLE IF NOT EXISTS guests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                first_name VARCHAR(50) NOT NULL,
+                last_name VARCHAR(50) NOT NULL,
+                patronymic VARCHAR(50),
+                passport_number VARCHAR(20) NOT NULL,
+                phone_number VARCHAR(20) NOT NULL
+            )
+        ''')
+
+    # Создаем таблицу бронирований (ТОЛЬКО НОМЕР ГОСТЯ И ВРЕМЯ ПРОЖИВАНИЯ)
+    cursor.execute('''
+            CREATE TABLE IF NOT EXISTS bookings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                guest_id INTEGER NOT NULL,
+                room_id INTEGER NOT NULL,
+                check_in_date DATE NOT NULL,
+                check_out_date DATE NOT NULL,
+                FOREIGN KEY (guest_id) REFERENCES guests (id),
+                FOREIGN KEY (room_id) REFERENCES rooms (id)
+            )
+        ''')
+
+    rooms_data = [
+        ("101",), ("102",), ("103",), ("104",), ("105",),
+        ("201",), ("202",), ("203",), ("204",),
+        ("301",), ("302",), ("303",), ("304",)
+    ]
+
 
     # Функция для хеширования пароля
     def hash_password(password):
@@ -54,17 +92,18 @@ def create_database():
             print(f"✅ Добавлен: {last_name} {first_name} {patronymic} - {position}")
         except sqlite3.IntegrityError:
             print(f"⚠️ Уже существует: {login}")
-
+    for room_number in rooms_data:
+        try:
+            cursor.execute('''
+                   INSERT INTO rooms (room_number)
+                   VALUES (?)
+               ''', room_number)
+            print(f"✅ Добавлен номер: {room_number[0]}")
+        except sqlite3.IntegrityError:
+            print(f"⚠️ Номер уже существует: {room_number[0]}")
     # Сохраняем изменения и закрываем соединение
     conn.commit()
     conn.close()
-
-    print("\n🎉 База данных Hotel_bd.db успешно создана!")
-    print("👥 Добавлено сотрудников: 8")
-    print("📊 Распределение по должностям:")
-    print("   - Администраторы: 2")
-    print("   - Регистраторы: 3")
-    print("   - Обслуживающий персонал: 3")
 
 
 # Запускаем создание базы данных

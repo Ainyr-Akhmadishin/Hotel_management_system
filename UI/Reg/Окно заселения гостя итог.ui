@@ -253,31 +253,11 @@ color: rgb(74, 111, 165);</string>
       <item row="7" column="1">
        <widget class="QComboBox" name="comboBox">
         <property name="currentText">
-         <string>101 - Стандарт</string>
+         <string/>
         </property>
         <property name="placeholderText" stdset="0">
          <string>Выберите номер</string>
         </property>
-        <item>
-         <property name="text">
-          <string>101 - Стандарт</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>102 - Люкс</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>201 - Бизнес</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>202 - Семейный</string>
-         </property>
-        </item>
        </widget>
       </item>
      </layout>

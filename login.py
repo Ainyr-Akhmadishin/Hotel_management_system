@@ -2,13 +2,12 @@ import sys
 import sqlite3
 import hashlib
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt6.QtCore import pyqtSignal
 from PyQt6 import uic
 
 
-from admin_script import AdminWindow
-from regist_script import RegistrarWindow
-from staff_script import StaffWindow
+from admin.admin_script import AdminWindow
+from regist.regist_script import RegistrarWindow
+from staff.staff_script import StaffWindow
 
 
 class LoginWindow(QMainWindow):
@@ -17,11 +16,11 @@ class LoginWindow(QMainWindow):
 
         uic.loadUi('UI/Вход в систему итог.ui', self)
 
-        # Подключаем обработчики событий
+
         self.pushButton.clicked.connect(self.login)
         self.lineEdit_3.returnPressed.connect(self.login)
 
-        # Окна для разных ролей
+
         self.employee_window = None
         self.admin_window = None
         self.registrar_window = None

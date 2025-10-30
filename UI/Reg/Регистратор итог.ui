@@ -162,16 +162,6 @@ QScrollBar::handle:horizontal:hover {
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="current_month_label">
-        <property name="styleSheet">
-         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
-        </property>
-        <property name="text">
-         <string>Текущий месяц</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="exit_button">
         <property name="minimumSize">
          <size>
@@ -210,6 +200,16 @@ QScrollBar::handle:horizontal:hover {
         </property>
         <property name="text">
          <string>◀ Пред.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="current_month_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+        </property>
+        <property name="text">
+         <string>Текущий месяц</string>
         </property>
        </widget>
       </item>
@@ -668,25 +668,6 @@ QScrollBar::handle:horizontal:hover {
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="data_button">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>33</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>25</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>💾 Загрузка/Выгрузка данных</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="admin_button">
             <property name="minimumSize">
              <size>
@@ -702,6 +683,25 @@ QScrollBar::handle:horizontal:hover {
             </property>
             <property name="text">
              <string>👨‍💼 Связь с администратором</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="data_button">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>33</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>💾 Загрузка/Выгрузка данных</string>
             </property>
            </widget>
           </item>
