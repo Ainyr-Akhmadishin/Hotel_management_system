@@ -13,16 +13,16 @@ class GuestRegistrationWindow(QMainWindow):
         uic.loadUi('UI/Reg/Окно заселения гостя итог.ui', self)
         self.setWindowTitle("Заселение гостя")
 
+
         self.dateEdit.setDate(QDate.currentDate())
         self.dateEdit.dateChanged.connect(self.update_available_rooms)
 
-        self.dateEdit.setDate(QDate.currentDate().addDays(1))
-        self.dateEdit.dateChanged.connect(self.update_available_rooms)
+        self.dateEdit_2.setDate(QDate.currentDate().addDays(1))
+        self.dateEdit_2.dateChanged.connect(self.update_available_rooms)
 
         self.load_rooms_to_combobox()
 
         self.pushButton.clicked.connect(self.register_guest)
-
 
     def load_rooms_to_combobox(self):
 
@@ -49,8 +49,7 @@ class GuestRegistrationWindow(QMainWindow):
 
         except Exception as e:
             print(f"❌ Ошибка загрузки номеров из БД: {e}")
-            # Если БД недоступна, добавляем тестовые номера
-            self.add_test_rooms()
+
 
     def add_test_rooms(self):
         """Добавляет тестовые номера если БД недоступна"""
@@ -63,6 +62,34 @@ class GuestRegistrationWindow(QMainWindow):
             for room in test_rooms:
                 self.comboBox.addItem(room)
             print("✅ Добавлены тестовые номера")
+
+    def update_available_rooms(self):
+        try:
+            check_in = self.dateEdit.date().toString("yyyy-MM-dd")
+            check_out = self.dateEdit_2.date().toString("yyyy-MM-dd")
+
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            # ПРОСТОЙ И ПОНЯТНЫЙ ЗАПРОС:
+            cursor.execute('''
+                SELECT r.room_number 
+                FROM rooms r
+                WHERE r.id NOT IN (
+                    SELECT b.room_id 
+                    FROM bookings b
+                    WHERE b.check_in_date < ? AND b.check_out_date > ?
+                )
+                ORDER BY r.room_number
+            ''', (check_out, check_in))
+
+            available_rooms = [row[0] for row in cursor.fetchall()]
+            conn.close()
+
+            # Обновляем комбобокс...
+
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
 
     def register_guest(self):
         """Обработка заселения гостя"""
