@@ -25,6 +25,7 @@ class LoginWindow(QMainWindow):
         self.admin_window = None
         self.registrar_window = None
 
+
     def hash_password(self, password):
         return hashlib.sha256(password.encode()).hexdigest()
 

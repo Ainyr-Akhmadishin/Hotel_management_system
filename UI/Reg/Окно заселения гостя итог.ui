@@ -95,7 +95,7 @@ color: rgb(74, 111, 165);</string>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit">
+       <widget class="QLineEdit" name="name">
         <property name="placeholderText">
          <string>Введите имя</string>
         </property>
@@ -112,7 +112,7 @@ color: rgb(74, 111, 165);</string>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLineEdit" name="fam">
         <property name="placeholderText">
          <string>Введите фамилию</string>
         </property>
@@ -129,7 +129,7 @@ color: rgb(74, 111, 165);</string>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="lineEdit_3">
+       <widget class="QLineEdit" name="otch">
         <property name="placeholderText">
          <string>Введите отчество</string>
         </property>
@@ -146,7 +146,7 @@ color: rgb(74, 111, 165);</string>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="lineEdit_4">
+       <widget class="QLineEdit" name="pas">
         <property name="inputMask">
          <string/>
         </property>
@@ -166,7 +166,7 @@ color: rgb(74, 111, 165);</string>
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QLineEdit" name="lineEdit_5">
+       <widget class="QLineEdit" name="phone">
         <property name="inputMask">
          <string/>
         </property>
@@ -189,7 +189,7 @@ color: rgb(74, 111, 165);</string>
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QDateEdit" name="dateEdit">
+       <widget class="QDateEdit" name="dateIn">
         <property name="dateTime">
          <datetime>
           <hour>0</hour>
@@ -220,7 +220,7 @@ color: rgb(74, 111, 165);</string>
        </widget>
       </item>
       <item row="6" column="1">
-       <widget class="QDateEdit" name="dateEdit_2">
+       <widget class="QDateEdit" name="dateOut">
         <property name="dateTime">
          <datetime>
           <hour>0</hour>
@@ -251,7 +251,7 @@ color: rgb(74, 111, 165);</string>
        </widget>
       </item>
       <item row="7" column="1">
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="number">
         <property name="currentText">
          <string/>
         </property>

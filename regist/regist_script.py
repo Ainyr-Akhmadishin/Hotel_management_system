@@ -20,13 +20,7 @@ class RegistrarWindow(QMainWindow):
 
 
     def guest_registration(self):
-
-
-
         self.guest_window = GuestRegistrationWindow(self)
-
-
-
         self.guest_window.show()
 
 
