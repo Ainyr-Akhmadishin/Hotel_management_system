@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>729</width>
+    <width>662</width>
     <height>627</height>
    </rect>
   </property>
@@ -72,11 +72,7 @@ QTableWidget {
     font-size: 9px;
     alternate-background-color: #f8f9fa;
 }
-QTableWidget::item {
-    padding: 2px 1px;
-    border: none;
-    text-align: center;
-}
+
 QTableWidget::item:selected {
     background-color: #e3f2fd;
 }
@@ -183,6 +179,61 @@ QScrollBar::handle:horizontal:hover {
      </layout>
     </item>
     <item>
+     <layout class="QHBoxLayout" name="search_layout">
+      <item>
+       <widget class="QLineEdit" name="search_input">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="placeholderText">
+         <string>🔍 Поиск...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="search_button">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>33</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Найти</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="month_nav_layout">
       <item>
        <widget class="QPushButton" name="prev_month_button">
@@ -233,62 +284,26 @@ QScrollBar::handle:horizontal:hover {
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="search_layout">
-      <item>
-       <widget class="QLineEdit" name="search_input">
+       <widget class="QPushButton" name="Button">
         <property name="minimumSize">
          <size>
-          <width>150</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="placeholderText">
-         <string>🔍 Поиск...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="search_button">
-        <property name="minimumSize">
-         <size>
-          <width>50</width>
+          <width>80</width>
           <height>33</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>50</width>
+          <width>80</width>
           <height>25</height>
          </size>
         </property>
         <property name="text">
-         <string>Найти</string>
+         <string>🗘 Обновить</string>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_3">
+       <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -377,7 +392,7 @@ QScrollBar::handle:horizontal:hover {
           </row>
           <row>
            <property name="text">
-            <string>7</string>
+            <string>кеу</string>
            </property>
           </row>
           <row>
@@ -664,25 +679,6 @@ QScrollBar::handle:horizontal:hover {
             </property>
             <property name="text">
              <string>👥 Связь с персоналом</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="admin_button">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>33</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>25</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>👨‍💼 Связь с администратором</string>
             </property>
            </widget>
           </item>

@@ -8,6 +8,7 @@ from regist.regist_exceptions import FIOException, LowerNameError, PassportError
 
 class GuestRegistrationWindow(QMainWindow):
     closed = pyqtSignal()
+    guest_registered = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -118,7 +119,6 @@ class GuestRegistrationWindow(QMainWindow):
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
 
-            # ПРОСТОЙ И ПОНЯТНЫЙ ЗАПРОС:
             cursor.execute('''
                         SELECT r.room_number 
                         FROM rooms r
@@ -263,6 +263,8 @@ class GuestRegistrationWindow(QMainWindow):
                                     f"Гость успешно заселен\n"
                                     f"Номер: {guest_number}\n"
                                     f"Период: {in_date} - {out_date}")
+
+            self.guest_registered.emit()
 
             self.close()
 

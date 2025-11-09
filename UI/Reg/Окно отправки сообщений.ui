@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MessageDialog</class>
+ <widget class="QDialog" name="MessageDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Отправка сообщения</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+    background-color: #f8f9fa;
+}
+QLineEdit {
+    padding: 8px 12px;
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 12px;
+    height: 35px;
+}
+QLineEdit:focus {
+    border-color: #4a6fa5;
+    background-color: #fafbfc;
+}
+QListWidget {
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    background-color: white;
+    padding: 3px;
+    font-size: 12px;
+    outline: none;
+}
+QListWidget::item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f3f4;
+}
+QListWidget::item:selected {
+    background-color: #e3f2fd;
+    border: 1px solid #4a6fa5;
+    border-radius: 4px;
+}
+QListWidget::item:hover {
+    background-color: #7B9ED2;
+    color: white;
+}
+QTextEdit {
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    background-color: white;
+    padding: 12px;
+    font-size: 12px;
+}
+QTextEdit:focus {
+    border-color: #4a6fa5;
+}
+QPushButton {
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    min-height: 35px;
+    font-size: 12px;
+}
+QPushButton:hover {
+    background-color: #3a5a80;
+}
+QPushButton:pressed {
+    background-color: #2a4a70;
+}
+QPushButton:disabled {
+    background-color: #c1c7d0;
+    color: #8a8f99;
+}
+QLabel {
+    font-size: 12px;
+    color: #2c3e50;
+}
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>12</number>
+   </property>
+   <property name="leftMargin">
+    <number>15</number>
+   </property>
+   <property name="topMargin">
+    <number>15</number>
+   </property>
+   <property name="rightMargin">
+    <number>15</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="title_label">
+     <property name="styleSheet">
+      <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;</string>
+     </property>
+     <property name="text">
+      <string>Отправка сообщения</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="recipient_search_layout">
+     <property name="spacing">
+      <number>8</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="recipient_label">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Получатель:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="search_recipient_input">
+       <property name="placeholderText">
+        <string>🔍 Поиск получателя...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="available_recipients_label">
+     <property name="text">
+      <string>Доступные получатели:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListWidget" name="recipients_list">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="selected_recipient_label">
+     <property name="styleSheet">
+      <string notr="true">font-weight: bold; color: #4a6fa5; background-color: #e3f2fd; padding: 8px; border-radius: 4px; border: 1px solid #4a6fa5;</string>
+     </property>
+     <property name="text">
+      <string>Отправить: никто</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="message_label">
+     <property name="text">
+      <string>Сообщение:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="message_text_edit">
+     <property name="acceptRichText">
+      <bool>false</bool>
+     </property>
+     <property name="placeholderText">
+      <string>Введите ваше сообщение здесь...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="button_layout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="cancel_button">
+       <property name="styleSheet">
+        <string notr="true">
+QPushButton {
+    background-color: rgb(74, 111, 165);
+    color: white;
+}
+        </string>
+       </property>
+       <property name="text">
+        <string>Отмена</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="send_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(74, 111, 165);
+color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>Отправить</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
