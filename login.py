@@ -9,10 +9,12 @@ from admin.admin_script import AdminWindow
 from regist.regist_script import RegistrarWindow
 from staff.staff_script import StaffWindow
 
+from sync_update import SimpleAutoSync
 
 class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.start_sync()
 
         uic.loadUi('UI/Вход в систему итог.ui', self)
 
@@ -25,6 +27,16 @@ class LoginWindow(QMainWindow):
         self.admin_window = None
         self.registrar_window = None
 
+    def start_sync(self):
+        """Запуск фоновой синхронизации"""
+        try:
+            self.sync_manager = SimpleAutoSync("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+            if self.sync_manager.start():
+                print("✅ Фоновая синхронизация запущена")
+            else:
+                print("⚠️ Синхронизация не запущена, работаем офлайн")
+        except Exception as e:
+            print(f"❌ Ошибка запуска синхронизации: {e}")
 
     def hash_password(self, password):
         return hashlib.sha256(password.encode()).hexdigest()
