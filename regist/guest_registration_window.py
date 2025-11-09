@@ -4,7 +4,7 @@ from PyQt6 import uic
 import sqlite3
 from datetime import datetime
 from regist.regist_exceptions import FIOException, LowerNameError, PassportError, DateError, PhoneError
-
+from bd_manager import YandexDiskUploader
 
 class GuestRegistrationWindow(QMainWindow):
     closed = pyqtSignal()
@@ -258,11 +258,17 @@ class GuestRegistrationWindow(QMainWindow):
 
             conn.commit()
             conn.close()
+            uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+            if uploader.upload_db():
+                print("✅ Изменения загружены на Яндекс Диск")
+            else:
+                print("⚠️ Не удалось загрузить изменения")
 
             QMessageBox.information(self, "Успех",
                                     f"Гость успешно заселен\n"
                                     f"Номер: {guest_number}\n"
                                     f"Период: {in_date} - {out_date}")
+
 
             self.guest_registered.emit()
 
