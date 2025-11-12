@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Аналитика отеля</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #f8f9fa;
+}
+QPushButton {
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    min-height: 30px;
+    font-size: 11px;
+}
+QPushButton:hover {
+    background-color: #3a5a80;
+}
+QPushButton:pressed {
+    background-color: #2a4a70;
+}
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #666666;
+}
+QLabel {
+    font-size: 11px;
+    color: #2c3e50;
+}
+QDateEdit {
+    padding: 4px 8px;
+    border: 1px solid #e1e5eb;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 11px;
+    height: 25px;
+}
+QDateEdit:focus {
+    border-color: #4a6fa5;
+    background-color: #fafbfc;
+}
+QDateEdit:invalid {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+QScrollBar:vertical {
+    border: none;
+    background-color: #f1f3f4;
+    width: 8px;
+    margin: 0px;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical {
+    background-color: #c1c7d0;
+    border-radius: 4px;
+    min-height: 12px;
+}
+QScrollBar::handle:vertical:hover {
+    background-color: #a5adba;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>15</number>
+    </property>
+    <property name="leftMargin">
+     <number>15</number>
+    </property>
+    <property name="topMargin">
+     <number>15</number>
+    </property>
+    <property name="rightMargin">
+     <number>15</number>
+    </property>
+    <property name="bottomMargin">
+     <number>15</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="header_layout">
+      <item>
+       <widget class="QLabel" name="title_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50;</string>
+        </property>
+        <property name="text">
+         <string>Аналитика отеля</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="current_date_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+        </property>
+        <property name="text">
+         <string>Текущая дата</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="styleSheet">
+       <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50; text-align: center;</string>
+      </property>
+      <property name="text">
+       <string>Данные об отеле</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="period_layout">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="styleSheet">
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50;</string>
+        </property>
+        <property name="text">
+         <string>Выбрать период с</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateEdit" name="start_date_edit">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Выберите начальную дату периода</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="styleSheet">
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50;</string>
+        </property>
+        <property name="text">
+         <string>по</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateEdit" name="end_date_edit">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Выберите конечную дату периода</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="date_error_label">
+      <property name="styleSheet">
+       <string notr="true">color: #dc3545; font-size: 10px; padding: 2px; text-align: center;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="content_layout">
+      <property name="spacing">
+       <number>20</number>
+      </property>
+      <item>
+       <widget class="QFrame" name="stats_frame">
+        <property name="styleSheet">
+         <string notr="true">background-color: white; 
+          border-radius: 6px; 
+          padding: 20px;
+          border: 1px solid #e1e8ed;</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="styleSheet">
+            <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 8px 12px; border-radius: 4px; text-align: center;</string>
+           </property>
+           <property name="text">
+            <string>Посещаемость</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_3">
+           <property name="styleSheet">
+            <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 8px 12px; border-radius: 4px; text-align: center;</string>
+           </property>
+           <property name="text">
+            <string>Прибыль</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="attendance_value">
+           <property name="styleSheet">
+            <string notr="true">font-size: 24px; font-weight: bold; color: #4a6fa5; text-align: center; padding: 20px;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="profit_value">
+           <property name="styleSheet">
+            <string notr="true">font-size: 24px; font-weight: bold; color: #27ae60; text-align: center; padding: 20px;</string>
+           </property>
+           <property name="text">
+            <string>0 ₽</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="export_layout">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="export_data_btn">
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>35</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>📊 Выгрузить данные</string>
+          </property>
+          <property name="toolTip">
+           <string>Выгрузить данные за выбранный период</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="load_data_btn">
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>35</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>📁 Загрузить данные</string>
+          </property>
+          <property name="toolTip">
+           <string>Загрузить данные из файла</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

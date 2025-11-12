@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>882</width>
+    <height>647</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Система управления</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #f8f9fa;
+}
+QPushButton {
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    min-height: 30px;
+    font-size: 11px;
+}
+QPushButton:hover {
+    background-color: #3a5a80;
+}
+QPushButton:pressed {
+    background-color: #2a4a70;
+}
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #666666;
+}
+QListView {
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    background-color: white;
+    padding: 3px;
+    font-size: 11px;
+}
+QLabel {
+    font-size: 11px;
+    color: #2c3e50;
+}
+QTimeEdit {
+    padding: 4px 8px;
+    border: 1px solid #e1e5eb;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 11px;
+    height: 25px;
+}
+QTimeEdit:focus {
+    border-color: #4a6fa5;
+    background-color: #fafbfc;
+}
+QScrollBar:vertical {
+    border: none;
+    background-color: #f1f3f4;
+    width: 8px;
+    margin: 0px;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical {
+    background-color: #c1c7d0;
+    border-radius: 4px;
+    min-height: 12px;
+}
+QScrollBar::handle:vertical:hover {
+    background-color: #a5adba;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>15</number>
+    </property>
+    <property name="leftMargin">
+     <number>15</number>
+    </property>
+    <property name="topMargin">
+     <number>15</number>
+    </property>
+    <property name="rightMargin">
+     <number>15</number>
+    </property>
+    <property name="bottomMargin">
+     <number>15</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="header_layout">
+      <item>
+       <widget class="QLabel" name="title_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50;</string>
+        </property>
+        <property name="text">
+         <string>Система управления</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="current_date_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+        </property>
+        <property name="text">
+         <string>Текущая дата</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="main_content_layout">
+      <property name="spacing">
+       <number>20</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="left_panel">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="styleSheet">
+           <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50;</string>
+          </property>
+          <property name="text">
+           <string>Список работников на смене</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame">
+          <property name="styleSheet">
+           <string notr="true">background-color: white; 
+            border-radius: 6px; 
+            padding: 10px;
+            border: 1px solid #e1e8ed;</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <layout class="QFormLayout" name="formLayout">
+             <property name="verticalSpacing">
+              <number>15</number>
+             </property>
+             <property name="horizontalSpacing">
+              <number>10</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_22">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>№</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="text">
+                <string>2</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="text">
+                <string>3</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QGridLayout" name="gridLayout">
+             <property name="verticalSpacing">
+              <number>10</number>
+             </property>
+             <property name="horizontalSpacing">
+              <number>15</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="styleSheet">
+                <string notr="true">font-weight: bold;</string>
+               </property>
+               <property name="text">
+                <string>Регистратура</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_4">
+               <property name="styleSheet">
+                <string notr="true">font-weight: bold;</string>
+               </property>
+               <property name="text">
+                <string>Персонал</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_13">
+               <property name="styleSheet">
+                <string notr="true">font-weight: bold;</string>
+               </property>
+               <property name="text">
+                <string>Время на смене</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>ФИО</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>ФИО</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QTimeEdit" name="timeEdit"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>ФИО</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>ФИО</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QTimeEdit" name="timeEdit_2"/>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>ФИО</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>ФИО</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QTimeEdit" name="timeEdit_3"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="sort_buttons_layout">
+          <property name="spacing">
+           <number>10</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="sort_registry_btn">
+            <property name="text">
+             <string>Отсортировать регистратуру</string>
+            </property>
+            <property name="toolTip">
+             <string>Для сортировки необходим список работников</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="sort_staff_btn">
+            <property name="text">
+             <string>Отсортировать персонал</string>
+            </property>
+            <property name="toolTip">
+             <string>Для сортировки необходим список работников</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="buttons_grid">
+          <property name="spacing">
+           <number>10</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="manage_employees_btn">
+            <property name="text">
+             <string>Уволить/Добавить сотрудника</string>
+            </property>
+            <property name="toolTip">
+             <string>Требуется доступ к базе данных сотрудников</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="employees_list_btn">
+            <property name="text">
+             <string>Список работников</string>
+            </property>
+            <property name="toolTip">
+             <string>База данных сотрудников должна быть доступна</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="contact_registry_btn">
+            <property name="text">
+             <string>Связь с регистратурой</string>
+            </property>
+            <property name="toolTip">
+             <string>Необходимо выбрать сотрудника регистратуры</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="contact_staff_btn">
+            <property name="text">
+             <string>Связь с персоналом</string>
+            </property>
+            <property name="toolTip">
+             <string>Необходимо выбрать сотрудника персонала</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="change_numbers_btn">
+            <property name="text">
+             <string>Изменение номеров</string>
+            </property>
+            <property name="toolTip">
+             <string>Требуются права администратора для изменения</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QPushButton" name="data_export_btn">
+            <property name="text">
+             <string>Выгрузка/Загрузка данных</string>
+            </property>
+            <property name="toolTip">
+             <string>Требуется доступ к файловой системе</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="right_panel">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_42">
+          <property name="styleSheet">
+           <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50;</string>
+          </property>
+          <property name="text">
+           <string>Сообщения</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_2">
+          <property name="styleSheet">
+           <string notr="true">background-color: white; 
+            border-radius: 6px; 
+            padding: 10px;
+            border: 1px solid #e1e8ed;</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QListView" name="listView">
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>300</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>882</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
