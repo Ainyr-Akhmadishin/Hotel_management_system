@@ -1,24 +1,88 @@
+import pickle
 import sqlite3
 
-from PyQt6.QtWidgets import QDialog, QMainWindow
+from PyQt6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
 
 
 
 class MassageWindow(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self,full_name, parent=None):
         super().__init__(parent)
         uic.loadUi('UI/Reg/Окно отправки сообщений.ui', self)
         self.setWindowTitle("Отправка сообщений")
 
+        self.full_name = full_name
         self.load_staff('')
         self.search_recipient_input.textChanged.connect(lambda: self.load_staff(self.search_recipient_input.text().title()))
         self.recipients_list.itemClicked.connect(self.selected_recipient)
 
+        self.send_button.clicked.connect(self.send_message)
 
     def selected_recipient(self, item):
         self.recipient = item.text()
         self.selected_recipient_label.setText("Отправить: " + self.recipient)
+
+    def send_message(self):
+        try:
+            binary_message = pickle.dumps(self.message_text_edit.toPlainText())
+
+            con = sqlite3.connect('Hotel_bd.db')
+            cur = con.cursor()
+
+
+            if not hasattr(self, 'recipient') or not self.recipient:
+                raise ValueError("Не выбран получатель")
+
+            if not self.message_text_edit.toPlainText().strip():
+                raise ValueError("Введите текст сообщения")
+
+
+            recipient_parts = self.recipient.split()
+            if len(recipient_parts) < 2:
+                raise ValueError("Некорректное имя получателя")
+
+            sender_parts = self.full_name.split()
+            if len(sender_parts) < 2:
+                raise ValueError("Некорректное имя отправителя")
+
+
+            cur.execute('''SELECT id FROM staff WHERE last_name = ? AND first_name = ?''',
+                        (recipient_parts[0], recipient_parts[1]))
+            recipient_result = cur.fetchone()
+            if not recipient_result:
+                raise ValueError("Получатель не найден в базе данных")
+            self.id_recipient = recipient_result[0]
+
+
+            cur.execute('''SELECT id FROM staff WHERE last_name = ? AND first_name = ?''',
+                        (sender_parts[1], sender_parts[0]))
+            sender_result = cur.fetchone()
+            if not sender_result:
+                raise ValueError("Отправитель не найден в базе данных")
+            self.id_sender = sender_result[0]
+
+
+            cur.execute('''INSERT INTO messages (from_user, to_user, text)
+                            VALUES (?, ?, ?)''',
+                        (self.id_sender, self.id_recipient, binary_message))
+
+            con.commit()
+            QMessageBox.information(self, "Успех",
+                                    f"Сообщение отправлено")
+
+        except ValueError as e:
+            print(f"❌ Ошибка: {e}")
+        except sqlite3.Error as e:
+            print(f"❌ Ошибка базы данных: {e}")
+        except IndexError as e:
+            print(f"❌ Ошибка обработки имени: {e}")
+        except Exception as e:
+            print(f"❌ Неизвестная ошибка: {e}")
+        finally:
+            if 'con' in locals():
+                con.close()
+
 
     def load_staff(self, name):
         try:
@@ -44,3 +108,7 @@ class MassageWindow(QDialog):
 
         except Exception as e:
             print(f"Ошибка загрузки сотрудников: {e}")
+
+
+
+

@@ -1,12 +1,12 @@
 import sqlite3
-
+from bd_manager import YandexDiskUploader
 
 def updating_guest_data():
     conn = sqlite3.connect('Hotel_bd.db')
     cursor = conn.cursor()
 
     # ИСПРАВЛЕННЫЙ ЗАПРОС - используем правильные названия столбцов
-    cursor.execute('''SELECT room_id, last_name || ' ' || SUBSTR(first_name, 1, 1) || '. ' || SUBSTR(patronymic, 1, 1) || '.' as f, check_in_date, check_out_date FROM bookings JOIN guests ON bookings.guest_id = guests.id''')
+    cursor.execute('''SELECT * FROM messages''')
     guests = cursor.fetchall()
 
     print("Данные о бронированиях:")
@@ -17,4 +17,6 @@ def updating_guest_data():
 
 
 if __name__ == "__main__":
-    updating_guest_data()
+    # y = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+    # y.upload_db()
+    # updating_guest_data()

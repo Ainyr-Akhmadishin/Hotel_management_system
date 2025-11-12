@@ -258,11 +258,7 @@ class GuestRegistrationWindow(QMainWindow):
 
             conn.commit()
             conn.close()
-            uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
-            if uploader.upload_db():
-                print("✅ Изменения загружены на Яндекс Диск")
-            else:
-                print("⚠️ Не удалось загрузить изменения")
+
 
             QMessageBox.information(self, "Успех",
                                     f"Гость успешно заселен\n"
@@ -273,6 +269,11 @@ class GuestRegistrationWindow(QMainWindow):
             self.guest_registered.emit()
 
             self.close()
+            uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+            if uploader.upload_db():
+                print("✅ Изменения загружены на Яндекс Диск")
+            else:
+                print("⚠️ Не удалось загрузить изменения")
 
 
         except LowerNameError as e:

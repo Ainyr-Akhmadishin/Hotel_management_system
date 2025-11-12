@@ -11,7 +11,7 @@ class YandexDiskUploader:
         self.local_file = "Hotel_bd.db"
 
     def check_connection(self):
-        """Проверить подключение к Яндекс Диску"""
+
         try:
             if self.y.check_token():
                 print("✅ Подключение к Яндекс Диску установлено")
@@ -24,19 +24,19 @@ class YandexDiskUploader:
             return False
 
     def upload_db(self):
-        """Загрузить БД на Яндекс Диск"""
+
         try:
-            # Проверяем есть ли локальный файл
+
             if not os.path.exists(self.local_file):
                 print(f"❌ Файл {self.local_file} не найден")
                 return False
 
-            # Создаем папку на Яндекс Диске если нужно
+
             if not self.y.exists("/HotelApp"):
                 self.y.mkdir("/HotelApp")
                 print("✅ Создана папка /HotelApp на Яндекс Диске")
 
-            # Загружаем файл
+
             print("🔄 Загрузка файла на Яндекс Диск...")
             self.y.upload(self.local_file, self.remote_path, overwrite=True)
 
@@ -49,24 +49,17 @@ class YandexDiskUploader:
             return False
 
     def download_db(self):
-        """Скачать БД с Яндекс Диска"""
         try:
-            # Проверяем есть ли файл на Яндекс Диске
+
             if not self.y.exists(self.remote_path):
                 print("❌ Файл не найден на Яндекс Диске")
                 return False
 
-            # Создаем резервную копию если файл уже существует
-            if os.path.exists(self.local_file):
-                backup_name = f"Hotel_bd_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.db"
-                os.rename(self.local_file, backup_name)
-                print(f"✅ Создана резервная копия: {backup_name}")
-
-            # Скачиваем файл
+            # Скачиваем файл (работает в любом случае)
             print("🔄 Скачивание файла с Яндекс Диска...")
-            self.y.download(self.remote_path, self.local_file)
+            self.y.download(self.remote_path, self.local_file, overwrite=True)
 
-            # Проверяем что файл скачался
+
             if os.path.exists(self.local_file):
                 file_size = os.path.getsize(self.local_file)
                 print("✅ Файл успешно скачан с Яндекс Диска!")
@@ -76,12 +69,13 @@ class YandexDiskUploader:
                 print("❌ Файл не скачался")
                 return False
 
+
         except Exception as e:
             print(f"❌ Ошибка скачивания: {e}")
             return False
 
     def check_remote_file(self):
-        """Проверить информацию о файле на Яндекс Диске"""
+
         try:
             if self.y.exists(self.remote_path):
                 file_info = self.y.get_meta(self.remote_path)

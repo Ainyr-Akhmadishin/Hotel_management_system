@@ -193,8 +193,8 @@ class RegistrarWindow(QMainWindow):
         self.guest_window.show()
 
     def open_massage(self):
-        self.massage_window = MassageWindow(self)
-        self.massage_window.exec()
+        self.massage_window = MassageWindow(full_name=self.full_name)
+        self.massage_window.show()
 
     def fill_rooms(self):
         try:

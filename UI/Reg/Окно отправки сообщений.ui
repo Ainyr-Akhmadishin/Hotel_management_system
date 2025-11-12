@@ -220,7 +220,7 @@ QPushButton {
      <item>
       <widget class="QPushButton" name="send_button">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(74, 111, 165);
