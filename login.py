@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt6 import uic
 
 
-from admin.admin_script import AdminWindow
+from admin.Admin import AdminWindow
 from regist.regist_script import RegistrarWindow
 from staff.staff_script import StaffWindow
 
@@ -32,11 +32,11 @@ class LoginWindow(QMainWindow):
         try:
             self.sync_manager = SimpleAutoSync("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
             if self.sync_manager.start():
-                print("✅ Фоновая синхронизация запущена")
+                print("Фоновая синхронизация запущена")
             else:
-                print("⚠️ Синхронизация не запущена, работаем офлайн")
+                print("Синхронизация не запущена, работаем офлайн")
         except Exception as e:
-            print(f"❌ Ошибка запуска синхронизации: {e}")
+            print(f"Ошибка запуска синхронизации: {e}")
 
     def hash_password(self, password):
         return hashlib.sha256(password.encode()).hexdigest()

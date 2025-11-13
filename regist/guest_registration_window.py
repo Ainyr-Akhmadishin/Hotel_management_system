@@ -72,45 +72,6 @@ class GuestRegistrationWindow(QMainWindow):
         else:
             label.setText(f"{base_text} *")
 
-    # def load_rooms_to_combobox(self):
-    #
-    #     try:
-    #         # Подключаемся к базе данных
-    #         conn = sqlite3.connect('Hotel_bd.db')
-    #         cursor = conn.cursor()
-    #
-    #         # Получаем все номера из таблицы rooms
-    #         cursor.execute('SELECT room_number FROM rooms ORDER BY room_number')
-    #         rooms = cursor.fetchall()
-    #
-    #         # Очищаем комбобокс перед добавлением
-    #         if hasattr(self, 'comboBox'):
-    #             self.comboBox.clear()
-    #
-    #             # Добавляем номера в комбобокс
-    #             for room in rooms:
-    #                 self.comboBox.addItem(room[0])  # room[0] - это room_number
-    #
-    #             print(f"✅ Загружено номеров в комбобокс: {len(rooms)}")
-    #
-    #         conn.close()
-    #
-    #     except Exception as e:
-    #         print(f"❌ Ошибка загрузки номеров из БД: {e}")
-
-
-    # def add_test_rooms(self):
-    #     """Добавляет тестовые номера если БД недоступна"""
-    #     test_rooms = ["101", "102", "103", "104", "105",
-    #                   "201", "202", "203", "204",
-    #                   "301", "302", "303", "304"]
-    #
-    #     if hasattr(self, 'comboBox'):
-    #         self.comboBox.clear()
-    #         for room in test_rooms:
-    #             self.comboBox.addItem(room)
-    #         print("✅ Добавлены тестовые номера")
-
     def update_available_rooms(self):
         try:
             check_in = self.dateIn.date().toString("yyyy-MM-dd")
@@ -271,9 +232,9 @@ class GuestRegistrationWindow(QMainWindow):
             self.close()
             uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
             if uploader.upload_db():
-                print("✅ Изменения загружены на Яндекс Диск")
+                print("Изменения загружены на Яндекс Диск")
             else:
-                print("⚠️ Не удалось загрузить изменения")
+                print("Не удалось загрузить изменения")
 
 
         except LowerNameError as e:

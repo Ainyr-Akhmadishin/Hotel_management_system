@@ -5,39 +5,39 @@ import sqlite3
 import sys
 
 # Импортируем модули для каждого функционала
-from employee_management import EmployeeManagementDialog
-from employee_list import EmployeeListDialog
-from room_management import RoomManagementDialog
-from data_export import DataExportDialog
+from admin.Add_Delete_sotrudnic import EmployeeManagementDialog
+from admin.List_sotrudnic import EmployeeListDialog
+from admin.Change_room import RoomManagementDialog
+from admin.Download_Upload_data import DataExportDialog
 
 
 class AdminWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, full_name, username):
         super().__init__()
-        uic.loadUi('UI/Админ переделанный.ui', self)
+        uic.loadUi('UI/Admin/Админ переделанный.ui', self)
 
         # Инициализация базы данных
-        self.init_database()
-
-        # Подключаем кнопки
-        self.sort_registry_btn.clicked.connect(self.sort_registry)
-        self.sort_staff_btn.clicked.connect(self.sort_staff)
-        self.manage_employees_btn.clicked.connect(self.manage_employees)
-        self.employees_list_btn.clicked.connect(self.show_employees_list)
-        self.contact_registry_btn.clicked.connect(self.contact_registry)
-        self.contact_staff_btn.clicked.connect(self.contact_staff)
-        self.change_numbers_btn.clicked.connect(self.change_numbers)
-        self.data_export_btn.clicked.connect(self.data_export_import)
-
-        # Устанавливаем текущую дату
-        self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
-
-        # Загружаем данные сотрудников
-        self.load_employees_data()
-
-        # Модель для списка сообщений
-        self.model = QtWidgets.QStringListModel()
-        self.listView.setModel(self.model)
+        # self.init_database()
+        #
+        # # Подключаем кнопки
+        # self.sort_registry_btn.clicked.connect(self.sort_registry)
+        # self.sort_staff_btn.clicked.connect(self.sort_staff)
+        # self.manage_employees_btn.clicked.connect(self.manage_employees)
+        # self.employees_list_btn.clicked.connect(self.show_employees_list)
+        # self.contact_registry_btn.clicked.connect(self.contact_registry)
+        # self.contact_staff_btn.clicked.connect(self.contact_staff)
+        # self.change_numbers_btn.clicked.connect(self.change_numbers)
+        # self.data_export_btn.clicked.connect(self.data_export_import)
+        #
+        # # Устанавливаем текущую дату
+        # self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
+        #
+        # # Загружаем данные сотрудников
+        # self.load_employees_data()
+        #
+        # # Модель для списка сообщений
+        # self.model = QtWidgets.QStringListModel()
+        # self.listView.setModel(self.model)
 
     def init_database(self):
         """Инициализация базы данных"""
