@@ -2,11 +2,12 @@ import sqlite3
 from calendar import monthrange
 from datetime import datetime, timedelta
 
-from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QDialog, QVBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QDialog, QVBoxLayout, QMessageBox
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6 import uic, QtCore
 from PyQt6.QtWidgets import QCalendarWidget
 from PyQt6.QtCore import QDate
+from PyQt6.QtGui import QBrush, QColor
 
 from regist.guest_registration_window import GuestRegistrationWindow
 from regist.massage_window import MassageWindow
@@ -108,7 +109,6 @@ class RegistrarWindow(QMainWindow):
                 check_in_date = datetime.strptime(guest[2], '%Y-%m-%d').date()
                 check_out_date = datetime.strptime(guest[3], '%Y-%m-%d').date()
 
-                # Находим строку по номеру комнаты
                 row = -1
                 for i in range(self.guest_table.rowCount()):
                     header_item = self.guest_table.verticalHeaderItem(i)
@@ -120,7 +120,6 @@ class RegistrarWindow(QMainWindow):
                     continue
 
 
-                # Заполняем ячейки для периода бронирования
                 for column in range(1, self.guest_table.columnCount()):
                     header = self.guest_table.horizontalHeaderItem(column)
                     if header:
@@ -134,8 +133,8 @@ class RegistrarWindow(QMainWindow):
                                 item = QTableWidgetItem(guest_name)
                                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-                                from PyQt6.QtGui import QBrush
-                                item.setBackground(QBrush(Qt.GlobalColor.green))
+
+                                item.setBackground(QBrush(QColor("#74E868")))
 
                                 # if(check_in_date == header_date):
                                 #     self.guest_table.setItem(row, column, item)
@@ -150,9 +149,9 @@ class RegistrarWindow(QMainWindow):
             conn.close()
 
         except Exception as e:
-            print(f"Ошибка в updating_guest_data: {e}")
-            import traceback
-            traceback.print_exc()
+            QMessageBox.critical(self, "Ошибка", str(e))
+            # import traceback
+            # traceback.print_exc()
 
 
 
@@ -217,10 +216,13 @@ class RegistrarWindow(QMainWindow):
             conn.close()
 
 
+
+        except sqlite3.Error as e:
+            QMessageBox.critical(self, "Ошибка загрузки данных о постояльцах", str(e))
         except Exception as e:
-            print(f"Ошибка при заполнении комнат: {e}")
-            import traceback
-            traceback.print_exc()
+            QMessageBox.critical(self, "Ошибка", str(e))
+            # import traceback
+            # traceback.print_exc()
 
     def get_month_dates(self):
         year = self.current_date.year
@@ -243,13 +245,13 @@ class RegistrarWindow(QMainWindow):
         self.guest_table.setHorizontalHeaderItem(0, QTableWidgetItem("Номер"))
 
         for col, date in enumerate(dates, 1):
-            day_name = self.get_russian_day_name(date.weekday())
+            day_name = self.get_day_name(date.weekday())
             header_text = f"{date.day} {day_name}"
             header_item = QTableWidgetItem(header_text)
             header_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.guest_table.setHorizontalHeaderItem(col, header_item)
 
-    def get_russian_day_name(self, weekday):
+    def get_day_name(self, weekday):
         days = {
             0: "Пн",
             1: "Вт",

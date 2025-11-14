@@ -72,13 +72,13 @@ class MassageWindow(QDialog):
                                     f"Сообщение отправлено")
 
         except ValueError as e:
-            print(f"❌ Ошибка: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
         except sqlite3.Error as e:
-            print(f"❌ Ошибка базы данных: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
         except IndexError as e:
-            print(f"❌ Ошибка обработки имени: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
         except Exception as e:
-            print(f"❌ Неизвестная ошибка: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
         finally:
             if 'con' in locals():
                 con.close()
@@ -105,9 +105,10 @@ class MassageWindow(QDialog):
             self.recipients_list.addItems(row[0] for row in cursor.fetchall())
             conn.close()
 
-
+        except sqlite3.Error as e:
+            QMessageBox.critical(self, "Ошибка загрузки сотрудников", str(e))
         except Exception as e:
-            print(f"Ошибка загрузки сотрудников: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
 
 
 

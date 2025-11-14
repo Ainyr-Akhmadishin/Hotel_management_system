@@ -28,7 +28,6 @@ class LoginWindow(QMainWindow):
         self.registrar_window = None
 
     def start_sync(self):
-        """Запуск фоновой синхронизации"""
         try:
             self.sync_manager = SimpleAutoSync("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
             if self.sync_manager.start():
@@ -65,8 +64,10 @@ class LoginWindow(QMainWindow):
             return None
 
         except sqlite3.Error as e:
-            print(f"Ошибка базы данных: {e}")
+            QMessageBox.warning(self, "Ошибка", "Ошибка базы данных")
             return None
+        except Exception as e:
+            QMessageBox.warning(self, "Ошибка", "Неизвестная ошибка")
 
     def login(self):
         username = self.lineEdit.text()
@@ -107,7 +108,6 @@ class LoginWindow(QMainWindow):
         self.lineEdit.clear()
         self.lineEdit_3.clear()
         self.show()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

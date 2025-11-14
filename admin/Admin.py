@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, uic
-from PyQt6.QtWidgets import QMessageBox
-from PyQt6.QtCore import QDate
+from PyQt6.QtWidgets import QMessageBox, QMainWindow
+from PyQt6.QtCore import QDate, pyqtSignal
 import sqlite3
 import sys
 
@@ -11,29 +11,29 @@ from admin.Change_room import RoomManagementDialog
 from admin.Download_Upload_data import DataExportDialog
 
 
-class AdminWindow(QtWidgets.QMainWindow):
+class AdminWindow(QMainWindow):
+    closed = pyqtSignal()
     def __init__(self, full_name, username):
         super().__init__()
         uic.loadUi('UI/Admin/Админ переделанный.ui', self)
 
-        # Инициализация базы данных
-        # self.init_database()
+        self.init_database()
         #
         # # Подключаем кнопки
-        # self.sort_registry_btn.clicked.connect(self.sort_registry)
-        # self.sort_staff_btn.clicked.connect(self.sort_staff)
-        # self.manage_employees_btn.clicked.connect(self.manage_employees)
-        # self.employees_list_btn.clicked.connect(self.show_employees_list)
-        # self.contact_registry_btn.clicked.connect(self.contact_registry)
-        # self.contact_staff_btn.clicked.connect(self.contact_staff)
-        # self.change_numbers_btn.clicked.connect(self.change_numbers)
-        # self.data_export_btn.clicked.connect(self.data_export_import)
+        self.sort_registry_btn.clicked.connect(self.sort_registry)
+        self.sort_staff_btn.clicked.connect(self.sort_staff)
+        self.manage_employees_btn.clicked.connect(self.manage_employees)
+        self.employees_list_btn.clicked.connect(self.show_employees_list)
+        self.contact_registry_btn.clicked.connect(self.contact_registry)
+        self.contact_staff_btn.clicked.connect(self.contact_staff)
+        self.change_numbers_btn.clicked.connect(self.change_numbers)
+        self.data_export_btn.clicked.connect(self.data_export_import)
         #
         # # Устанавливаем текущую дату
-        # self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
+        self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
         #
         # # Загружаем данные сотрудников
-        # self.load_employees_data()
+        self.load_employees_data()
         #
         # # Модель для списка сообщений
         # self.model = QtWidgets.QStringListModel()
@@ -230,8 +230,8 @@ class AdminWindow(QtWidgets.QMainWindow):
         event.accept()
 
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+# if __name__ == "__main__":
+#     app = QtWidgets.QApplication(sys.argv)
+#     window = AdminWindow("Ars","Admin")
+#     window.show()
+#     sys.exit(app.exec())

@@ -41,7 +41,7 @@ class GuestRegistrationWindow(QMainWindow):
             self.phone.returnPressed.connect(lambda: self.dateIn.setFocus())
 
         except Exception as e:
-            print(f"Ошибка в setup_enter_handlers: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
 
 
     def setup_star_handlers(self):
@@ -62,7 +62,7 @@ class GuestRegistrationWindow(QMainWindow):
             # self.phone.textChanged.connect(lambda: self.phone.setStyleSheet(""))
 
         except Exception as e:
-            print(f"Ошибка в setup_star_handlers: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
 
     def removeStar(self, label, filled):
         base_text = label.text()
@@ -97,7 +97,7 @@ class GuestRegistrationWindow(QMainWindow):
             self.number.addItems(available_rooms)
 
         except Exception as e:
-            print(f"Ошибка: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
 
     def FIOCheck(self,field,field_name,required = True):
 
