@@ -9,7 +9,7 @@ from datetime import datetime
 class EmployeeListDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('Список сотрудников переделанная.ui', self)
+        uic.loadUi('UI/Admin/Список сотрудников переделанная.ui', self)
 
         self.setWindowTitle("Список сотрудников")
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))

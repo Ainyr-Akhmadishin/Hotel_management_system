@@ -8,7 +8,7 @@ from datetime import datetime
 class RoomManagementDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('Изменение номеров переделанная.ui', self)
+        uic.loadUi('UI/Admin/Изменение номеров переделанная.ui', self)
 
         self.setWindowTitle("Управление номерами")
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))

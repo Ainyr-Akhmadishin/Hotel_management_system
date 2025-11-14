@@ -10,7 +10,7 @@ from datetime import datetime
 class DataExportDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('загрузка и выгрузка переделенная.ui', self)
+        uic.loadUi('UI/Admin/загрузка и выгрузка переделенная.ui', self)
 
         self.setWindowTitle("Аналитика отеля")
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
@@ -51,7 +51,7 @@ class DataExportDialog(QDialog):
             # Статистика по бронированиям
             self.cursor.execute("""
                 SELECT COUNT(*) as booking_count,
-                       COUNT(*) * 2500 as estimated_profit  # Предполагаемая стоимость номера
+                       COUNT(*) * 2500 as estimated_profit
                 FROM bookings 
                 WHERE check_in_date BETWEEN ? AND ?
             """, (start_date, end_date))

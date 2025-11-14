@@ -8,7 +8,7 @@ import hashlib
 class EmployeeManagementDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('Добавить или удалить сотрудника переделенная.ui', self)
+        uic.loadUi('UI/Admin/Добавить или удалить сотрудника переделенная.ui', self)
 
         self.setWindowTitle("Управление персоналом")
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
