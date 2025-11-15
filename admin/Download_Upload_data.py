@@ -5,12 +5,12 @@ import sqlite3
 import csv
 import json
 from datetime import datetime
-
+from utils import get_resource_path
 
 class DataExportDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('UI/Admin/загрузка и выгрузка переделенная.ui', self)
+        uic.loadUi(get_resource_path('UI/Admin/загрузка и выгрузка переделенная.ui'), self)
 
         self.setWindowTitle("Аналитика отеля")
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))

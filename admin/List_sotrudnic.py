@@ -4,12 +4,12 @@ from PyQt6.QtCore import QDate
 import sqlite3
 import csv
 from datetime import datetime
-
+from utils import get_resource_path
 
 class EmployeeListDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('UI/Admin/Список сотрудников переделанная.ui', self)
+        uic.loadUi(get_resource_path('UI/Admin/Список сотрудников переделанная.ui'), self)
 
         self.setWindowTitle("Список сотрудников")
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))

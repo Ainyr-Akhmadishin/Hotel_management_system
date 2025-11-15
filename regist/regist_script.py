@@ -14,6 +14,9 @@ from regist.massage_window import MassageWindow
 
 from regist.guest_update_window import GuestUpdateWindow  # Добавьте эту строку в импорты
 
+from utils import get_resource_path
+from notifications_manager import SimpleNotificationsManager
+
 class RegistrarWindow(QMainWindow):
     closed = pyqtSignal()
 
@@ -24,8 +27,16 @@ class RegistrarWindow(QMainWindow):
         self.current_date = datetime.now()
         self.visible_days = 14
 
-        uic.loadUi('UI/Reg/Регистратор итог.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Регистратор итог.ui'), self)
         self.setWindowTitle(f"Регистратор - {self.full_name}")
+
+        self.user_id = self.get_user_id(username)
+
+        # Инициализируем менеджер уведомлений
+        self.notifications_manager = SimpleNotificationsManager(
+            self.user_id,
+            self.notifications_frame
+        )
 
         self.guest_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
 
@@ -50,6 +61,26 @@ class RegistrarWindow(QMainWindow):
         self.next_month_button.clicked.connect(self.next_month)
 
         self.Button.clicked.connect(self.updating_guest_data)
+
+
+    def get_user_id(self, username):
+        """Получение ID пользователя по логину"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT id FROM staff WHERE login = ?', (username,))
+            result = cursor.fetchone()
+            conn.close()
+            return result[0] if result else 1
+        except Exception as e:
+            print(f"Ошибка получения ID пользователя: {e}")
+            return 1
+
+    def closeEvent(self, event):
+        """Останавливаем обновления уведомлений при закрытии"""
+        if hasattr(self, 'notifications_manager'):
+            self.notifications_manager.stop_updates()
+        super().closeEvent(event)
 
     def get_guest_data(self, row, column):
         """Получение данных гостя для редактирования"""

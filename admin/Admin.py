@@ -4,6 +4,8 @@ from PyQt6.QtCore import QDate, pyqtSignal
 import sqlite3
 import sys
 
+from utils import get_resource_path
+
 # Импортируем модули для каждого функционала
 from admin.Add_Delete_sotrudnic import EmployeeManagementDialog
 from admin.List_sotrudnic import EmployeeListDialog
@@ -15,7 +17,7 @@ class AdminWindow(QMainWindow):
     closed = pyqtSignal()
     def __init__(self, full_name, username):
         super().__init__()
-        uic.loadUi('UI/Admin/Админ переделанный.ui', self)
+        uic.loadUi(get_resource_path('UI/Admin/Админ переделанный.ui'), self)
 
         self.init_database()
         #

@@ -5,7 +5,7 @@ import sqlite3
 from datetime import datetime
 from regist.guest_registration_window import GuestRegistrationWindow
 from bd_manager import YandexDiskUploader
-
+from utils import get_resource_path
 
 class GuestUpdateWindow(GuestRegistrationWindow):
     closed = pyqtSignal()

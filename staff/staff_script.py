@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtCore import pyqtSignal
 from PyQt6 import uic
 
+from utils import get_resource_path
 
 class StaffWindow(QMainWindow):
     closed = pyqtSignal()

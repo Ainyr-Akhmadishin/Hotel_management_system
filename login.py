@@ -11,12 +11,14 @@ from staff.staff_script import StaffWindow
 
 from sync_update import SimpleAutoSync
 
+from utils import get_resource_path
+
 class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.start_sync()
+        # self.start_sync()
 
-        uic.loadUi('UI/Вход в систему итог.ui', self)
+        uic.loadUi(get_resource_path('UI/Вход в систему итог.ui'), self)
 
 
         self.pushButton.clicked.connect(self.login)

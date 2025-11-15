@@ -3,12 +3,12 @@ from PyQt6.QtWidgets import QMessageBox, QDialog, QInputDialog
 from PyQt6.QtCore import QDate
 import sqlite3
 from datetime import datetime
-
+from utils import get_resource_path
 
 class RoomManagementDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('UI/Admin/Изменение номеров переделанная.ui', self)
+        uic.loadUi(get_resource_path('UI/Admin/Изменение номеров переделанная.ui'), self)
 
         self.setWindowTitle("Управление номерами")
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))

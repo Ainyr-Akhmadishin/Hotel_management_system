@@ -4,12 +4,12 @@ import sqlite3
 from PyQt6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
 
-
+from utils import get_resource_path
 
 class MassageWindow(QDialog):
     def __init__(self,full_name, parent=None):
         super().__init__(parent)
-        uic.loadUi('UI/Reg/Окно отправки сообщений.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно отправки сообщений.ui'), self)
         self.setWindowTitle("Отправка сообщений")
 
         self.full_name = full_name

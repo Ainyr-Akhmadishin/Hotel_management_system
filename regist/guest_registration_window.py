@@ -5,6 +5,7 @@ import sqlite3
 from datetime import datetime
 from regist.regist_exceptions import FIOException, LowerNameError, PassportError, DateError, PhoneError
 from bd_manager import YandexDiskUploader
+from utils import get_resource_path
 
 class GuestRegistrationWindow(QMainWindow):
     closed = pyqtSignal()
@@ -13,7 +14,7 @@ class GuestRegistrationWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        uic.loadUi('UI/Reg/Окно заселения гостя итог.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно заселения гостя итог.ui'), self)
         self.setWindowTitle("Заселение гостя")
         self.phone.setInputMask("+7(000)000-00-00")
 
