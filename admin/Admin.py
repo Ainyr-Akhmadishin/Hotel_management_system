@@ -12,12 +12,24 @@ from admin.List_sotrudnic import EmployeeListDialog
 from admin.Change_room import RoomManagementDialog
 from admin.Download_Upload_data import DataExportDialog
 
+from notifications_manager import SimpleNotificationsManager
+
+from massage_window import MassageWindow
 
 class AdminWindow(QMainWindow):
     closed = pyqtSignal()
     def __init__(self, full_name, username):
         super().__init__()
         uic.loadUi(get_resource_path('UI/Admin/Админ переделанный.ui'), self)
+        self.user_id = self.get_user_id(username)
+        self.full_name = full_name
+        self.username = username
+        # Инициализируем менеджер уведомлений
+        self.notifications_manager = SimpleNotificationsManager(
+            self.user_id,
+            self.notifications_frame,
+            self  # передаем ссылку на главное окно
+        )
 
         self.init_database()
         #
@@ -26,8 +38,9 @@ class AdminWindow(QMainWindow):
         self.sort_staff_btn.clicked.connect(self.sort_staff)
         self.manage_employees_btn.clicked.connect(self.manage_employees)
         self.employees_list_btn.clicked.connect(self.show_employees_list)
-        self.contact_registry_btn.clicked.connect(self.contact_registry)
-        self.contact_staff_btn.clicked.connect(self.contact_staff)
+        # self.contact_registry_btn.clicked.connect(self.contact_registry)
+
+        self.staff_button.clicked.connect(self.open_massage)
         self.change_numbers_btn.clicked.connect(self.change_numbers)
         self.data_export_btn.clicked.connect(self.data_export_import)
         #
@@ -40,6 +53,28 @@ class AdminWindow(QMainWindow):
         # # Модель для списка сообщений
         # self.model = QtWidgets.QStringListModel()
         # self.listView.setModel(self.model)
+    def open_massage(self):
+        self.massage_window = MassageWindow(full_name=self.full_name)
+        self.massage_window.show()
+
+    def get_user_id(self, username):
+        """Получение ID пользователя по логину"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT id FROM staff WHERE login = ?', (username,))
+            result = cursor.fetchone()
+            conn.close()
+            return result[0] if result else 1
+        except Exception as e:
+            print(f"Ошибка получения ID пользователя: {e}")
+            return 1
+
+    def closeEvent(self, event):
+        """Останавливаем обновления уведомлений при закрытии"""
+        if hasattr(self, 'notifications_manager'):
+            self.notifications_manager.stop_updates()
+        super().closeEvent(event)
 
     def init_database(self):
         """Инициализация базы данных"""

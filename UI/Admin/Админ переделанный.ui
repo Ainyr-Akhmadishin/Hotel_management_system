@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AdminWindow</class>
+ <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
@@ -167,11 +167,11 @@ QScrollBar::handle:vertical:hover {
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <layout class="QFormLayout" name="formLayout">
-             <property name="verticalSpacing">
-              <number>15</number>
-             </property>
              <property name="horizontalSpacing">
               <number>10</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>15</number>
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_22">
@@ -194,11 +194,11 @@ QScrollBar::handle:vertical:hover {
                  <height>0</height>
                 </size>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
                <property name="text">
                 <string>1</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -210,11 +210,11 @@ QScrollBar::handle:vertical:hover {
                  <height>0</height>
                 </size>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
                <property name="text">
                 <string>2</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -226,11 +226,11 @@ QScrollBar::handle:vertical:hover {
                  <height>0</height>
                 </size>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
                <property name="text">
                 <string>3</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -238,11 +238,11 @@ QScrollBar::handle:vertical:hover {
            </item>
            <item>
             <layout class="QGridLayout" name="gridLayout">
-             <property name="verticalSpacing">
-              <number>10</number>
-             </property>
              <property name="horizontalSpacing">
               <number>15</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>10</number>
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_3">
@@ -337,21 +337,21 @@ QScrollBar::handle:vertical:hover {
           </property>
           <item>
            <widget class="QPushButton" name="sort_registry_btn">
-            <property name="text">
-             <string>Отсортировать регистратуру</string>
-            </property>
             <property name="toolTip">
              <string>Для сортировки необходим список работников</string>
+            </property>
+            <property name="text">
+             <string>Отсортировать регистратуру</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="sort_staff_btn">
-            <property name="text">
-             <string>Отсортировать персонал</string>
-            </property>
             <property name="toolTip">
              <string>Для сортировки необходим список работников</string>
+            </property>
+            <property name="text">
+             <string>Отсортировать персонал</string>
             </property>
            </widget>
           </item>
@@ -364,61 +364,51 @@ QScrollBar::handle:vertical:hover {
           </property>
           <item row="0" column="0">
            <widget class="QPushButton" name="manage_employees_btn">
-            <property name="text">
-             <string>Уволить/Добавить сотрудника</string>
-            </property>
             <property name="toolTip">
              <string>Требуется доступ к базе данных сотрудников</string>
+            </property>
+            <property name="text">
+             <string>Уволить/Добавить сотрудника</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QPushButton" name="employees_list_btn">
-            <property name="text">
-             <string>Список работников</string>
-            </property>
             <property name="toolTip">
              <string>База данных сотрудников должна быть доступна</string>
             </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="contact_registry_btn">
             <property name="text">
-             <string>Связь с регистратурой</string>
-            </property>
-            <property name="toolTip">
-             <string>Необходимо выбрать сотрудника регистратуры</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="contact_staff_btn">
-            <property name="text">
-             <string>Связь с персоналом</string>
-            </property>
-            <property name="toolTip">
-             <string>Необходимо выбрать сотрудника персонала</string>
+             <string>Список работников</string>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
            <widget class="QPushButton" name="change_numbers_btn">
-            <property name="text">
-             <string>Изменение номеров</string>
-            </property>
             <property name="toolTip">
              <string>Требуются права администратора для изменения</string>
+            </property>
+            <property name="text">
+             <string>Изменение номеров</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
            <widget class="QPushButton" name="data_export_btn">
+            <property name="toolTip">
+             <string>Требуется доступ к файловой системе</string>
+            </property>
             <property name="text">
              <string>Выгрузка/Загрузка данных</string>
             </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QPushButton" name="staff_button">
             <property name="toolTip">
-             <string>Требуется доступ к файловой системе</string>
+             <string>Необходимо выбрать сотрудника персонала</string>
+            </property>
+            <property name="text">
+             <string>Связь с персоналом</string>
             </property>
            </widget>
           </item>
@@ -442,7 +432,7 @@ QScrollBar::handle:vertical:hover {
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="frame_2">
+         <widget class="QFrame" name="notifications_frame">
           <property name="styleSheet">
            <string notr="true">background-color: white; 
             border-radius: 6px; 
@@ -455,19 +445,21 @@ QScrollBar::handle:vertical:hover {
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QListView" name="listView">
-             <property name="minimumSize">
-              <size>
-               <width>200</width>
-               <height>300</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <layout class="QVBoxLayout" name="verticalLayout_2"/>
          </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
@@ -481,7 +473,7 @@ QScrollBar::handle:vertical:hover {
      <x>0</x>
      <y>0</y>
      <width>882</width>
-     <height>26</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>

@@ -137,65 +137,67 @@ def create_database():
     cursor.execute("SELECT id FROM guests ORDER BY id")
     guest_ids = [row[0] for row in cursor.fetchall()]
 
-    test_bookings = [
-        # Используем реальные room_id и guest_id
-        (guest_ids[0], room_mapping["101"], today, today + timedelta(days=3)),
-        (guest_ids[1], room_mapping["103"], today, today + timedelta(days=5)),
-        (guest_ids[2], room_mapping["105"], today + timedelta(days=2), today + timedelta(days=7)),
-        (guest_ids[3], room_mapping["203"], today + timedelta(days=1), today + timedelta(days=4)),
-        (guest_ids[4], room_mapping["301"], today - timedelta(days=5), today + timedelta(days=10)),
-        (guest_ids[0], room_mapping["102"], today - timedelta(days=10), today - timedelta(days=2)),
-        (guest_ids[1], room_mapping["104"], today - timedelta(days=7), today - timedelta(days=1)),
-    ]
-
-    # Добавляем тестовые бронирования
-    for guest_id, room_id, check_in, check_out in test_bookings:
-        try:
-            cursor.execute('''
-                INSERT INTO bookings (guest_id, room_id, check_in_date, check_out_date)
-                VALUES (?, ?, ?, ?)
-            ''', (guest_id, room_id, check_in.strftime("%Y-%m-%d"), check_out.strftime("%Y-%m-%d")))
-            print(f"✅ Добавлено бронирование: гость {guest_id}, номер {room_id}")
-        except Exception as e:
-            print(f"❌ Ошибка добавления бронирования: {e}")
-
-    # КОММИТ после бронирований
-    conn.commit()
-    print("✅ Бронирования добавлены")
+    # test_bookings = [
+    #     # Используем реальные room_id и guest_id
+    #     (guest_ids[0], room_mapping["101"], today, today + timedelta(days=3)),
+    #     (guest_ids[1], room_mapping["103"], today, today + timedelta(days=5)),
+    #     (guest_ids[2], room_mapping["105"], today + timedelta(days=2), today + timedelta(days=7)),
+    #     (guest_ids[3], room_mapping["203"], today + timedelta(days=1), today + timedelta(days=4)),
+    #     (guest_ids[4], room_mapping["301"], today - timedelta(days=5), today + timedelta(days=10)),
+    #     (guest_ids[0], room_mapping["102"], today - timedelta(days=10), today - timedelta(days=2)),
+    #     (guest_ids[1], room_mapping["104"], today - timedelta(days=7), today - timedelta(days=1)),
+    # ]
+    #
+    # # Добавляем тестовые бронирования
+    # for guest_id, room_id, check_in, check_out in test_bookings:
+    #     try:
+    #         cursor.execute('''
+    #             INSERT INTO bookings (guest_id, room_id, check_in_date, check_out_date)
+    #             VALUES (?, ?, ?, ?)
+    #         ''', (guest_id, room_id, check_in.strftime("%Y-%m-%d"), check_out.strftime("%Y-%m-%d")))
+    #         print(f"✅ Добавлено бронирование: гость {guest_id}, номер {room_id}")
+    #     except Exception as e:
+    #         print(f"❌ Ошибка добавления бронирования: {e}")
+    #
+    # # КОММИТ после бронирований
+    # conn.commit()
+    # print("✅ Бронирования добавлены")
 
     # Добавляем тестовые сообщения между сотрудниками
     # ИСПРАВЛЕНИЕ: используем числа 0 и 1 вместо False и True
-    test_messages = [
-        (1, 2, "Добро пожаловать в систему! Проверьте новые бронирования.", 0),
-        (2, 1, "Спасибо! Уже проверяю. Всё в порядке.", 1),
-        (1, 3, "Подготовьте номер 101 к заселению. Гость приедет через 2 часа.", 0),
-        (3, 1, "Номер 101 готов. Постельное белье заменено, уборка завершена.", 1),
-        (1, 6, "Срочно! В номере 205 протекает кран. Нужно срочно починить.", 0),
-        (6, 1, "Принято. Отправляюсь в номер 205 для ремонта.", 0),
-        (2, 4, "Не забудьте проверить документы у гостя в номере 301.", 0),
-        (4, 2, "Документы проверены, всё в порядке. Гость заселился.", 1),
-        (1, 5, "Завтра плановая проверка номеров. Будьте готовы.", 0),
-        (5, 7, "Помогите с уборкой в номерах 201-204. Спасибо!", 0)
-    ]
-
-    # Добавляем тестовые сообщения
-    for from_user, to_user, text, is_read in test_messages:
-        try:
-            cursor.execute('''
-                INSERT INTO messages (from_user, to_user, text, is_read)
-                VALUES (?, ?, ?, ?)
-            ''', (from_user, to_user, text, is_read))
-            print(f"✅ Добавлено сообщение: {from_user} -> {to_user}")
-        except Exception as e:
-            print(f"❌ Ошибка добавления сообщения: {e}")
+    # test_messages = [
+    #     (1, 2, "Добро пожаловать в систему! Проверьте новые бронирования.", 0),
+    #     (2, 1, "Спасибо! Уже проверяю. Всё в порядке.", 1),
+    #     (1, 3, "Подготовьте номер 101 к заселению. Гость приедет через 2 часа.", 0),
+    #     (3, 1, "Номер 101 готов. Постельное белье заменено, уборка завершена.", 1),
+    #     (1, 6, "Срочно! В номере 205 протекает кран. Нужно срочно починить.", 0),
+    #     (6, 1, "Принято. Отправляюсь в номер 205 для ремонта.", 0),
+    #     (2, 4, "Не забудьте проверить документы у гостя в номере 301.", 0),
+    #     (4, 2, "Документы проверены, всё в порядке. Гость заселился.", 1),
+    #     (1, 5, "Завтра плановая проверка номеров. Будьте готовы.", 0),
+    #     (5, 7, "Помогите с уборкой в номерах 201-204. Спасибо!", 0)
+    # ]
+    #
+    # # Добавляем тестовые сообщения
+    # for from_user, to_user, text, is_read in test_messages:
+    #     try:
+    #         cursor.execute('''
+    #             INSERT INTO messages (from_user, to_user, text, is_read)
+    #             VALUES (?, ?, ?, ?)
+    #         ''', (from_user, to_user, text, is_read))
+    #         print(f"✅ Добавлено сообщение: {from_user} -> {to_user}")
+    #     except Exception as e:
+    #         print(f"❌ Ошибка добавления сообщения: {e}")
 
     # ФИНАЛЬНЫЙ КОММИТ
+    conn.execute('DELETE FROM messages')
     conn.commit()
+    conn.close()
 
     # Проверяем что сообщения добавились
-    cursor.execute("SELECT COUNT(*) FROM messages")
-    message_count = cursor.fetchone()[0]
-    print(f"📊 Добавлено сообщений: {message_count}")
+    # cursor.execute("SELECT COUNT(*) FROM messages")
+    # message_count = cursor.fetchone()[0]
+    # print(f"📊 Добавлено сообщений: {message_count}")
 
     conn.close()
     print("🎉 База данных создана с тестовыми бронированиями и сообщениями!")

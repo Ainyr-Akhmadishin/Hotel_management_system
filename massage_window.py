@@ -4,6 +4,7 @@ import sqlite3
 from PyQt6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
 
+from bd_manager import YandexDiskUploader
 from utils import get_resource_path
 
 class MassageWindow(QDialog):
@@ -68,8 +69,15 @@ class MassageWindow(QDialog):
                         (self.id_sender, self.id_recipient, binary_message))
 
             con.commit()
+            con.close()
             QMessageBox.information(self, "Успех",
                                     f"Сообщение отправлено")
+            self.close()
+            uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+            if uploader.upload_db():
+                print("Изменения загружены на Яндекс Диск")
+            else:
+                print("Не удалось загрузить изменения")
 
         except ValueError as e:
             QMessageBox.critical(self, "Ошибка", str(e))
@@ -104,6 +112,7 @@ class MassageWindow(QDialog):
             self.recipients_list.clear()
             self.recipients_list.addItems(row[0] for row in cursor.fetchall())
             conn.close()
+
 
         except sqlite3.Error as e:
             QMessageBox.critical(self, "Ошибка загрузки сотрудников", str(e))

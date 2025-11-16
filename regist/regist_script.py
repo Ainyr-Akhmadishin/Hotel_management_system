@@ -10,7 +10,7 @@ from PyQt6.QtCore import QDate
 from PyQt6.QtGui import QBrush, QColor, QAction
 
 from regist.guest_registration_window import GuestRegistrationWindow
-from regist.massage_window import MassageWindow
+from massage_window import MassageWindow
 
 from regist.guest_update_window import GuestUpdateWindow  # Добавьте эту строку в импорты
 
@@ -35,7 +35,8 @@ class RegistrarWindow(QMainWindow):
         # Инициализируем менеджер уведомлений
         self.notifications_manager = SimpleNotificationsManager(
             self.user_id,
-            self.notifications_frame
+            self.notifications_frame,
+            self  # передаем ссылку на главное окно
         )
 
         self.guest_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
