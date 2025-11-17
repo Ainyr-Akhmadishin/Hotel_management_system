@@ -13,6 +13,7 @@ from regist.guest_registration_window import GuestRegistrationWindow
 from massage_window import MassageWindow
 
 from regist.guest_update_window import GuestUpdateWindow  # Добавьте эту строку в импорты
+from regist.upload_or_download import UDWindow
 
 from utils import get_resource_path
 from notifications_manager import SimpleNotificationsManager
@@ -62,7 +63,12 @@ class RegistrarWindow(QMainWindow):
         self.next_month_button.clicked.connect(self.next_month)
 
         self.Button.clicked.connect(self.updating_guest_data)
+        self.data_button.clicked.connect(self.upload_or_download)
 
+    def upload_or_download(self):
+
+        self.udwindow = UDWindow(on_data_updated=self.updating_guest_data)
+        self.udwindow.show()
 
     def get_user_id(self, username):
         """Получение ID пользователя по логину"""

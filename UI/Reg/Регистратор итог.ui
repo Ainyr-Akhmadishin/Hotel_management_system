@@ -697,7 +697,7 @@ QScrollBar::handle:horizontal:hover {
              </size>
             </property>
             <property name="text">
-             <string>💾 Загрузка/Выгрузка данных</string>
+             <string>💾 Загрузка/Сохранение данных</string>
             </property>
            </widget>
           </item>

@@ -24,7 +24,9 @@ def create_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS rooms (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            room_number VARCHAR(10) UNIQUE NOT NULL
+            room_number VARCHAR(10) UNIQUE NOT NULL,
+            room_type VARCHAR(50) NOT NULL,
+            price_per_night DECIMAL(10,2) NOT NULL
         )
     ''')
 
@@ -65,9 +67,21 @@ def create_database():
     ''')
 
     # Данные для добавления
-    rooms_data = [("101",), ("102",), ("103",), ("104",), ("105",),
-                  ("201",), ("202",), ("203",), ("204",),
-                  ("301",), ("302",), ("303",), ("304",)]
+    rooms_data = [
+        ("101", "Стандарт", 3500.00),
+        ("102", "Стандарт", 3500.00),
+        ("103", "Стандарт", 3500.00),
+        ("104", "Стандарт", 3500.00),
+        ("105", "Стандарт", 3500.00),
+        ("201", "Бизнес", 4500.00),
+        ("202", "Бизнес", 4500.00),
+        ("203", "Бизнес", 4500.00),
+        ("204", "Бизнес", 4500.00),
+        ("301", "Люкс", 5500.00),
+        ("302", "Люкс", 5500.00),
+        ("303", "Люкс", 5500.00),
+        ("304", "Люкс", 5500.00)
+    ]
 
     staff_members = [
         ("Арслан", "Хубетдинов", "Илгамович", "Ars", "Ars", "администратор"),
@@ -104,12 +118,12 @@ def create_database():
             print(f"⚠️ Сотрудник уже существует: {login}")
 
     # Добавляем номера
-    for room_number in rooms_data:
+    for room_data in rooms_data:
         try:
-            cursor.execute('INSERT INTO rooms (room_number) VALUES (?)', room_number)
-            print(f"✅ Добавлен номер: {room_number[0]}")
+            cursor.execute('INSERT INTO rooms (room_number, room_type, price_per_night) VALUES (?, ?, ?)', room_data)
+            print(f"✅ Добавлен номер: {room_data[0]} ({room_data[1]}) - {room_data[2]} руб.")
         except sqlite3.IntegrityError:
-            print(f"⚠️ Номер уже существует: {room_number[0]}")
+            print(f"⚠️ Номер уже существует: {room_data[0]}")
 
     # Добавляем гостей
     for first_name, last_name, patronymic, passport, phone in guests_data:
@@ -137,31 +151,60 @@ def create_database():
     cursor.execute("SELECT id FROM guests ORDER BY id")
     guest_ids = [row[0] for row in cursor.fetchall()]
 
-    # test_bookings = [
-    #     # Используем реальные room_id и guest_id
-    #     (guest_ids[0], room_mapping["101"], today, today + timedelta(days=3)),
-    #     (guest_ids[1], room_mapping["103"], today, today + timedelta(days=5)),
-    #     (guest_ids[2], room_mapping["105"], today + timedelta(days=2), today + timedelta(days=7)),
-    #     (guest_ids[3], room_mapping["203"], today + timedelta(days=1), today + timedelta(days=4)),
-    #     (guest_ids[4], room_mapping["301"], today - timedelta(days=5), today + timedelta(days=10)),
-    #     (guest_ids[0], room_mapping["102"], today - timedelta(days=10), today - timedelta(days=2)),
-    #     (guest_ids[1], room_mapping["104"], today - timedelta(days=7), today - timedelta(days=1)),
-    # ]
-    #
-    # # Добавляем тестовые бронирования
-    # for guest_id, room_id, check_in, check_out in test_bookings:
-    #     try:
-    #         cursor.execute('''
-    #             INSERT INTO bookings (guest_id, room_id, check_in_date, check_out_date)
-    #             VALUES (?, ?, ?, ?)
-    #         ''', (guest_id, room_id, check_in.strftime("%Y-%m-%d"), check_out.strftime("%Y-%m-%d")))
-    #         print(f"✅ Добавлено бронирование: гость {guest_id}, номер {room_id}")
-    #     except Exception as e:
-    #         print(f"❌ Ошибка добавления бронирования: {e}")
-    #
-    # # КОММИТ после бронирований
-    # conn.commit()
-    # print("✅ Бронирования добавлены")
+    test_bookings = [
+        # Используем реальные room_id и guest_id
+        (guest_ids[0], room_mapping["101"], today, today + timedelta(days=3)),
+        (guest_ids[1], room_mapping["103"], today, today + timedelta(days=5)),
+        (guest_ids[2], room_mapping["105"], today + timedelta(days=2), today + timedelta(days=7)),
+        (guest_ids[3], room_mapping["203"], today + timedelta(days=1), today + timedelta(days=4)),
+        (guest_ids[4], room_mapping["301"], today - timedelta(days=5), today + timedelta(days=10)),
+        (guest_ids[0], room_mapping["102"], today - timedelta(days=10), today - timedelta(days=2)),
+        (guest_ids[1], room_mapping["104"], today - timedelta(days=7), today - timedelta(days=1)),
+        (guest_ids[0], room_mapping["101"], today, today + timedelta(days=3)),
+        (guest_ids[1], room_mapping["103"], today, today + timedelta(days=5)),
+        (guest_ids[2], room_mapping["105"], today + timedelta(days=2), today + timedelta(days=7)),
+        (guest_ids[3], room_mapping["203"], today + timedelta(days=1), today + timedelta(days=4)),
+
+        # Долгосрочное бронирование (уже началось)
+        (guest_ids[4], room_mapping["301"], today - timedelta(days=5), today + timedelta(days=10)),
+
+        # Завершенные брони (выезд в прошлом)
+        (guest_ids[0], room_mapping["102"], today - timedelta(days=10), today - timedelta(days=2)),
+        (guest_ids[1], room_mapping["104"], today - timedelta(days=7), today - timedelta(days=1)),
+
+        # ДОБАВЛЕННЫЕ БРОНИ ДЛЯ ПРОВЕРКИ ПЕРИОДОВ:
+
+        # Брони за последний месяц (30 дней)
+        (guest_ids[2], room_mapping["201"], today - timedelta(days=15), today - timedelta(days=10)),
+        (guest_ids[3], room_mapping["302"], today - timedelta(days=25), today - timedelta(days=20)),
+
+        # Брони за последние 6 месяцев (но больше месяца)
+        (guest_ids[4], room_mapping["202"], today - timedelta(days=90), today - timedelta(days=85)),
+        (guest_ids[0], room_mapping["304"], today - timedelta(days=120), today - timedelta(days=115)),
+
+        # Брони за последний год (но больше 6 месяцев)
+        (guest_ids[1], room_mapping["102"], today - timedelta(days=200), today - timedelta(days=195)),
+        (guest_ids[2], room_mapping["204"], today - timedelta(days=300), today - timedelta(days=295)),
+
+        # Будущие брони (ожидаются)
+        (guest_ids[3], room_mapping["201"], today + timedelta(days=5), today + timedelta(days=8)),
+        (guest_ids[4], room_mapping["302"], today + timedelta(days=10), today + timedelta(days=15)),
+    ]
+
+    # Добавляем тестовые бронирования
+    for guest_id, room_id, check_in, check_out in test_bookings:
+        try:
+            cursor.execute('''
+                INSERT INTO bookings (guest_id, room_id, check_in_date, check_out_date)
+                VALUES (?, ?, ?, ?)
+            ''', (guest_id, room_id, check_in.strftime("%Y-%m-%d"), check_out.strftime("%Y-%m-%d")))
+            print(f"✅ Добавлено бронирование: гость {guest_id}, номер {room_id}")
+        except Exception as e:
+            print(f"❌ Ошибка добавления бронирования: {e}")
+
+    # КОММИТ после бронирований
+    conn.commit()
+    print("✅ Бронирования добавлены")
 
     # Добавляем тестовые сообщения между сотрудниками
     # ИСПРАВЛЕНИЕ: используем числа 0 и 1 вместо False и True
