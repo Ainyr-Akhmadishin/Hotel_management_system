@@ -31,21 +31,11 @@ class UploadWindow(QMainWindow):
 
             if not current_file_path:
                 raise EmptyPathError
-            with open(current_file_path,'w', newline = '',encoding='utf-8-sig') as f:
-                writer = csv.writer(
-                    f,
-                    delimiter = ';',
-                    quotechar = '"',
-                    quoting = csv.QUOTE_MINIMAL)
-                writer.writerow(
-                    [self.previewTable.horizontalHeaderItem(i).text()
-                     for i in range(self.previewTable.columnCount())
-                     ]
-                )
 
-                for i in self.data:
-
-                    writer.writerow(i)
+            if current_file_path.lower().endswith('.txt'):
+                self.save_as_txt(current_file_path)
+            else:
+                self.save_as_csv(current_file_path)
 
             QMessageBox.information(self, "Успех", f"Отчет успешно сохранен в:\n{current_file_path}")
             self.filePathEdit.clear()
@@ -63,6 +53,52 @@ class UploadWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Неизвестная ошибка", f"Произошла непредвиденная ошибка:\n{str(e)}")
 
+    def save_as_csv(self, file_path):
+        with open(file_path, 'w', newline='', encoding='utf-8-sig') as f:
+            writer = csv.writer(
+                f,
+                delimiter=';',
+                quotechar='"',
+                quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(
+                [self.previewTable.horizontalHeaderItem(i).text()
+                 for i in range(self.previewTable.columnCount())
+                 ]
+            )
+
+            for i in self.data:
+                writer.writerow(i)
+
+    def save_as_txt(self, file_path):
+        with open(file_path, 'w', encoding='utf-8') as f:
+
+            f.write("ОТЧЕТ О БРОНИРОВАНИЯХ\n")
+            f.write("=" * 100 + "\n")
+            f.write(
+                f"Период: с {self.start_date.strftime('%d.%m.%Y')} по {datetime.now().date().strftime('%d.%m.%Y')}\n")
+            f.write("=" * 100 + "\n\n")
+
+
+            headers = [self.previewTable.horizontalHeaderItem(i).text() for i in range(self.previewTable.columnCount())]
+
+
+            col_widths = [len(header) for header in headers]
+            for row in self.data:
+                for i, cell in enumerate(row):
+                    col_widths[i] = max(col_widths[i], len(str(cell)))
+
+            col_widths = [width + 2 for width in col_widths]
+
+
+            header_line = "".join([headers[i].ljust(col_widths[i]) for i in range(len(headers))])
+            f.write(header_line + "\n")
+            f.write("-" * len(header_line) + "\n")
+
+            for row in self.data:
+                row_line = "".join([str(cell).ljust(col_widths[i]) for i, cell in enumerate(row)])
+                f.write(row_line + "\n")
+
+            f.write("\n" + "=" * 100 + "\n")
 
     def browse(self):
 
@@ -71,14 +107,14 @@ class UploadWindow(QMainWindow):
                 self,
                 "Сохранить отчет о бронированиях",
                 f"отчет_бронирования_за_период_{self.start_date.strftime('%d.%m.%Y')}-{datetime.now().date().strftime('%d.%m.%Y')}",
-                "CSV Files (*.csv);"
+                "CSV Files (*.csv);;Text Files (*.txt)"
             )
 
             if file_path:
                 self.filePathEdit.setText(file_path)
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка выбора файла", f"Не удалось выбрать файл:\n{str(e)}")
+            QMessageBox.critical(self, "Ошибка выбора файла", f"Не удалось выбрать файл")
 
     def update_preview_table(self, data):
         try:
@@ -100,7 +136,7 @@ class UploadWindow(QMainWindow):
             self.previewTable.resizeColumnsToContents()
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка обновления таблицы", f"Не удалось обновить таблицу:\n{str(e)}")
+            QMessageBox.critical(self, "Ошибка обновления таблицы", f"Не удалось обновить таблицу")
 
     def get_data(self):
         try:
@@ -136,7 +172,7 @@ class UploadWindow(QMainWindow):
             self.data = cursor.fetchall()
             self.update_preview_table(self.data)
         except sqlite3.Error as e:
-            QMessageBox.critical(self, "Ошибка базы данных", f"Не удалось загрузить данные:\n{str(e)}")
+            QMessageBox.critical(self, "Ошибка базы данных", f"Не удалось загрузить базу данных")
         except Exception as e:
             QMessageBox.critical(self, "Ошибка загрузки данных", f"Произошла непредвиденная ошибка:\n{str(e)}")
 

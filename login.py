@@ -24,7 +24,6 @@ class LoginWindow(QMainWindow):
         self.pushButton.clicked.connect(self.login)
         self.lineEdit_3.returnPressed.connect(self.login)
 
-
         self.employee_window = None
         self.admin_window = None
         self.registrar_window = None

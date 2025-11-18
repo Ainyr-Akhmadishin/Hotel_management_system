@@ -30,13 +30,14 @@ class HotelManager(QMainWindow):
         # Создаем вкладки для каждой таблицы
         self.tabs = QTabWidget()
 
-        # Создаем вкладки для всех таблиц
+        # Создаем вкладки для всех таблиц (ДОБАВЛЕНА ТАБЛИЦА maintenance_tasks)
         self.tables_info = {
             'staff': "Сотрудники",
             'rooms': "Номера",
             'guests': "Гости",
             'bookings': "Бронирования",
-            'messages': "Сообщения"
+            'messages': "Сообщения",
+            'maintenance_tasks': "Задания на уборку"  # ДОБАВЛЕНА НОВАЯ ТАБЛИЦА
         }
 
         self.table_widgets = {}
@@ -70,8 +71,14 @@ class HotelManager(QMainWindow):
         self.delete_selected_btn.clicked.connect(self.delete_selected_rows)
         self.delete_selected_btn.setStyleSheet("background-color: #ff6b6b; color: white;")
 
+        # ДОБАВЛЕНА КНОПКА ДЛЯ СТАТИСТИКИ ЗАДАНИЙ
+        self.tasks_stats_btn = QPushButton("📈 Статистика заданий")
+        self.tasks_stats_btn.clicked.connect(self.show_tasks_statistics)
+        self.tasks_stats_btn.setStyleSheet("background-color: #4CAF50; color: white;")
+
         button_layout.addWidget(self.refresh_btn)
         button_layout.addWidget(self.structure_btn)
+        button_layout.addWidget(self.tasks_stats_btn)  # ДОБАВЛЕНА КНОПКА
         button_layout.addWidget(self.delete_selected_btn)
         button_layout.addStretch()
 
@@ -103,18 +110,255 @@ class HotelManager(QMainWindow):
             view_action = context_menu.addAction("👁️ Просмотреть запись")
             refresh_action = context_menu.addAction("🔄 Обновить таблицу")
 
+            # ДОБАВЛЕНЫ ДОПОЛНИТЕЛЬНЫЕ ДЕЙСТВИЯ ДЛЯ ТАБЛИЦЫ ЗАДАНИЙ
+            if table_name == 'maintenance_tasks':
+                context_menu.addSeparator()
+                change_status_action = context_menu.addAction("🔄 Изменить статус задания")
+                assign_staff_action = context_menu.addAction("👨‍💼 Назначить сотрудника")
+
             action = context_menu.exec(table_widget.viewport().mapToGlobal(position))
 
             if action == delete_action:
-                # ПЕРЕДАЕМ table_name КАК СТРОКУ, А НЕ КАК РЕЗУЛЬТАТ ФУНКЦИИ
                 self.delete_selected_rows(table_name)
             elif action == view_action:
                 self.view_selected_record(table_name)
             elif action == refresh_action:
                 self.load_table_data_direct(table_name)
+            # ОБРАБОТКА НОВЫХ ДЕЙСТВИЙ ДЛЯ ЗАДАНИЙ
+            elif table_name == 'maintenance_tasks' and action == change_status_action:
+                self.change_task_status()
+            elif table_name == 'maintenance_tasks' and action == assign_staff_action:
+                self.assign_staff_to_task()
 
         except Exception as e:
             print(f"Ошибка в контекстном меню: {e}")
+
+    def change_task_status(self):
+        """Изменить статус выбранного задания"""
+        try:
+            table_widget = self.table_widgets['maintenance_tasks']
+            selected_rows = table_widget.selectionModel().selectedRows()
+
+            if not selected_rows or len(selected_rows) > 1:
+                QMessageBox.warning(self, "Внимание", "Выберите одно задание для изменения статуса")
+                return
+
+            row = selected_rows[0].row()
+            task_id_item = table_widget.item(row, 0)
+            current_status_item = table_widget.item(row, 5)  # Статус обычно в колонке 5
+
+            if not task_id_item:
+                QMessageBox.warning(self, "Ошибка", "Не удалось определить ID задания")
+                return
+
+            task_id = task_id_item.text()
+            current_status = current_status_item.text() if current_status_item else "новая"
+
+            # Диалог для выбора нового статуса
+            from PyQt6.QtWidgets import QInputDialog
+            statuses = ["новая", "в работе", "выполнена", "отменена"]
+            new_status, ok = QInputDialog.getItem(
+                self, "Изменение статуса", "Выберите новый статус:",
+                statuses, statuses.index(current_status) if current_status in statuses else 0, False
+            )
+
+            if ok and new_status:
+                self.update_task_status(task_id, new_status, row)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось изменить статус:\n{str(e)}")
+
+    def update_task_status(self, task_id, new_status, row):
+        """Обновить статус задания в базе данных"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            completed_at = "CURRENT_TIMESTAMP" if new_status == "выполнена" else "NULL"
+
+            cursor.execute(f'''
+                UPDATE maintenance_tasks 
+                SET status = ?, completed_at = {completed_at}
+                WHERE id = ?
+            ''', (new_status, task_id))
+
+            conn.commit()
+            conn.close()
+
+            # Обновляем отображение в таблице
+            table_widget = self.table_widgets['maintenance_tasks']
+            status_item = table_widget.item(row, 5)
+            if status_item:
+                status_item.setText(new_status)
+                # Обновляем цвет в зависимости от статуса
+                self.color_task_by_status(status_item, new_status)
+
+            QMessageBox.information(self, "Успех", f"Статус задания обновлен на: {new_status}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось обновить статус:\n{str(e)}")
+
+    def assign_staff_to_task(self):
+        """Назначить сотрудника на задание"""
+        try:
+            table_widget = self.table_widgets['maintenance_tasks']
+            selected_rows = table_widget.selectionModel().selectedRows()
+
+            if not selected_rows or len(selected_rows) > 1:
+                QMessageBox.warning(self, "Внимание", "Выберите одно задание для назначения сотрудника")
+                return
+
+            row = selected_rows[0].row()
+            task_id_item = table_widget.item(row, 0)
+
+            if not task_id_item:
+                QMessageBox.warning(self, "Ошибка", "Не удалось определить ID задания")
+                return
+
+            task_id = task_id_item.text()
+
+            # Получаем список сотрудников
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, first_name || ' ' || last_name FROM staff WHERE position LIKE '%обслуживаю%' OR position LIKE '%персонал%'")
+            staff_members = cursor.fetchall()
+            conn.close()
+
+            if not staff_members:
+                QMessageBox.warning(self, "Внимание", "Нет доступных сотрудников")
+                return
+
+            staff_names = [f"{staff[0]} - {staff[1]}" for staff in staff_members]
+
+            from PyQt6.QtWidgets import QInputDialog
+            staff_choice, ok = QInputDialog.getItem(
+                self, "Назначение сотрудника", "Выберите сотрудника:",
+                staff_names, 0, False
+            )
+
+            if ok and staff_choice:
+                staff_id = staff_choice.split(' - ')[0]
+                self.update_task_staff(task_id, staff_id, row)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось назначить сотрудника:\n{str(e)}")
+
+    def update_task_staff(self, task_id, staff_id, row):
+        """Обновить назначенного сотрудника в базе данных"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            cursor.execute('''
+                UPDATE maintenance_tasks 
+                SET assigned_to = ?
+                WHERE id = ?
+            ''', (staff_id, task_id))
+
+            conn.commit()
+
+            # Получаем имя сотрудника для отображения
+            cursor.execute("SELECT first_name || ' ' || last_name FROM staff WHERE id = ?", (staff_id,))
+            staff_name = cursor.fetchone()[0]
+            conn.close()
+
+            # Обновляем отображение в таблице
+            table_widget = self.table_widgets['maintenance_tasks']
+            assigned_item = table_widget.item(row, 3)  # Колонка assigned_to
+            if assigned_item:
+                assigned_item.setText(staff_name)
+
+            QMessageBox.information(self, "Успех", f"Сотрудник назначен: {staff_name}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось назначить сотрудника:\n{str(e)}")
+
+    def show_tasks_statistics(self):
+        """Показать статистику по заданиям"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            # Статистика по статусам
+            cursor.execute('''
+                SELECT status, COUNT(*) as count 
+                FROM maintenance_tasks 
+                GROUP BY status 
+                ORDER BY 
+                    CASE status 
+                        WHEN 'новая' THEN 1
+                        WHEN 'в работе' THEN 2
+                        WHEN 'выполнена' THEN 3
+                        ELSE 4
+                    END
+            ''')
+            status_stats = cursor.fetchall()
+
+            # Статистика по комнатам
+            cursor.execute('''
+                SELECT room_number, COUNT(*) as task_count,
+                       SUM(CASE WHEN status = 'выполнена' THEN 1 ELSE 0 END) as completed_count
+                FROM maintenance_tasks 
+                GROUP BY room_number
+                ORDER BY task_count DESC
+                LIMIT 10
+            ''')
+            room_stats = cursor.fetchall()
+
+            # Статистика по сотрудникам
+            cursor.execute('''
+                SELECT s.first_name || ' ' || s.last_name as staff_name,
+                       COUNT(mt.id) as task_count,
+                       SUM(CASE WHEN mt.status = 'выполнена' THEN 1 ELSE 0 END) as completed_count
+                FROM maintenance_tasks mt
+                LEFT JOIN staff s ON mt.assigned_to = s.id
+                GROUP BY mt.assigned_to
+                ORDER BY task_count DESC
+            ''')
+            staff_stats = cursor.fetchall()
+
+            conn.close()
+
+            # Формируем отчет
+            stats_text = "📊 СТАТИСТИКА ЗАДАНИЙ НА УБОРКУ\n\n"
+
+            stats_text += "📋 ПО СТАТУСАМ:\n"
+            for status, count in status_stats:
+                stats_text += f"  {status:<12}: {count:>2} заданий\n"
+
+            stats_text += "\n🏠 ПО КОМНАТАМ (ТОП-10):\n"
+            for room, total, completed in room_stats:
+                stats_text += f"  Комната {room}: {total} заданий ({completed} выполнено)\n"
+
+            stats_text += "\n👨‍💼 ПО СОТРУДНИКАМ:\n"
+            for staff_name, total, completed in staff_stats:
+                if staff_name:
+                    stats_text += f"  {staff_name}: {total} заданий ({completed} выполнено)\n"
+                else:
+                    stats_text += f"  Не назначено: {total} заданий\n"
+
+            QMessageBox.information(self, "Статистика заданий", stats_text)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось получить статистику:\n{str(e)}")
+
+    def color_task_by_status(self, item, status):
+        """Цветовое оформление задания по статусу"""
+        color_map = {
+            'новая': Qt.GlobalColor.yellow,
+            'в работе': Qt.GlobalColor.blue,
+            'выполнена': Qt.GlobalColor.green,
+            'отменена': Qt.GlobalColor.gray
+        }
+
+        if status in color_map:
+            item.setBackground(color_map[status])
+            # Белый текст для синего фона
+            if status == 'в работе':
+                item.setForeground(Qt.GlobalColor.white)
+            else:
+                item.setForeground(Qt.GlobalColor.black)
 
     def delete_selected_rows(self, table_name=None):
         """Удалить выбранные строки из таблицы"""
@@ -137,7 +381,17 @@ class HotelManager(QMainWindow):
                 QMessageBox.warning(self, "Внимание", "Выберите записи для удаления")
                 return
 
-            # ... остальной код без изменений ...
+            # Подтверждение удаления
+            reply = QMessageBox.question(
+                self,
+                "Подтверждение удаления",
+                f"Вы уверены, что хотите удалить {len(selected_rows)} записей из таблицы '{self.tables_info[table_name]}'?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
+            )
+
+            if reply == QMessageBox.StandardButton.Yes:
+                self.perform_deletion(table_name, selected_rows, table_widget)
 
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Неожиданная ошибка:\n{str(e)}")
@@ -286,14 +540,42 @@ class HotelManager(QMainWindow):
     def load_table_data(self, cursor, table_name):
         """Загрузка данных конкретной таблицы"""
         try:
-            # Получаем данные таблицы
-            cursor.execute(f"SELECT * FROM {table_name}")
+            # Для таблицы заданий используем JOIN для получения имен сотрудников
+            if table_name == 'maintenance_tasks':
+                query = '''
+                    SELECT 
+                        mt.id,
+                        mt.room_number,
+                        mt.description,
+                        s1.first_name || ' ' || s1.last_name as assigned_to,
+                        s2.first_name || ' ' || s2.last_name as created_by,
+                        mt.status,
+                        mt.created_at,
+                        mt.completed_at,
+                        mt.notes
+                    FROM maintenance_tasks mt
+                    LEFT JOIN staff s1 ON mt.assigned_to = s1.id
+                    LEFT JOIN staff s2 ON mt.created_by = s2.id
+                    ORDER BY mt.created_at DESC
+                '''
+                cursor.execute(query)
+            else:
+                # Для остальных таблиц обычный SELECT
+                cursor.execute(f"SELECT * FROM {table_name}")
+
             data = cursor.fetchall()
 
             # Получаем названия колонок
             cursor.execute(f"PRAGMA table_info({table_name})")
             columns_info = cursor.fetchall()
             column_names = [col[1] for col in columns_info]
+
+            # Для таблицы заданий используем понятные названия колонок
+            if table_name == 'maintenance_tasks':
+                column_names = [
+                    'ID', 'Комната', 'Описание', 'Назначено', 'Создал',
+                    'Статус', 'Создано', 'Завершено', 'Примечания'
+                ]
 
             # Настраиваем таблицу
             table_widget = self.table_widgets[table_name]
@@ -308,7 +590,8 @@ class HotelManager(QMainWindow):
 
                     # Форматируем даты
                     if isinstance(value, str) and (
-                            'date' in column_names[col].lower() or 'created' in column_names[col].lower()):
+                            'date' in column_names[col].lower() or 'created' in column_names[
+                        col].lower() or 'completed' in column_names[col].lower()):
                         try:
                             if ' ' in value:  # Дата и время
                                 date_obj = datetime.strptime(str(value), '%Y-%m-%d %H:%M:%S')
@@ -319,8 +602,12 @@ class HotelManager(QMainWindow):
                         except:
                             pass
 
-                    # Цветовое оформление для статусов
-                    if 'status' in column_names[col].lower() or 'is_read' in column_names[col].lower():
+                    # Цветовое оформление для статусов заданий
+                    if table_name == 'maintenance_tasks' and col == 5:  # Колонка статуса
+                        self.color_task_by_status(item, str(value).lower())
+
+                    # Цветовое оформление для других статусов
+                    elif 'status' in column_names[col].lower() or 'is_read' in column_names[col].lower():
                         if str(value).lower() in ['true', '1', 'активно', 'available', 'confirmed']:
                             item.setBackground(Qt.GlobalColor.lightGreen)
                         elif str(value).lower() in ['false', '0', 'неактивно', 'occupied']:
@@ -388,11 +675,11 @@ def main():
         conn = sqlite3.connect('Hotel_bd.db')
         cursor = conn.cursor()
 
-        # Проверяем существование таблиц
+        # Проверяем существование таблиц (ДОБАВЛЕНА maintenance_tasks)
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         tables = [table[0] for table in cursor.fetchall()]
 
-        required_tables = ['messages', 'bookings', 'guests', 'rooms', 'staff']
+        required_tables = ['messages', 'bookings', 'guests', 'rooms', 'staff', 'maintenance_tasks']
         missing_tables = [table for table in required_tables if table not in tables]
 
         if missing_tables:

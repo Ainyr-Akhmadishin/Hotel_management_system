@@ -245,7 +245,7 @@ class DownloadWindow(QMainWindow):
                 self,
                 "Загрузить файл с данными",
                 "",
-                "CSV Files (*.csv);"
+                "CSV Files (*.csv);; Text Files (*.txt)"
             )
 
             if file_path:
@@ -256,26 +256,51 @@ class DownloadWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Ошибка выбора файла", f"Не удалось выбрать файл:\n{str(e)}")
 
+    def load_from_txt(self, file_path):
+        """Загрузка данных из TXT файла - так же как из CSV"""
+        with open(file_path, encoding='utf-8') as f:
+            reader = csv.reader(f, delimiter=';', quotechar='"')
+
+            # Читаем первую строку как заголовки
+            titel = next(reader)
+            self.previewTable.setColumnCount(len(titel))
+            self.previewTable.setHorizontalHeaderLabels(titel)
+
+            self.data = list(reader)
+
+            for i, row in enumerate(self.data):
+                self.previewTable.setRowCount(
+                    self.previewTable.rowCount() + 1
+                )
+                for j, elem in enumerate(row):
+                    self.previewTable.setItem(i, j, QTableWidgetItem(elem))
+
+    def load_from_csv(self, file_path):
+        with open(file_path, encoding='utf-8') as f:
+            reader = csv.reader(f, delimiter=';', quotechar='"')
+            titel = next(reader)
+            self.previewTable.setColumnCount(len(titel))
+            self.previewTable.setHorizontalHeaderLabels(titel)
+
+            self.data = list(reader)
+
+            for i, row in enumerate(self.data):
+                self.previewTable.setRowCount(
+                    self.previewTable.rowCount() + 1
+                )
+                for j, elem in enumerate(row):
+                    self.previewTable.setItem(i, j, QTableWidgetItem(elem))
+
     def preview(self):
         current_path = self.filePathEdit.text()
         try:
-            with open(current_path, encoding = 'utf-8') as f:
-                reader = csv.reader(f, delimiter = ';', quotechar = '"')
-                titel = next(reader)
-                self.previewTable.setColumnCount(len(titel))
-                self.previewTable.setHorizontalHeaderLabels(titel)
-
-                self.data = list(reader)
-
-                for i, row in enumerate(self.data):
-                    self.previewTable.setRowCount(
-                        self.previewTable.rowCount() + 1
-                    )
-                    for j, elem in enumerate(row):
-                        self.previewTable.setItem(i, j, QTableWidgetItem(elem))
+            if current_path.lower().endswith('.txt'):
+                self.load_from_txt(current_path)
+            else:
+                self.load_from_csv(current_path)
 
         except Exception as e:
-            print(str(e))
+            QMessageBox.critical(self, "Ошибка", f"Не удалось загрузить файл: {str(e)}")
 
 
 
