@@ -14,27 +14,27 @@ from admin.Download_Upload_data import DataExportDialog
 class AdminWindow(QtWidgets.QMainWindow):
     def __init__(self, full_name, username):
         super().__init__()
-        uic.loadUi('UI/Admin/Админ переделанный.ui', self)
+        uic.loadUi('Админ переделанный.ui', self)
 
         # Инициализация базы данных
-        # self.init_database()
-        #
-        # # Подключаем кнопки
-        # self.sort_registry_btn.clicked.connect(self.sort_registry)
-        # self.sort_staff_btn.clicked.connect(self.sort_staff)
-        # self.manage_employees_btn.clicked.connect(self.manage_employees)
-        # self.employees_list_btn.clicked.connect(self.show_employees_list)
-        # self.contact_registry_btn.clicked.connect(self.contact_registry)
-        # self.contact_staff_btn.clicked.connect(self.contact_staff)
-        # self.change_numbers_btn.clicked.connect(self.change_numbers)
-        # self.data_export_btn.clicked.connect(self.data_export_import)
-        #
-        # # Устанавливаем текущую дату
-        # self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
-        #
-        # # Загружаем данные сотрудников
-        # self.load_employees_data()
-        #
+        self.init_database()
+
+        # Подключаем кнопки
+        self.sort_registry_btn.clicked.connect(self.sort_registry)
+        self.sort_staff_btn.clicked.connect(self.sort_staff)
+        self.manage_employees_btn.clicked.connect(self.manage_employees)
+        self.employees_list_btn.clicked.connect(self.show_employees_list)
+        self.contact_registry_btn.clicked.connect(self.contact_registry)
+        self.contact_staff_btn.clicked.connect(self.contact_staff)
+        self.change_numbers_btn.clicked.connect(self.change_numbers)
+        self.data_export_btn.clicked.connect(self.data_export_import)
+
+        # Устанавливаем текущую дату
+        self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
+
+        # Загружаем данные сотрудников
+        self.load_employees_data()
+
         # # Модель для списка сообщений
         # self.model = QtWidgets.QStringListModel()
         # self.listView.setModel(self.model)
@@ -108,7 +108,7 @@ class AdminWindow(QtWidgets.QMainWindow):
             self.add_message("✅ Регистратура отсортирована")
             QMessageBox.information(self, "Успех", "Регистратура успешно отсортирована!")
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка при сортировке: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка при сортировке")
 
     def sort_staff(self):
         """Сортировка персонала"""
@@ -126,7 +126,7 @@ class AdminWindow(QtWidgets.QMainWindow):
             # Обновляем данные после закрытия диалога
             self.load_employees_data()
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка открытия управления сотрудниками: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка открытия управления сотрудниками")
 
     def show_employees_list(self):
         """Показать список работников"""
@@ -134,7 +134,7 @@ class AdminWindow(QtWidgets.QMainWindow):
             dialog = EmployeeListDialog(self)
             dialog.exec()
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка открытия списка сотрудников: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка открытия списка сотрудников")
 
     def contact_registry(self):
         """Связь с регистратурой"""
@@ -162,13 +162,13 @@ class AdminWindow(QtWidgets.QMainWindow):
                 self.cursor.execute('''
                     INSERT INTO messages (from_user, to_user, text, is_read)
                     VALUES (?, ?, ?, ?)
-                ''', (1, employee_id, f"Связь с регистратурой: {employee}", 0))
+                ''', (1, employee_id, f"Связь с регистратурой", 0))
                 self.conn.commit()
 
                 self.add_message(f"📞 Связь с регистратурой: {employee}")
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка связи с регистратурой: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка связи с регистратурой")
 
     def contact_staff(self):
         """Связь с персоналом"""
@@ -202,7 +202,7 @@ class AdminWindow(QtWidgets.QMainWindow):
                 self.add_message(f"📞 Связь с персоналом: {employee}")
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка связи с персоналом: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка связи с персоналом")
 
     def change_numbers(self):
         """Изменение номеров"""
@@ -210,7 +210,7 @@ class AdminWindow(QtWidgets.QMainWindow):
             dialog = RoomManagementDialog(self)
             dialog.exec()
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка открытия управления номерами: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка открытия управления номерами")
 
     def data_export_import(self):
         """Выгрузка/загрузка данных"""
@@ -218,7 +218,7 @@ class AdminWindow(QtWidgets.QMainWindow):
             dialog = DataExportDialog(self)
             dialog.exec()
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка открытия экспорта данных: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка открытия экспорта данных")
 
     def closeEvent(self, event):
         """Закрытие соединения с БД при закрытии приложения"""
@@ -230,8 +230,8 @@ class AdminWindow(QtWidgets.QMainWindow):
         event.accept()
 
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+# if __name__ == "__main__":
+#     app = QtWidgets.QApplication(sys.argv)
+#     window = AdminWindow("Тестовый Админ", "admin")
+#     window.show()
+#     sys.exit(app.exec())
