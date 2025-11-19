@@ -24,6 +24,7 @@ class RegistrarWindow(QMainWindow):
 
     def __init__(self, full_name, username):
         super().__init__()
+        self.showMaximized()
         self.full_name = full_name
         self.username = username
         self.current_date = datetime.now()
@@ -59,8 +60,9 @@ class RegistrarWindow(QMainWindow):
         self.checkout_timer.start(86400000)
         QtCore.QTimer.singleShot(5000, self.check_checkout_dates)
 
-        QtCore.QTimer.singleShot(100, self.updating_guest_data)
+        QtCore.QTimer.singleShot(500, self.updating_guest_data)
 
+        QtCore.QTimer.singleShot(50, self.scroll_to_current_date)
 
 
         self.current_month_label.mousePressEvent = self.on_month_label_click
@@ -73,6 +75,138 @@ class RegistrarWindow(QMainWindow):
 
         self.Button.clicked.connect(self.updating_guest_data)
         self.data_button.clicked.connect(self.upload_or_download)
+
+        self.search_button.clicked.connect(self.search_guest)
+        self.search_input.returnPressed.connect(self.search_guest)  # Поиск по Enter
+
+    def scroll_to_current_date(self):
+        """Прокручивает таблицу к текущей дате + 8 дней или к последнему дню месяца"""
+        try:
+            today = datetime.now()
+            target_day = today.day + 8
+
+            # Получаем количество дней в текущем месяце
+            _, days_in_month = monthrange(today.year, today.month)
+
+            # Если целевой день превышает количество дней в месяце, берем последний день
+            if target_day > days_in_month:
+                target_day = days_in_month
+
+            print(f"🎯 Целевой день для прокрутки: {target_day} (текущий: {today.day} + 8 дней)")
+
+            # Если текущий месяц отображается в таблице
+            if today.year == self.current_date.year and today.month == self.current_date.month:
+                # Ищем колонку с целевой датой
+                for column in range(1, self.guest_table.columnCount()):
+                    header = self.guest_table.horizontalHeaderItem(column)
+                    if header:
+                        header_text = header.text()
+                        try:
+                            # Извлекаем день из заголовка
+                            day = int(header_text.split()[0])
+                            if day == target_day:
+                                # Прокручиваем к этой колонке
+                                self.guest_table.horizontalScrollBar().setValue(column)
+
+                                # Выделяем ячейку для визуального акцента
+                                if self.guest_table.rowCount() > 0:
+                                    self.guest_table.setCurrentCell(0, column)
+
+                                # Прокручиваем вертикально к верху
+                                self.guest_table.verticalScrollBar().setValue(0)
+
+                                print(f"✅ Прокрутка к дате: {target_day}.{today.month}.{today.year} (колонка {column})")
+                                break
+                        except (ValueError, IndexError):
+                            continue
+                else:
+                    print(f"⚠️ Целевой день {target_day} не найден в таблице")
+            else:
+                print("ℹ️ Текущая дата не в отображаемом месяце")
+
+        except Exception as e:
+            print(f"❌ Ошибка прокрутки к текущей дате: {e}")
+
+
+    def search_guest(self):
+        """Поиск гостя по фамилии и прокрутка к нему"""
+        try:
+            search_text = self.search_input.text().strip()
+            if not search_text:
+                QMessageBox.information(self, "Поиск", "Введите фамилию для поиска")
+                return
+
+            # Ищем гостя в таблице
+            found_cells = []
+
+            for row in range(self.guest_table.rowCount()):
+                for column in range(1, self.guest_table.columnCount()):  # Пропускаем столбец статусов
+                    item = self.guest_table.item(row, column)
+                    if item and item.text():
+                        # Проверяем содержит ли текст фамилию (игнорируем регистр)
+                        if search_text.lower() in item.text().lower():
+                            found_cells.append((row, column, item.text()))
+
+            if found_cells:
+                # Берем первую найденную ячейку
+                row, column, guest_name = found_cells[0]
+
+                # Прокручиваем таблицу к найденной ячейке (слева)
+                self.scroll_to_cell(row, column)
+
+                # Подсвечиваем найденную ячейку
+                self.highlight_found_cell(row, column)
+
+                # Простое сообщение о найденном госте
+                QMessageBox.information(
+                    self,
+                    "Найден",
+                    f"Гость: {guest_name}"
+                )
+
+            else:
+                QMessageBox.information(
+                    self,
+                    "Не найдено",
+                    f"Гость с фамилией '{search_text}' не найден"
+                )
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка поиска", f"Не удалось выполнить поиск: {str(e)}")
+
+    def scroll_to_cell(self, row, column):
+        """Прокручивает таблицу так, чтобы найденная ячейка была слева"""
+        try:
+            # Устанавливаем скроллбар так, чтобы колонка была первой видимой
+            self.guest_table.horizontalScrollBar().setValue(column)
+
+            # Прокручиваем вертикально к строке
+            self.guest_table.verticalScrollBar().setValue(row)
+
+            # Выделяем найденную ячейку
+            self.guest_table.setCurrentCell(row, column)
+
+        except Exception as e:
+            print(f"Ошибка прокрутки: {e}")
+
+
+
+    def highlight_found_cell(self, row, column):
+        """Временно подсвечивает найденную ячейку"""
+        try:
+            item = self.guest_table.item(row, column)
+            if item:
+                # Сохраняем оригинальный цвет
+                original_color = item.background()
+
+                # Устанавливаем желтый цвет для выделения
+                item.setBackground(QBrush(QColor("#FFD700")))
+
+                # Через 3 секунды возвращаем оригинальный цвет
+                QtCore.QTimer.singleShot(3000, lambda: item.setBackground(original_color))
+
+        except Exception as e:
+            print(f"Ошибка подсветки: {e}")
 
     def check_checkout_dates(self):
         """Проверяет даты выселения и создает задания на уборку"""
