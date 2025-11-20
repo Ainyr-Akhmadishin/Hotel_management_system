@@ -213,8 +213,8 @@ def clear_maintenance_tasks():
 # clear_maintenance_tasks()
 if __name__ == "__main__":
     # delete_tables_only()
-    # y = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
-    # y.upload_db()
+    y = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+    y.upload_db()
     # for i in print_data():
     #     print(i)
     # updating_guest_data()
