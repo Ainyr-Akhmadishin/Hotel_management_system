@@ -667,34 +667,6 @@ class RegistrarWindow(QMainWindow):
 
         # Устанавливаем фокус политику - запрещаем фокусировку на ячейках
         self.guest_table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-    # def start_auto_refresh(self):
-    #     self.refresh_timer = QtCore.QTimer()
-    #     self.refresh_timer.timeout.connect(self.check_updating_guest_data)
-    #     self.refresh_timer.start(2000)
-    #
-    #     self.check_updating_guest_data()
-    #
-    # def check_updating_guest_data(self):
-    #     conn = sqlite3.connect('Hotel_bd.db')
-    #     cursor = conn.cursor()
-    #
-    #     cursor.execute('''
-    #                     SELECT COUNT(*)
-    #                     FROM bookings
-    #                 ''', )
-    #     current_count = cursor.fetchone()[0]
-    #
-    #     if not hasattr(self, 'previous_guest_count'):
-    #         self.previous_guest_count = current_count
-    #         self.updating_guest_data()
-    #         return
-    #
-    #     if current_count != self.previous_guest_count:
-    #         self.previous_guest_count = current_count
-    #         self.updating_guest_data()
-    #
-    #     conn.close()
-
 
     def clear_table_data(self):
         for row in range(self.guest_table.rowCount()):

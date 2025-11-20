@@ -402,7 +402,7 @@ QScrollBar::handle:horizontal:hover {
         <number>0</number>
        </property>
        <item>
-        <widget class="QGroupBox" name="notifications_group">
+        <widget class="QGroupBox" name="notifications_frame">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -414,20 +414,7 @@ QScrollBar::handle:horizontal:hover {
          <property name="title">
           <string>Уведомления</string>
          </property>
-         <layout class="QVBoxLayout" name="notifications_layout">
-          <item>
-           <widget class="QTextEdit" name="notifications_text">
-            <property name="font">
-             <font>
-              <pointsize>-1</pointsize>
-             </font>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QVBoxLayout" name="notifications_layout"/>
         </widget>
        </item>
        <item>
