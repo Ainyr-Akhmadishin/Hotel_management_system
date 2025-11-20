@@ -46,7 +46,6 @@ class UploadWindow(QMainWindow):
 
         except FileNotFoundError:
             QMessageBox.critical(self, "Ошибка пути", "Указан неверный путь к файлу")
-
         except UnicodeEncodeError:
             QMessageBox.critical(self, "Ошибка кодировки", "Ошибка при сохранении русских символов")
 

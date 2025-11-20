@@ -120,10 +120,6 @@ class GuestRegistrationWindow(QMainWindow):
             field.setStyleSheet("border: 2px solid red !important; background-color: #FFE6E6 !important;")
             raise FIOException(f"Поле '{field_name}' должно быть не менее 2 символов")
 
-        # Если данные введены с маленькой буквы, то вызывается ошибка, в которой они преобразовывваются в заглавные буквы
-        # if not field.istitle() or not field.istitle():
-        #     raise LowerNameError(first_name, last_name)
-
 
 
     def FIOLowerCheck(self,field_name,field_fam,field_otchestvo):
@@ -208,20 +204,15 @@ class GuestRegistrationWindow(QMainWindow):
 
             guest_id = cursor.lastrowid
 
-
             cursor.execute('SELECT id FROM rooms WHERE room_number = ?', (guest_number,))
             room_id = cursor.fetchone()[0]
-
 
             cursor.execute('''
                         INSERT INTO bookings (guest_id, room_id, check_in_date, check_out_date)
                         VALUES (?, ?, ?, ?)
                     ''', (guest_id, room_id, in_date, out_date))
-
             conn.commit()
             conn.close()
-
-
             QMessageBox.information(self, "Успех",
                                     f"Гость успешно заселен\n"
                                     f"Номер: {guest_number}\n"
@@ -236,7 +227,6 @@ class GuestRegistrationWindow(QMainWindow):
                 print("Изменения загружены на Яндекс Диск")
             else:
                 print("Не удалось загрузить изменения")
-
 
         except LowerNameError as e:
             QMessageBox.critical(self, "Ошибка", str(e))
