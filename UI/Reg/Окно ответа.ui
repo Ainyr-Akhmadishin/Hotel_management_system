@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ViewMessageDialog</class>
+ <widget class="QDialog" name="ViewMessageDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>689</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Просмотр сообщения</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+    background-color: #f8f9fa;
+}
+QFrame {
+    background-color: white;
+    border-radius: 6px;
+}
+QLabel {
+    font-size: 12px;
+    color: #2c3e50;
+}
+QTextEdit {
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    background-color: white;
+    padding: 12px;
+    font-size: 12px;
+}
+QTextEdit:focus {
+    border-color: #4a6fa5;
+}
+QPushButton {
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    min-height: 35px;
+    font-size: 12px;
+}
+QPushButton:hover {
+    background-color: #3a5a80;
+}
+QPushButton:pressed {
+    background-color: #2a4a70;
+}
+QPushButton:disabled {
+    background-color: #c1c7d0;
+    color: #8a8f99;
+}
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>12</number>
+   </property>
+   <property name="leftMargin">
+    <number>15</number>
+   </property>
+   <property name="topMargin">
+    <number>15</number>
+   </property>
+   <property name="rightMargin">
+    <number>15</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="title_label">
+     <property name="styleSheet">
+      <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;</string>
+     </property>
+     <property name="text">
+      <string>Просмотр сообщения</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="header_frame">
+     <property name="styleSheet">
+      <string notr="true">QFrame {
+    background-color: #f8f9fa;
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    padding: 12px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="sender_label">
+        <property name="styleSheet">
+         <string notr="true">font-weight: bold; font-size: 14px;</string>
+        </property>
+        <property name="text">
+         <string>От: Имя Фамилия</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="position_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 12px; color: #6c757d;</string>
+        </property>
+        <property name="text">
+         <string>Должность: Администратор</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="time_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 12px; color: #6c757d;</string>
+        </property>
+        <property name="text">
+         <string>Время: 10:30 15.12.2023</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="message_frame">
+     <property name="styleSheet">
+      <string notr="true">QFrame {
+    background-color: white;
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    padding: 15px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="message_title_label">
+        <property name="styleSheet">
+         <string notr="true">font-weight: bold; margin-bottom: 8px;</string>
+        </property>
+        <property name="text">
+         <string>Сообщение:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="message_text">
+        <property name="styleSheet">
+         <string notr="true">QTextEdit {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #f8f9fa;
+}</string>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="reply_frame">
+     <property name="styleSheet">
+      <string notr="true">QFrame {
+    background-color: white;
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    padding: 15px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="reply_label">
+        <property name="styleSheet">
+         <string notr="true">font-weight: bold; margin-bottom: 8px;</string>
+        </property>
+        <property name="text">
+         <string>Ваш ответ:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="reply_text">
+        <property name="styleSheet">
+         <string notr="true">QTextEdit {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px;
+}</string>
+        </property>
+        <property name="placeholderText">
+         <string>Введите ваш ответ...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="button_layout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="close_button">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+	background-color: rgb(74, 111, 165);
+    color: white;
+}
+</string>
+       </property>
+       <property name="text">
+        <string>Закрыть</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="send_reply_button">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+	background-color: rgb(74, 111, 165);
+    color: white;
+}
+</string>
+       </property>
+       <property name="text">
+        <string>Отправить ответ</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

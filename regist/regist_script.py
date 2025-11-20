@@ -2,14 +2,22 @@ import sqlite3
 from calendar import monthrange
 from datetime import datetime, timedelta
 
-from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QDialog, QVBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem, QDialog, QVBoxLayout, QMessageBox, QMenu
 from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6 import uic, QtCore
+from PyQt6 import uic, QtCore, QtWidgets
 from PyQt6.QtWidgets import QCalendarWidget
 from PyQt6.QtCore import QDate
+from PyQt6.QtGui import QBrush, QColor, QAction
 
 from regist.guest_registration_window import GuestRegistrationWindow
-from regist.massage_window import MassageWindow
+from massage_window import MassageWindow
+
+from regist.guest_update_window import GuestUpdateWindow  # Добавьте эту строку в импорты
+from regist.upload_or_download import UDWindow
+from regist.task_script import TaskWindow
+
+from utils import get_resource_path
+from notifications_manager import SimpleNotificationsManager
 
 class RegistrarWindow(QMainWindow):
     closed = pyqtSignal()
@@ -21,9 +29,22 @@ class RegistrarWindow(QMainWindow):
         self.current_date = datetime.now()
         self.visible_days = 14
 
-        uic.loadUi('UI/Reg/Регистратор итог.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Регистратор итог.ui'), self)
         self.setWindowTitle(f"Регистратор - {self.full_name}")
 
+        self.user_id = self.get_user_id(username)
+
+        # Инициализируем менеджер уведомлений
+        self.notifications_manager = SimpleNotificationsManager(
+            self.user_id,
+            self.notifications_frame,
+            self  # передаем ссылку на главное окно
+        )
+
+        self.guest_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+
+        self.guest_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.guest_table.customContextMenuRequested.connect(self.show_context_menu)
 
         self.fill_rooms()
         self.update_month_display()
@@ -32,7 +53,15 @@ class RegistrarWindow(QMainWindow):
 
         # self.check_updating_guest_data()
 
+        # Таймер для автоматической проверки выселений раз в 24 часа
+        self.checkout_timer = QtCore.QTimer()
+        self.checkout_timer.timeout.connect(self.check_checkout_dates)
+        self.checkout_timer.start(86400000)
+        QtCore.QTimer.singleShot(5000, self.check_checkout_dates)
+
         QtCore.QTimer.singleShot(100, self.updating_guest_data)
+
+
 
         self.current_month_label.mousePressEvent = self.on_month_label_click
 
@@ -43,7 +72,467 @@ class RegistrarWindow(QMainWindow):
         self.next_month_button.clicked.connect(self.next_month)
 
         self.Button.clicked.connect(self.updating_guest_data)
+        self.data_button.clicked.connect(self.upload_or_download)
 
+    def check_checkout_dates(self):
+        """Проверяет даты выселения и создает задания на уборку"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            # Сегодняшняя дата
+            today = datetime.now().strftime('%Y-%m-%d')
+
+            # Находим бронирования, где сегодня дата выселения
+            cursor.execute('''
+                SELECT DISTINCT r.room_number
+                FROM bookings b
+                JOIN rooms r ON b.room_id = r.id
+                LEFT JOIN maintenance_tasks mt ON r.room_number = mt.room_number 
+                    AND DATE(mt.created_at) = ?
+                    AND mt.description LIKE '%выезда%'
+                WHERE b.check_out_date = ?
+                AND mt.id IS NULL
+            ''', (today, today))
+
+            today_checkouts = cursor.fetchall()
+
+            for room_data in today_checkouts:
+                room_number = room_data[0]
+                # СОЗДАЕМ ЗАДАНИЕ НА УБОРКУ ПРЯМО ЗДЕСЬ
+                try:
+                    cleaning_task = TaskWindow(room_number, self.user_id)
+                    cleaning_task.create_task(self.user_id)
+                    print(f"✅ Создано задание на уборку комнаты {room_number} после выселения")
+                except Exception as e:
+                    print(f"❌ Ошибка создания задания для комнаты {room_number}: {e}")
+
+            conn.close()
+
+            if today_checkouts:
+                print(f"✅ Создано {len(today_checkouts)} заданий на уборку для выселений сегодня")
+                self.update_status_column()
+            else:
+                print("ℹ️ На сегодня нет выселений для создания заданий")
+
+        except Exception as e:
+            print(f"❌ Ошибка проверки дат выселения: {e}")
+
+    def get_status_display_name(self, status):
+        """Возвращает красивое отображаемое имя для статуса"""
+        status_names = {
+            'в работе': "⚡ В работе",
+            'в ожидании уборки': "⏳ Ожидание уборки",
+            'убрано': "✨ Убрано"
+        }
+        return status_names.get(status, f"📋 {status}")
+
+    def apply_status_text_style(self, item, status):
+        """Применяет цвет только к тексту статуса"""
+        # Цвета текста для разных статусов
+        text_colors = {
+            'в работе': '#2196F3',  # Синий текст
+            'в ожидании уборки': '#FF9800',  # Оранжевый текст
+            'убрано': '#9C27B0'  # Фиолетовый текст
+        }
+
+        color = text_colors.get(status, '#000000')  # По умолчанию черный
+
+        # Применяем цвет только к тексту
+        item.setForeground(QBrush(QColor(color)))
+
+        # Делаем текст жирным
+        font = item.font()
+        font.setBold(True)
+        item.setFont(font)
+
+    def update_status_column(self):
+        """Обновление столбца 'Статус' для всех комнат"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            # Сначала устанавливаем всем комнатам статус "убрано"
+            for row in range(self.guest_table.rowCount()):
+                status_item = QTableWidgetItem("✨ Убрано")
+                status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                self.apply_status_text_style(status_item, "убрано")
+                self.guest_table.setItem(row, 0, status_item)
+
+            # Теперь получаем актуальные статусы из базы данных
+            cursor.execute('''
+                SELECT DISTINCT room_number, status 
+                FROM maintenance_tasks 
+                WHERE status != 'выполнена' 
+                AND status != 'убрано'
+                ORDER BY room_number
+            ''')
+
+            active_tasks = cursor.fetchall()
+
+            # Обновляем статусы для комнат с активными заданиями
+            for room_number, status in active_tasks:
+                row = self.find_room_row(room_number)
+                if row != -1:
+                    status_display = self.get_status_display_name(status)
+                    status_item = QTableWidgetItem(status_display)
+                    status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                    self.apply_status_text_style(status_item, status)
+                    self.guest_table.setItem(row, 0, status_item)
+
+            conn.close()
+
+        except Exception as e:
+            print(f"Ошибка обновления столбца статусов: {e}")
+
+    def find_room_row(self, room_number):
+        """Найти строку таблицы по номеру комнаты"""
+        for row in range(self.guest_table.rowCount()):
+            header_item = self.guest_table.verticalHeaderItem(row)
+            if header_item and header_item.text() == str(room_number):
+                return row
+        return -1
+
+    def upload_or_download(self):
+
+        self.udwindow = UDWindow(on_data_updated=self.updating_guest_data)
+        self.udwindow.show()
+
+    def get_user_id(self, username):
+        """Получение ID пользователя по логину"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT id FROM staff WHERE login = ?', (username,))
+            result = cursor.fetchone()
+            conn.close()
+            return result[0] if result else 1
+        except Exception as e:
+            print(f"Ошибка получения ID пользователя: {e}")
+            return 1
+
+    def closeEvent(self, event):
+        """Останавливаем обновления уведомлений при закрытии"""
+        if hasattr(self, 'notifications_manager'):
+            self.notifications_manager.stop_updates()
+        super().closeEvent(event)
+
+    def get_guest_data(self, row, column):
+        """Получение данных гостя для редактирования"""
+        try:
+            room_number = self.guest_table.verticalHeaderItem(row).text()
+            guest_name = self.guest_table.item(row, column).text()
+
+            # Получаем дату из заголовка колонки
+            header = self.guest_table.horizontalHeaderItem(column)
+            date_info = header.text() if header else "неизвестная дата"
+
+            # Извлекаем день из даты в заголовке
+            try:
+                day = int(date_info.split()[0])
+                current_date = datetime(self.current_date.year, self.current_date.month, day)
+                current_date_str = current_date.strftime('%Y-%m-%d')
+            except:
+                current_date_str = self.current_date.strftime('%Y-%m-%d')
+
+            # Подключаемся к базе данных для получения полной информации
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            # Получаем полные данные о бронировании
+            cursor.execute('''
+                SELECT 
+                    guests.id as guest_id,
+                    guests.first_name,
+                    guests.last_name,
+                    guests.patronymic,
+                    guests.phone_number,
+                    guests.passport_number,
+                    bookings.check_in_date,
+                    bookings.check_out_date,
+                    rooms.room_number,
+                    bookings.id as booking_id
+                FROM bookings 
+                JOIN guests ON bookings.guest_id = guests.id
+                JOIN rooms ON bookings.room_id = rooms.id
+                WHERE rooms.room_number = ? 
+                AND bookings.check_in_date <= ?
+                AND bookings.check_out_date >= ?
+            ''', (room_number, current_date_str, current_date_str))
+
+            booking_info = cursor.fetchone()
+            conn.close()
+
+            if booking_info:
+                (guest_id, first_name, last_name, patronymic, phone,
+                 passport, check_in_date, check_out_date,
+                 room_number, booking_id) = booking_info
+
+                return {
+                    'guest_id': guest_id,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'patronymic': patronymic,
+                    'passport': passport,
+                    'phone': phone,
+                    'room_number': room_number,
+                    'check_in': check_in_date,
+                    'check_out': check_out_date,
+                    'booking_id': booking_id
+                }
+            else:
+                return None
+
+        except Exception as e:
+            print(f"Ошибка получения данных гостя: {e}")
+            return None
+
+    def edit_guest(self, row, column):
+        """Функция для изменения данных постояльца"""
+        try:
+            # Получаем данные гостя
+            guest_data = self.get_guest_data(row, column)
+            if guest_data:
+                # Открываем окно редактирования
+                self.update_window = GuestUpdateWindow(self, guest_data)
+                self.update_window.guest_updated.connect(self.updating_guest_data)
+                self.update_window.show()
+            else:
+                QMessageBox.warning(self, "Ошибка", "Не удалось получить данные гостя для редактирования")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось открыть окно редактирования: {str(e)}")
+
+    def show_context_menu(self, position):
+        """Показать контекстное меню при клике на ячейку с постояльцем"""
+        # Получаем индекс ячейки, по которой кликнули
+        index = self.guest_table.indexAt(position)
+
+        if index.isValid():
+            row = index.row()
+            column = index.column()
+
+            # Проверяем, что кликнули на ячейку с данными (не на заголовок)
+            if column > 0:  # Пропускаем колонку с номерами комнат
+                item = self.guest_table.item(row, column)
+
+                # Если в ячейке есть текст (постоялец)
+                if item and item.text().strip():
+                    # Создаем контекстное меню
+                    context_menu = QMenu(self)
+
+                    # Добавляем действия
+                    task_action = QAction("🧹 Отправить на уброку", self)
+                    edit_action = QAction("✏️ Изменить данные", self)
+                    delete_action = QAction("🗑️ Удалить бронь", self)
+                    info_action = QAction("ℹ️ Информация", self)
+
+                    # Подключаем все функции
+                    edit_action.triggered.connect(lambda: self.edit_guest(row, column))
+                    delete_action.triggered.connect(lambda: self.delete_booking(row, column))
+                    info_action.triggered.connect(lambda: self.show_guest_info(row, column))
+                    task_action.triggered.connect(lambda: self.show_task_window(row))
+
+                    # Добавляем действия в меню
+                    context_menu.addAction(edit_action)
+                    context_menu.addAction(delete_action)
+                    context_menu.addAction(task_action)
+                    context_menu.addSeparator()  # Разделитель
+                    context_menu.addAction(info_action)
+
+                    # Показываем меню в позиции клика
+                    context_menu.exec(self.guest_table.viewport().mapToGlobal(position))
+
+    def show_task_window(self,row):
+        try:
+            self.room_number = self.guest_table.verticalHeaderItem(row).text()
+            self.task_window = TaskWindow(self.room_number, self.user_id)
+            self.task_window.task_created.connect(self.update_status_column)
+            self.task_window.show()
+        except Exception as e:
+            print(str(e))
+
+
+    def show_guest_info(self, row, column):
+        """Функция для показа информации о постояльце"""
+        try:
+            room_number = self.guest_table.verticalHeaderItem(row).text()
+            guest_name = self.guest_table.item(row, column).text()
+
+            # Получаем дату из заголовка колонки
+            header = self.guest_table.horizontalHeaderItem(column)
+            date_info = header.text() if header else "неизвестная дата"
+
+            # Извлекаем день из даты в заголовке
+            try:
+                day = int(date_info.split()[0])
+                current_date = datetime(self.current_date.year, self.current_date.month, day)
+                current_date_str = current_date.strftime('%Y-%m-%d')
+            except:
+                current_date_str = self.current_date.strftime('%Y-%m-%d')
+
+            # Подключаемся к базе данных для получения подробной информации
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            # Запрос для получения информации о бронировании
+            cursor.execute('''
+                SELECT 
+                    guests.first_name,
+                    guests.last_name,
+                    guests.patronymic,
+                    guests.phone_number,
+                    guests.passport_number,
+                    bookings.check_in_date,
+                    bookings.check_out_date,
+                    rooms.room_number,
+                    bookings.id
+                FROM bookings 
+                JOIN guests ON bookings.guest_id = guests.id
+                JOIN rooms ON bookings.room_id = rooms.id
+                WHERE rooms.room_number = ? 
+                AND bookings.check_in_date <= ?
+                AND bookings.check_out_date >= ?
+            ''', (room_number, current_date_str, current_date_str))
+
+            booking_info = cursor.fetchone()
+            conn.close()
+
+            if booking_info:
+                (first_name, last_name, patronymic, phone,
+                 passport_data, check_in_date, check_out_date,
+                 room_number, booking_id) = booking_info
+
+                # Рассчитываем количество ночей
+                check_in = datetime.strptime(check_in_date, '%Y-%m-%d').date()
+                check_out = datetime.strptime(check_out_date, '%Y-%m-%d').date()
+                nights = (check_out - check_in).days
+
+                # Формируем сообщение с информацией
+                info_message = (
+                    f"📋 Информация о бронировании\n\n"
+                    f"👤 Гость:\n"
+                    f"   ФИО: {last_name} {first_name} {patronymic or ''}\n"
+                    f"   Телефон: {phone}\n"
+                    f"   Паспорт: {passport_data}\n\n"
+                    f"🏨 Номер:\n"
+                    f"   Номер: {room_number}\n\n"
+                    f"📅 Даты проживания:\n"
+                    f"   Заезд: {check_in_date}\n"
+                    f"   Выезд: {check_out_date}\n"
+                    f"   Ночей: {nights}\n\n"
+                    f"📊 ID бронирования: {booking_id}"
+                )
+            else:
+                info_message = (
+                    f"Информация о бронировании:\n\n"
+                    f"Комната: {room_number}\n"
+                    f"Постоялец в таблице: {guest_name}\n"
+                    f"Дата просмотра: {date_info}\n\n"
+                    f"❌ Бронь не найдена в базе данных для указанной даты."
+                )
+
+            QMessageBox.information(self, "Информация о постояльце", info_message)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось получить информацию: {str(e)}")
+
+    def delete_booking(self, row, column):
+        """Функция для удаления бронирования"""
+        try:
+            room_number = self.guest_table.verticalHeaderItem(row).text()
+            guest_name = self.guest_table.item(row, column).text()
+
+            # Получаем дату из заголовка колонки
+            header = self.guest_table.horizontalHeaderItem(column)
+            date_info = header.text() if header else "неизвестная дата"
+
+            # Извлекаем день из даты в заголовке
+            try:
+                day = int(date_info.split()[0])
+                current_date = datetime(self.current_date.year, self.current_date.month, day)
+                current_date_str = current_date.strftime('%Y-%m-%d')
+            except:
+                current_date_str = self.current_date.strftime('%Y-%m-%d')
+
+            # Подтверждение удаления
+            reply = QMessageBox.question(
+                self,
+                "Удаление брони",
+                f"Вы уверены, что хотите удалить бронь?\n\n"
+                f"Комната: {room_number}\n"
+                f"Постоялец: {guest_name}\n"
+                f"Дата: {date_info}",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
+            )
+
+            if reply == QMessageBox.StandardButton.Yes:
+                # Подключаемся к базе данных для удаления
+                conn = sqlite3.connect('Hotel_bd.db')
+                cursor = conn.cursor()
+
+                # ИСПРАВЛЕННЫЙ ЗАПРОС - ищем бронирование по номеру комнаты и дате
+                cursor.execute('''
+                    SELECT bookings.id 
+                    FROM bookings 
+                    JOIN guests ON bookings.guest_id = guests.id
+                    JOIN rooms ON bookings.room_id = rooms.id
+                    WHERE rooms.room_number = ? 
+                    AND bookings.check_in_date <= ?
+                    AND bookings.check_out_date >= ?
+                ''', (room_number, current_date_str, current_date_str))
+
+                booking_id_result = cursor.fetchone()
+
+                if booking_id_result:
+                    booking_id = booking_id_result[0]
+
+                    # Удаляем бронирование
+                    cursor.execute('DELETE FROM bookings WHERE id = ?', (booking_id,))
+                    conn.commit()
+                    QMessageBox.information(
+                        self,
+                        "Успех",
+                        f"Бронь успешно удалена!\n\n"
+                        f"Комната: {room_number}\n"
+                        f"Постоялец: {guest_name}"
+                    )
+                    cleaning_after_delete = TaskWindow(room_number, self.user_id)
+                    cleaning_after_delete.create_task(self.user_id)
+                    self.update_status_column()
+                    # Обновляем таблицу
+                    self.updating_guest_data()
+                else:
+                    QMessageBox.warning(
+                        self,
+                        "Ошибка",
+                        "Бронь не найдена в базе данных для указанной даты"
+                    )
+
+                conn.close()
+
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось удалить бронь: {str(e)}")
+
+    def setup_table_readonly(self):
+        """Настройка таблицы как доступной только для чтения"""
+        # Запрещаем редактирование таблицы
+        self.guest_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+
+        # # Запрещаем выделение ячеек (опционально)
+        # self.guest_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
+
+        # Или если хотите разрешить выделение, но без редактирования:
+        self.guest_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+
+        # Запрещаем изменение размера ячеек
+        self.guest_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
+        self.guest_table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
+
+        # Устанавливаем фокус политику - запрещаем фокусировку на ячейках
+        self.guest_table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
     # def start_auto_refresh(self):
     #     self.refresh_timer = QtCore.QTimer()
     #     self.refresh_timer.timeout.connect(self.check_updating_guest_data)
@@ -108,7 +597,6 @@ class RegistrarWindow(QMainWindow):
                 check_in_date = datetime.strptime(guest[2], '%Y-%m-%d').date()
                 check_out_date = datetime.strptime(guest[3], '%Y-%m-%d').date()
 
-                # Находим строку по номеру комнаты
                 row = -1
                 for i in range(self.guest_table.rowCount()):
                     header_item = self.guest_table.verticalHeaderItem(i)
@@ -119,8 +607,7 @@ class RegistrarWindow(QMainWindow):
                 if row == -1:
                     continue
 
-
-                # Заполняем ячейки для периода бронирования
+                first_day_set = False  # Флаг для отслеживания первой ячейки
                 for column in range(1, self.guest_table.columnCount()):
                     header = self.guest_table.horizontalHeaderItem(column)
                     if header:
@@ -130,17 +617,17 @@ class RegistrarWindow(QMainWindow):
                             header_date = datetime(self.current_date.year, self.current_date.month, day).date()
 
                             if check_in_date <= header_date <= check_out_date:
-
                                 item = QTableWidgetItem(guest_name)
                                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                                item.setBackground(QBrush(QColor("#74E868")))
 
-                                from PyQt6.QtGui import QBrush
-                                item.setBackground(QBrush(Qt.GlobalColor.green))
-
-                                # if(check_in_date == header_date):
-                                #     self.guest_table.setItem(row, column, item)
-                                # else:
-                                #     self.guest_table.setItem(row, column, " ")
+                                # Делаем текст видимым только в первой ячейке заезда
+                                if not first_day_set and header_date == check_in_date:
+                                    # Первая ячейка - видимый текст
+                                    first_day_set = True
+                                else:
+                                    # Остальные ячейки - невидимый текст (но данные есть!)
+                                    item.setForeground(QBrush(QColor("#74E868")))  # Тот же цвет что и фон
 
                                 self.guest_table.setItem(row, column, item)
 
@@ -148,11 +635,10 @@ class RegistrarWindow(QMainWindow):
                             continue
 
             conn.close()
+            self.update_status_column()
 
         except Exception as e:
-            print(f"Ошибка в updating_guest_data: {e}")
-            import traceback
-            traceback.print_exc()
+            QMessageBox.critical(self, "Ошибка", str(e))
 
 
 
@@ -217,10 +703,13 @@ class RegistrarWindow(QMainWindow):
             conn.close()
 
 
+
+        except sqlite3.Error as e:
+            QMessageBox.critical(self, "Ошибка загрузки данных о постояльцах", str(e))
         except Exception as e:
-            print(f"Ошибка при заполнении комнат: {e}")
-            import traceback
-            traceback.print_exc()
+            QMessageBox.critical(self, "Ошибка", str(e))
+            # import traceback
+            # traceback.print_exc()
 
     def get_month_dates(self):
         year = self.current_date.year
@@ -240,16 +729,16 @@ class RegistrarWindow(QMainWindow):
 
         self.guest_table.setColumnCount(len(dates) + 1)
 
-        self.guest_table.setHorizontalHeaderItem(0, QTableWidgetItem("Номер"))
+        self.guest_table.setHorizontalHeaderItem(0, QTableWidgetItem("Статус"))
 
         for col, date in enumerate(dates, 1):
-            day_name = self.get_russian_day_name(date.weekday())
+            day_name = self.get_day_name(date.weekday())
             header_text = f"{date.day} {day_name}"
             header_item = QTableWidgetItem(header_text)
             header_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.guest_table.setHorizontalHeaderItem(col, header_item)
 
-    def get_russian_day_name(self, weekday):
+    def get_day_name(self, weekday):
         days = {
             0: "Пн",
             1: "Вт",

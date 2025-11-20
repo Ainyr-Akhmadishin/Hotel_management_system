@@ -11,24 +11,24 @@ from staff.staff_script import StaffWindow
 
 from sync_update import SimpleAutoSync
 
+from utils import get_resource_path
+
 class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.start_sync()
+        # self.start_sync()
 
-        uic.loadUi('UI/Вход в систему итог.ui', self)
+        uic.loadUi(get_resource_path('UI/Вход в систему итог.ui'), self)
 
 
         self.pushButton.clicked.connect(self.login)
         self.lineEdit_3.returnPressed.connect(self.login)
-
 
         self.employee_window = None
         self.admin_window = None
         self.registrar_window = None
 
     def start_sync(self):
-        """Запуск фоновой синхронизации"""
         try:
             self.sync_manager = SimpleAutoSync("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
             if self.sync_manager.start():
@@ -65,8 +65,10 @@ class LoginWindow(QMainWindow):
             return None
 
         except sqlite3.Error as e:
-            print(f"Ошибка базы данных: {e}")
+            QMessageBox.warning(self, "Ошибка", "Ошибка базы данных")
             return None
+        except Exception as e:
+            QMessageBox.warning(self, "Ошибка", "Неизвестная ошибка")
 
     def login(self):
         username = self.lineEdit.text()
@@ -107,7 +109,6 @@ class LoginWindow(QMainWindow):
         self.lineEdit.clear()
         self.lineEdit_3.clear()
         self.show()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

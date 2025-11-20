@@ -4,12 +4,13 @@ import sqlite3
 from PyQt6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
 
-
+from bd_manager import YandexDiskUploader
+from utils import get_resource_path
 
 class MassageWindow(QDialog):
     def __init__(self,full_name, parent=None):
         super().__init__(parent)
-        uic.loadUi('UI/Reg/Окно отправки сообщений.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно отправки сообщений.ui'), self)
         self.setWindowTitle("Отправка сообщений")
 
         self.full_name = full_name
@@ -68,17 +69,24 @@ class MassageWindow(QDialog):
                         (self.id_sender, self.id_recipient, binary_message))
 
             con.commit()
+            con.close()
             QMessageBox.information(self, "Успех",
                                     f"Сообщение отправлено")
+            self.close()
+            uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+            if uploader.upload_db():
+                print("Изменения загружены на Яндекс Диск")
+            else:
+                print("Не удалось загрузить изменения")
 
         except ValueError as e:
-            print(f"❌ Ошибка: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
         except sqlite3.Error as e:
-            print(f"❌ Ошибка базы данных: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
         except IndexError as e:
-            print(f"❌ Ошибка обработки имени: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
         except Exception as e:
-            print(f"❌ Неизвестная ошибка: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
         finally:
             if 'con' in locals():
                 con.close()
@@ -106,8 +114,10 @@ class MassageWindow(QDialog):
             conn.close()
 
 
+        except sqlite3.Error as e:
+            QMessageBox.critical(self, "Ошибка загрузки сотрудников", str(e))
         except Exception as e:
-            print(f"Ошибка загрузки сотрудников: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
 
 
 

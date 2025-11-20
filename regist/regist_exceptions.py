@@ -20,3 +20,11 @@ class DateError(Exception):
 
 class PhoneError(Exception):
     pass
+
+class EmptyPathError(Exception):
+    pass
+
+class BookingError(Exception):
+    pass
+class RoomError(Exception):
+    pass

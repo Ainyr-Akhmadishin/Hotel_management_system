@@ -5,6 +5,7 @@ import sqlite3
 from datetime import datetime
 from regist.regist_exceptions import FIOException, LowerNameError, PassportError, DateError, PhoneError
 from bd_manager import YandexDiskUploader
+from utils import get_resource_path
 
 class GuestRegistrationWindow(QMainWindow):
     closed = pyqtSignal()
@@ -13,7 +14,7 @@ class GuestRegistrationWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        uic.loadUi('UI/Reg/Окно заселения гостя итог.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно заселения гостя итог.ui'), self)
         self.setWindowTitle("Заселение гостя")
         self.phone.setInputMask("+7(000)000-00-00")
 
@@ -41,7 +42,7 @@ class GuestRegistrationWindow(QMainWindow):
             self.phone.returnPressed.connect(lambda: self.dateIn.setFocus())
 
         except Exception as e:
-            print(f"Ошибка в setup_enter_handlers: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
 
 
     def setup_star_handlers(self):
@@ -62,7 +63,7 @@ class GuestRegistrationWindow(QMainWindow):
             # self.phone.textChanged.connect(lambda: self.phone.setStyleSheet(""))
 
         except Exception as e:
-            print(f"Ошибка в setup_star_handlers: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
 
     def removeStar(self, label, filled):
         base_text = label.text()
@@ -97,7 +98,7 @@ class GuestRegistrationWindow(QMainWindow):
             self.number.addItems(available_rooms)
 
         except Exception as e:
-            print(f"Ошибка: {e}")
+            QMessageBox.critical(self, "Ошибка", str(e))
 
     def FIOCheck(self,field,field_name,required = True):
 

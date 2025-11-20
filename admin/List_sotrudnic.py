@@ -4,15 +4,19 @@ from PyQt6.QtCore import QDate
 import sqlite3
 import csv
 from datetime import datetime
+from utils import get_resource_path
 
 
 class EmployeeListDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('Список сотрудников переделанная.ui', self)
+        uic.loadUi(get_resource_path('UI/Admin/Список сотрудников переделанная.ui'), self)
 
         self.setWindowTitle("Список сотрудников")
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
+
+        # Устанавливаем полноэкранный режим
+        self.showMaximized()
 
         # Инициализация БД
         self.conn = sqlite3.connect('Hotel_bd.db')
@@ -20,16 +24,24 @@ class EmployeeListDialog(QDialog):
 
         # Подключаем кнопки
         self.export_button.clicked.connect(self.export_data)
-        self.add_button.clicked.connect(self.add_employee)
         self.refresh_button.clicked.connect(self.load_employees)
         self.sort_comboBox.currentTextChanged.connect(self.sort_employees)
         self.search_lineEdit.textChanged.connect(self.search_employees)
 
-        # Список меток для сотрудников
+        # Список меток для сотрудников (организовано по колонкам)
         self.employee_labels = []
-        for i in range(3, 23):  # label_3 to label_22
-            label = getattr(self, f'label_{i}')
-            self.employee_labels.append(label)
+        # Создаем матрицу меток: 5 строк × 4 колонки
+        self.label_matrix = [
+            [self.label_3, self.label_5, self.label_4, self.label_8],  # строка 0
+            [self.label_6, self.label_7, self.label_9, self.label_10],  # строка 1
+            [self.label_11, self.label_12, self.label_13, self.label_14],  # строка 2
+            [self.label_15, self.label_16, self.label_17, self.label_18],  # строка 3
+            [self.label_19, self.label_20, self.label_21, self.label_22]  # строка 4
+        ]
+
+        # Преобразуем матрицу в плоский список для удобства
+        for row in self.label_matrix:
+            self.employee_labels.extend(row)
 
         # Загружаем сотрудников
         self.all_employees = []
@@ -50,39 +62,62 @@ class EmployeeListDialog(QDialog):
             QMessageBox.critical(self, "Ошибка", f"Ошибка загрузки сотрудников: {str(e)}")
 
     def display_employees(self, employees):
-        """Отображение сотрудников в интерфейсе"""
-        # Очищаем метки
+        """Отображение сотрудников в интерфейсе (слева направо, сверху вниз)"""
+        # Очищаем все метки
         for label in self.employee_labels:
-            label.setText("")
-            label.setStyleSheet("padding: 4px 8px; border-radius: 3px;")
+            label.setText("Пусто")
+            label.setStyleSheet(
+                "padding: 6px 10px; border-radius: 3px; color: #999999; background-color: #f8f9fa; font-style: italic;")
+            label.setVisible(True)
 
-        # Заполняем метки
-        for i, (first_name, last_name, patronymic, position) in enumerate(employees):
-            if i >= len(self.employee_labels):
-                break
+        # Фильтруем только валидных сотрудников
+        valid_employees = [emp for emp in employees if emp[0] and emp[1] and emp[3]]
 
-            full_name = f"{last_name} {first_name}"
-            if patronymic:
-                full_name += f" {patronymic}"
+        if not valid_employees:
+            # Если нет сотрудников, показываем сообщение в первой ячейке
+            self.label_3.setText("Нет сотрудников для отображения")
+            self.label_3.setStyleSheet(
+                "padding: 6px 10px; border-radius: 3px; color: #666666; background-color: #f8f9fa; font-weight: bold;")
+            return
 
-            # Добавляем должность в скобках
-            full_name += f" ({position})"
+        # Заполняем метки по колонкам (сначала заполняем колонку, потом переходим к следующей)
+        employee_index = 0
+        total_employees = len(valid_employees)
 
-            self.employee_labels[i].setText(full_name)
+        # Проходим по колонкам (всего 4 колонки)
+        for col in range(4):  # 4 колонки
+            for row in range(5):  # 5 строк
+                if employee_index >= total_employees:
+                    break
 
-            # Разные цвета для разных должностей
-            if position == 'администратор':
-                self.employee_labels[i].setStyleSheet(
-                    "padding: 4px 8px; border-radius: 3px; background-color: #e3f2fd; font-weight: bold;"
-                )
-            elif position == 'регистратор':
-                self.employee_labels[i].setStyleSheet(
-                    "padding: 4px 8px; border-radius: 3px; background-color: #e8f5e8;"
-                )
-            else:
-                self.employee_labels[i].setStyleSheet(
-                    "padding: 4px 8px; border-radius: 3px; background-color: #fff3cd;"
-                )
+                first_name, last_name, patronymic, position = valid_employees[employee_index]
+
+                full_name = f"{last_name} {first_name}"
+                if patronymic:
+                    full_name += f" {patronymic}"
+
+                # Добавляем должность в скобках
+                full_name += f" ({position})"
+
+                # Устанавливаем текст в соответствующую метку
+                label = self.label_matrix[row][col]
+                label.setText(full_name)
+
+                # Разные цвета для разных должностей
+                if position.lower() == 'администратор':
+                    label.setStyleSheet(
+                        "background-color: #e3f2fd; padding: 6px 10px; border-radius: 3px; font-weight: bold; color: #000000;"
+                    )
+                elif position.lower() == 'регистратор':
+                    label.setStyleSheet(
+                        "background-color: #e8f5e8; padding: 6px 10px; border-radius: 3px; color: #000000;"
+                    )
+                else:
+                    label.setStyleSheet(
+                        "background-color: #fff3cd; padding: 6px 10px; border-radius: 3px; color: #000000;"
+                    )
+
+                employee_index += 1
 
     def sort_employees(self):
         """Сортировка сотрудников"""
@@ -91,14 +126,15 @@ class EmployeeListDialog(QDialog):
         if not self.all_employees:
             return
 
+        # Фильтруем пустые записи перед сортировкой
+        filtered_employees = [emp for emp in self.all_employees if emp[0] and emp[1] and emp[3]]
+
         if sort_option == "Сортировка по Фамилии":
-            sorted_employees = sorted(self.all_employees, key=lambda x: x[1])  # last_name
-        elif sort_option == "Сортировка по Имени":
-            sorted_employees = sorted(self.all_employees, key=lambda x: x[0])  # first_name
+            sorted_employees = sorted(filtered_employees, key=lambda x: x[1])  # last_name
         elif sort_option == "Сортировка по Должности":
-            sorted_employees = sorted(self.all_employees, key=lambda x: x[3])  # position
+            sorted_employees = sorted(filtered_employees, key=lambda x: x[3])  # position
         else:
-            sorted_employees = self.all_employees
+            sorted_employees = filtered_employees
 
         self.display_employees(sorted_employees)
 
@@ -107,11 +143,17 @@ class EmployeeListDialog(QDialog):
         search_text = self.search_lineEdit.text().strip().lower()
 
         if not search_text:
-            self.display_employees(self.all_employees)
+            # При отмене поиска показываем всех сотрудников (без пустых)
+            filtered_employees = [emp for emp in self.all_employees if emp[0] and emp[1] and emp[3]]
+            self.display_employees(filtered_employees)
             return
 
         filtered_employees = []
         for first_name, last_name, patronymic, position in self.all_employees:
+            # Пропускаем пустые записи
+            if not first_name or not last_name or not position:
+                continue
+
             if (search_text in first_name.lower() or
                     search_text in last_name.lower() or
                     search_text in (patronymic or "").lower() or
@@ -121,7 +163,7 @@ class EmployeeListDialog(QDialog):
         self.display_employees(filtered_employees)
 
     def export_data(self):
-        """Экспорт данных в CSV"""
+        """Экспорт данных в CSV с правильной кодировкой"""
         try:
             file_path, _ = QFileDialog.getSaveFileName(
                 self, "Экспорт данных", f"сотрудники_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
@@ -129,11 +171,19 @@ class EmployeeListDialog(QDialog):
             )
 
             if file_path:
-                with open(file_path, 'w', newline='', encoding='utf-8') as file:
-                    writer = csv.writer(file)
+                # Фильтруем пустые записи перед экспортом
+                valid_employees = [emp for emp in self.all_employees if emp[0] and emp[1] and emp[3]]
+
+                if not valid_employees:
+                    QMessageBox.warning(self, "Предупреждение", "Нет данных для экспорта")
+                    return
+
+                # Используем кодировку utf-8-sig для правильного отображения кириллицы в Excel
+                with open(file_path, 'w', newline='', encoding='utf-8-sig') as file:
+                    writer = csv.writer(file, delimiter=';')  # Используем точку с запятой как разделитель
                     writer.writerow(['Фамилия', 'Имя', 'Отчество', 'Должность', 'Дата экспорта'])
 
-                    for first_name, last_name, patronymic, position in self.all_employees:
+                    for first_name, last_name, patronymic, position in valid_employees:
                         writer.writerow([
                             last_name,
                             first_name,
@@ -146,56 +196,6 @@ class EmployeeListDialog(QDialog):
 
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Ошибка экспорта данных: {str(e)}")
-
-    def add_employee(self):
-        """Добавление нового сотрудника"""
-        try:
-            from PyQt6.QtWidgets import QInputDialog
-            import hashlib
-
-            first_name, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите имя:")
-            if not ok or not first_name.strip():
-                return
-
-            last_name, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите фамилию:")
-            if not ok or not last_name.strip():
-                return
-
-            patronymic, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите отчество:")
-            if not ok:
-                patronymic = ""
-
-            position, ok = QInputDialog.getItem(self, "Добавление сотрудника", "Выберите должность:",
-                                                ['администратор', 'регистратор', 'обслуживающий персонал'], 0, False)
-            if not ok:
-                return
-
-            login, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите логин:")
-            if not ok or not login.strip():
-                return
-
-            password, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите пароль:")
-            if not ok or not password.strip():
-                return
-
-            # Хешируем пароль
-            password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-            # Добавляем в БД
-            self.cursor.execute('''
-                INSERT INTO staff (first_name, last_name, patronymic, login, password_hash, position)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (first_name.strip(), last_name.strip(), patronymic.strip(), login.strip(), password_hash, position))
-
-            self.conn.commit()
-
-            QMessageBox.information(self, "Успех", "Сотрудник успешно добавлен!")
-            self.load_employees()
-
-        except sqlite3.IntegrityError:
-            QMessageBox.warning(self, "Ошибка", "Сотрудник с таким логином уже существует!")
-        except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка добавления сотрудника: {str(e)}")
 
     def closeEvent(self, event):
         """Закрытие соединения с БД"""
