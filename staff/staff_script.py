@@ -10,19 +10,15 @@ from staff.BD_staff import UploadCleaningWindow
 from notifications_manager import SimpleNotificationsManager
 
 class TaskAssignmentError(Exception):
-    """Базовое исключение для ошибок назначения задач"""
     pass
 
 class NoTaskSelectedError(Exception):
-    """Исключение при отсутствии выбранных задач"""
     pass
 
 class NoUnassignedTasksError(Exception):
-    """Исключение когда список неназначенных задач пуст"""
     pass
 
 class TaskAlreadyAssignedError(Exception):
-    """Исключение когда задача уже назначена другому пользователю"""
     pass
 
 class StaffWindow(QMainWindow):
@@ -46,7 +42,6 @@ class StaffWindow(QMainWindow):
         self.transfer_button.clicked.connect(self.assign_tasks_to_current_user)
         self.contact_button.clicked.connect(self.open_massage)
 
-        # Получаем ID текущего пользователя и загружаем задачи
         self.load_unassigned_tasks()
         self.load_user_tasks()
 
@@ -55,7 +50,6 @@ class StaffWindow(QMainWindow):
         self.massage_window.show()
 
     def get_current_user_id(self):
-        """Получаем ID текущего пользователя по username"""
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
@@ -69,7 +63,6 @@ class StaffWindow(QMainWindow):
             print(f"Ошибка получения ID пользователя: {e}")
 
     def load_unassigned_tasks(self):
-        """Загрузка неназначенных задач в список all_tasks_list с чекбоксами"""
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()

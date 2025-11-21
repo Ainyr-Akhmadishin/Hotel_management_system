@@ -9,9 +9,10 @@ from PyQt6 import uic
 
 
 class EmptyPathError(Exception):
-    """Исключение для пустого пути файла"""
     pass
 
+class InvalidFileFormatError(Exception):
+    pass
 
 class UploadCleaningWindow(QMainWindow):
     closed = pyqtSignal()
@@ -19,9 +20,10 @@ class UploadCleaningWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        uic.loadUi('UI/Reg/Окно сохранения данных.ui', self)  # Используем тот же UI файл
+        uic.loadUi('UI/Reg/Окно сохранения данных.ui', self)
         self.setWindowTitle(f"Сохранение данных об уборке")
         self.get_data()
+        self.allowed_formats = ['.csv', '.txt']
 
 
         self.monthRadio.toggled.connect(self.get_data)
@@ -31,12 +33,22 @@ class UploadCleaningWindow(QMainWindow):
         self.browseButton.clicked.connect(self.browse)
         self.exportButton.clicked.connect(self.save)
 
+    def validate_file_format(self, file_path):
+        file_extension = file_path[file_path.rfind('.'):].lower()
+        if file_extension not in self.allowed_formats:
+            raise InvalidFileFormatError(
+                f"Недопустимый формат файла: {file_extension}. "
+                f"Разрешены только: {', '.join(self.allowed_formats)}"
+            )
+
     def save(self):
         try:
             current_file_path = self.filePathEdit.text()
 
             if not current_file_path:
                 raise EmptyPathError
+
+            self.validate_file_format(current_file_path)
 
             if current_file_path.lower().endswith('.txt'):
                 self.save_as_txt(current_file_path)
@@ -45,6 +57,9 @@ class UploadCleaningWindow(QMainWindow):
 
             QMessageBox.information(self, "Успех", f"Отчет об уборке успешно сохранен в:\n{current_file_path}")
             self.filePathEdit.clear()
+
+        except InvalidFileFormatError as e:
+            QMessageBox.critical(self, "Ошибка формата файла", str(e))
         except EmptyPathError:
             QMessageBox.critical(self, "Ошибка пустого пути", "Выберите путь для записи")
         except PermissionError:
