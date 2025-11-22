@@ -22,6 +22,14 @@ class DownloadWindow(QMainWindow):
         self.setWindowTitle(f"Загрузка данных о брони")
         self.browseButton.clicked.connect(self.browse)
         self.loadButton.clicked.connect(self.download)
+        self.cancelButton.clicked.connect(self.show_ud_window)
+
+    def show_ud_window(self):
+        """Показывает окно выбора сохранить или загрузить"""
+        from regist.upload_or_download import UDWindow
+        self.ud_window = UDWindow()
+        self.ud_window.show()
+        self.close()
 
     def FIOCheck(self, text, field_name, required=True):
 
@@ -300,10 +308,7 @@ class DownloadWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Не удалось загрузить файл: {str(e)}")
 
-
-
-
-
     def closeEvent(self, event):
+        """При закрытии крестиком - просто закрываем окно"""
         self.closed.emit()
         event.accept()

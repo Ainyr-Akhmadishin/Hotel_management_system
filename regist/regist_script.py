@@ -64,8 +64,10 @@ class RegistrarWindow(QMainWindow):
 
         QtCore.QTimer.singleShot(50, self.scroll_to_current_date)
 
+        self.last_status_count = 0
+        self.setup_task_monitoring()
 
-        self.current_month_label.mousePressEvent = self.on_month_label_click
+        # self.current_month_label.mousePressEvent = self.on_month_label_click
 
         self.book_button.clicked.connect(self.guest_registration)
         self.staff_button.clicked.connect(self.open_massage)
@@ -78,6 +80,65 @@ class RegistrarWindow(QMainWindow):
 
         self.search_button.clicked.connect(self.search_guest)
         self.search_input.returnPressed.connect(self.search_guest)  # Поиск по Enter
+
+        self.exit_button.clicked.connect(self.logout)
+
+    def logout(self):
+        """Выход в окно авторизации при нажатии кнопки с подтверждением"""
+        reply = QMessageBox.question(
+            self,
+            "Подтверждение выхода",
+            "Вы уверены, что хотите выйти из аккаунта?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            self.closed.emit()  # Отправляем сигнал для возврата к авторизации
+            self.close()
+
+    def closeEvent(self, event):
+        """При закрытии крестиком - просто закрываем окно"""
+        event.accept()
+
+    def setup_task_monitoring(self):
+        self.task_check_timer = QtCore.QTimer()
+        self.task_check_timer.timeout.connect(self.check_task_updates)
+        self.task_check_timer.start(15000)
+
+
+    def check_task_updates(self):
+        """Проверяет изменения статусов задач для всех статусов"""
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+            # Получаем хэш всех текущих статусов задач
+            cursor.execute('''
+                SELECT GROUP_CONCAT(room_number || ':' || status, '|') 
+                FROM maintenance_tasks 
+                WHERE status IN ('в работе', 'в ожидании уборки', 'убрано')
+                ORDER BY room_number
+            ''')
+
+            current_status_hash = cursor.fetchone()[0] or ""
+            conn.close()
+
+            # Если хэш изменился или это первая проверка - обновляем
+            if not hasattr(self, 'last_status_hash') or current_status_hash != self.last_status_hash:
+                self.last_status_hash = current_status_hash
+                self.update_status_column()
+
+        except Exception as e:
+            print(f"Ошибка проверки задач: {e}")
+
+    def closeEvent(self, event):
+        if hasattr(self, 'task_check_timer'):
+            self.task_check_timer.stop()
+        if hasattr(self, 'notifications_manager'):
+            self.notifications_manager.stop_updates()
+        super().closeEvent(event)
+
 
     def scroll_to_current_date(self):
         """Прокручивает таблицу к текущей дате + 8 дней или к последнему дню месяца"""
@@ -209,7 +270,7 @@ class RegistrarWindow(QMainWindow):
             print(f"Ошибка подсветки: {e}")
 
     def check_checkout_dates(self):
-        """Проверяет даты выселения и создает задания на уборку"""
+        """Проверяет даты выселения и создает задания на уборку, если их еще нет"""
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
@@ -222,32 +283,45 @@ class RegistrarWindow(QMainWindow):
                 SELECT DISTINCT r.room_number
                 FROM bookings b
                 JOIN rooms r ON b.room_id = r.id
-                LEFT JOIN maintenance_tasks mt ON r.room_number = mt.room_number 
-                    AND DATE(mt.created_at) = ?
-                    AND mt.description LIKE '%выезда%'
                 WHERE b.check_out_date = ?
-                AND mt.id IS NULL
-            ''', (today, today))
+            ''', (today,))
 
             today_checkouts = cursor.fetchall()
+            created_tasks_count = 0
 
             for room_data in today_checkouts:
                 room_number = room_data[0]
-                # СОЗДАЕМ ЗАДАНИЕ НА УБОРКУ ПРЯМО ЗДЕСЬ
-                try:
-                    cleaning_task = TaskWindow(room_number, self.user_id)
-                    cleaning_task.create_task(self.user_id)
-                    print(f"✅ Создано задание на уборку комнаты {room_number} после выселения")
-                except Exception as e:
-                    print(f"❌ Ошибка создания задания для комнаты {room_number}: {e}")
+
+                # ПРОВЕРЯЕМ, ЕСТЬ ЛИ УЖЕ ЗАДАНИЕ НА УБОРКУ ДЛЯ ЭТОЙ КОМНАТЫ СЕГОДНЯ
+                cursor.execute('''
+                    SELECT id FROM maintenance_tasks 
+                    WHERE room_number = ? 
+                    AND DATE(created_at) = ?
+                    AND description LIKE '%выезда%'
+                    AND status != 'выполнена'
+                ''', (room_number, today))
+
+                existing_task = cursor.fetchone()
+
+                # Если задания нет - создаем новое
+                if not existing_task:
+                    try:
+                        cleaning_task = TaskWindow(room_number, self.user_id)
+                        cleaning_task.create_task(self.user_id)
+                        created_tasks_count += 1
+                        print(f"✅ Создано задание на уборку комнаты {room_number} после выселения")
+                    except Exception as e:
+                        print(f"❌ Ошибка создания задания для комнаты {room_number}: {e}")
+                else:
+                    print(f"ℹ️ Задание на уборку для комнаты {room_number} уже существует")
 
             conn.close()
 
-            if today_checkouts:
-                print(f"✅ Создано {len(today_checkouts)} заданий на уборку для выселений сегодня")
+            if created_tasks_count > 0:
+                print(f"✅ Создано {created_tasks_count} заданий на уборку для выселений сегодня")
                 self.update_status_column()
             else:
-                print("ℹ️ На сегодня нет выселений для создания заданий")
+                print("ℹ️ На сегодня нет выселений для создания новых заданий или задания уже существуют")
 
         except Exception as e:
             print(f"❌ Ошибка проверки дат выселения: {e}")
@@ -696,7 +770,8 @@ class RegistrarWindow(QMainWindow):
             ''', (last_day_of_month_str, first_day_of_month))
 
             guests = cursor.fetchall()
-            guest_set = False
+            today = datetime.now().date()
+
             for guest in guests:
                 room_number = guest[0]
                 guest_name = guest[1]
@@ -725,15 +800,31 @@ class RegistrarWindow(QMainWindow):
                             if check_in_date <= header_date <= check_out_date:
                                 item = QTableWidgetItem(guest_name)
                                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                                item.setBackground(QBrush(QColor("#74E868")))
+
+                                # ОПРЕДЕЛЯЕМ ЦВЕТ В ЗАВИСИМОСТИ ОТ СТАТУСА БРОНИ
+                                if check_out_date < today:
+                                    # Бронь началась и закончилась ДО текущего дня - серый
+                                    color = "#B0B0B0"  # Серый
+                                    status = "прошла"
+                                elif check_in_date <= today <= check_out_date:
+                                    # Бронь началась в прошлом и идет СЕЙЧАС - зеленый
+                                    color = "#74E868"  # Зеленый
+                                    status = "сейчас"
+                                else:
+                                    # Бронь начинается и заканчивается в БУДУЩЕМ - голубой
+                                    color = "#68B5E8"  # Голубой
+                                    status = "будет"
+
+                                item.setBackground(QBrush(QColor(color)))
 
                                 # Делаем текст видимым только в первой ячейке заезда
                                 if not first_day_set and header_date == check_in_date:
-                                    # Первая ячейка - видимый текст
+                                    # Первая ячейка - видимый текст (черный)
                                     first_day_set = True
+                                    item.setForeground(QBrush(QColor("#000000")))  # Черный текст
                                 else:
-                                    # Остальные ячейки - невидимый текст (но данные есть!)
-                                    item.setForeground(QBrush(QColor("#74E868")))  # Тот же цвет что и фон
+                                    # Остальные ячейки - текст совпадает с фоном
+                                    item.setForeground(QBrush(QColor(color)))
 
                                 self.guest_table.setItem(row, column, item)
 

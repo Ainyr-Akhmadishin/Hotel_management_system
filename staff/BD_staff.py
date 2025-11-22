@@ -41,6 +41,7 @@ class UploadCleaningWindow(QMainWindow):
                 f"Разрешены только: {', '.join(self.allowed_formats)}"
             )
 
+
     def save(self):
         try:
             current_file_path = self.filePathEdit.text()
@@ -79,14 +80,14 @@ class UploadCleaningWindow(QMainWindow):
                 quotechar='"',
                 quoting=csv.QUOTE_MINIMAL)
 
-            # Записываем заголовки
+
             writer.writerow(
                 [self.previewTable.horizontalHeaderItem(i).text()
                  for i in range(self.previewTable.columnCount())
                  ]
             )
 
-            # Записываем данные
+
             for i in self.data:
                 writer.writerow(i)
 
@@ -99,10 +100,8 @@ class UploadCleaningWindow(QMainWindow):
                 f"Период: с {self.start_date.strftime('%d.%m.%Y')} по {datetime.now().date().strftime('%d.%m.%Y')}\n")
             f.write("=" * 120 + "\n\n")
 
-            # Получаем заголовки
             headers = [self.previewTable.horizontalHeaderItem(i).text() for i in range(self.previewTable.columnCount())]
 
-            # Вычисляем ширину колонок
             col_widths = [len(header) for header in headers]
             for row in self.data:
                 for i, cell in enumerate(row):
@@ -110,12 +109,10 @@ class UploadCleaningWindow(QMainWindow):
 
             col_widths = [width + 2 for width in col_widths]
 
-            # Записываем заголовки
             header_line = "".join([headers[i].ljust(col_widths[i]) for i in range(len(headers))])
             f.write(header_line + "\n")
             f.write("-" * len(header_line) + "\n")
 
-            # Записываем данные
             for row in self.data:
                 row_line = "".join([str(cell).ljust(col_widths[i]) for i, cell in enumerate(row)])
                 f.write(row_line + "\n")
@@ -143,7 +140,6 @@ class UploadCleaningWindow(QMainWindow):
                 self.previewTable.setRowCount(0)
                 return
 
-            # Заголовки для данных об уборке
             headers = [
                 'ID задачи', 'Комната', 'Тип уборки', 'Описание',
                 'Создал', 'Должность создателя', 'Исполнитель', 'Должность исполнителя',
@@ -166,7 +162,6 @@ class UploadCleaningWindow(QMainWindow):
             QMessageBox.critical(self, "Ошибка обновления таблицы", f"Не удалось обновить таблицу")
 
     def get_cleaning_data_query(self):
-        """SQL запрос для получения данных об уборке"""
         return """
         SELECT 
             mt.id as task_id,
@@ -231,7 +226,6 @@ class UploadCleaningWindow(QMainWindow):
             self.filePathEdit.clear()
             today = datetime.now().date()
 
-            # Определяем период
             if self.monthRadio.isChecked():
                 self.start_date = today - timedelta(days=30)
             elif self.sixMonthsRadio.isChecked():
@@ -244,7 +238,6 @@ class UploadCleaningWindow(QMainWindow):
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
 
-            # Выполняем запрос для данных об уборке
             cursor.execute(self.get_cleaning_data_query(), (self.start_date.strftime('%Y-%m-%d'),))
             self.data = cursor.fetchall()
 

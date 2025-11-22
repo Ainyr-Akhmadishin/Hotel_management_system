@@ -6,7 +6,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMainWindow, QDialog, QTableWidgetItem, QFileDialog, QMessageBox
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6 import uic
-from regist.regist_exceptions import EmptyPathError
+from regist.regist_exceptions import EmptyPathError, InvalidFileFormatError
 
 class UploadWindow(QMainWindow):
     closed = pyqtSignal()
@@ -16,6 +16,9 @@ class UploadWindow(QMainWindow):
         uic.loadUi('UI/Reg/Окно сохранения данных.ui', self)
         self.setWindowTitle(f"Сохранение данных о брони")
         self.get_data()
+
+        self.allowed_formats = ['.csv', '.txt']
+
         self.monthRadio.toggled.connect(self.get_data)
         self.sixMonthsRadio.toggled.connect(self.get_data)
 
@@ -24,6 +27,22 @@ class UploadWindow(QMainWindow):
         self.browseButton.clicked.connect(self.browse)
 
         self.exportButton.clicked.connect(self.save)
+        self.cancelButton.clicked.connect(self.show_ud_window)
+
+    def validate_file_format(self, file_path):
+        file_extension = file_path[file_path.rfind('.'):].lower()
+        if file_extension not in self.allowed_formats:
+            raise InvalidFileFormatError(
+                f"Недопустимый формат файла: {file_extension}. "
+                f"Разрешены только: {', '.join(self.allowed_formats)}"
+            )
+
+    def show_ud_window(self):
+        """Показывает окно выбора сохранить или загрузить"""
+        from regist.upload_or_download import UDWindow
+        self.ud_window = UDWindow()
+        self.ud_window.show()
+        self.close()
 
     def save(self):
         try:
@@ -31,6 +50,8 @@ class UploadWindow(QMainWindow):
 
             if not current_file_path:
                 raise EmptyPathError
+
+            self.validate_file_format(current_file_path)
 
             if current_file_path.lower().endswith('.txt'):
                 self.save_as_txt(current_file_path)
@@ -41,6 +62,9 @@ class UploadWindow(QMainWindow):
             self.filePathEdit.clear()
         except EmptyPathError:
             QMessageBox.critical(self, "Ошибка пустого пути", "Выберите путь для записи")
+
+        except InvalidFileFormatError as e:
+            QMessageBox.critical(self, "Ошибка формата файла", str(e))
         except PermissionError:
             QMessageBox.critical(self, "Ошибка доступа", "Файл заблокирован или нет прав для записи")
 
@@ -176,5 +200,6 @@ class UploadWindow(QMainWindow):
             QMessageBox.critical(self, "Ошибка загрузки данных", f"Произошла непредвиденная ошибка:\n{str(e)}")
 
     def closeEvent(self, event):
+        """При закрытии крестиком - просто закрываем окно"""
         self.closed.emit()
         event.accept()

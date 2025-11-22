@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>689</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,15 +22,15 @@ QFrame {
     border-radius: 6px;
 }
 QLabel {
-    font-size: 12px;
+    font-size: 11px;
     color: #2c3e50;
 }
 QTextEdit {
     border: 1px solid #e1e5eb;
     border-radius: 6px;
     background-color: white;
-    padding: 12px;
-    font-size: 12px;
+    padding: 10px;
+    font-size: 11px;
 }
 QTextEdit:focus {
     border-color: #4a6fa5;
@@ -39,11 +39,11 @@ QPushButton {
     background-color: #4a6fa5;
     color: white;
     border: none;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 6px;
     font-weight: bold;
-    min-height: 35px;
-    font-size: 12px;
+    min-height: 30px;
+    font-size: 11px;
 }
 QPushButton:hover {
     background-color: #3a5a80;
@@ -51,32 +51,28 @@ QPushButton:hover {
 QPushButton:pressed {
     background-color: #2a4a70;
 }
-QPushButton:disabled {
-    background-color: #c1c7d0;
-    color: #8a8f99;
-}
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>12</number>
+    <number>10</number>
    </property>
    <property name="leftMargin">
-    <number>15</number>
+    <number>12</number>
    </property>
    <property name="topMargin">
-    <number>15</number>
+    <number>12</number>
    </property>
    <property name="rightMargin">
-    <number>15</number>
+    <number>12</number>
    </property>
    <property name="bottomMargin">
-    <number>15</number>
+    <number>12</number>
    </property>
    <item>
     <widget class="QLabel" name="title_label">
      <property name="styleSheet">
-      <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;</string>
+      <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50;</string>
      </property>
      <property name="text">
       <string>Просмотр сообщения</string>
@@ -90,7 +86,7 @@ QPushButton:disabled {
     background-color: #f8f9fa;
     border: 1px solid #e1e5eb;
     border-radius: 6px;
-    padding: 12px;
+    padding: 8px;
 }</string>
      </property>
      <property name="frameShape">
@@ -99,14 +95,14 @@ QPushButton:disabled {
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
-       <number>6</number>
+       <number>15</number>
       </property>
       <item>
        <widget class="QLabel" name="sender_label">
         <property name="styleSheet">
-         <string notr="true">font-weight: bold; font-size: 14px;</string>
+         <string notr="true">font-weight: bold; font-size: 11px;</string>
         </property>
         <property name="text">
          <string>От: Имя Фамилия</string>
@@ -116,20 +112,20 @@ QPushButton:disabled {
       <item>
        <widget class="QLabel" name="position_label">
         <property name="styleSheet">
-         <string notr="true">font-size: 12px; color: #6c757d;</string>
+         <string notr="true">font-size: 11px; color: #6c757d;</string>
         </property>
         <property name="text">
-         <string>Должность: Администратор</string>
+         <string>Администратор</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="time_label">
         <property name="styleSheet">
-         <string notr="true">font-size: 12px; color: #6c757d;</string>
+         <string notr="true">font-size: 11px; color: #6c757d;</string>
         </property>
         <property name="text">
-         <string>Время: 10:30 15.12.2023</string>
+         <string>15.12.2023 10:30</string>
         </property>
        </widget>
       </item>
@@ -143,7 +139,7 @@ QPushButton:disabled {
     background-color: white;
     border: 1px solid #e1e5eb;
     border-radius: 6px;
-    padding: 15px;
+    padding: 12px;
 }</string>
      </property>
      <property name="frameShape">
@@ -154,12 +150,12 @@ QPushButton:disabled {
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <property name="spacing">
-       <number>8</number>
+       <number>6</number>
       </property>
       <item>
        <widget class="QLabel" name="message_title_label">
         <property name="styleSheet">
-         <string notr="true">font-weight: bold; margin-bottom: 8px;</string>
+         <string notr="true">font-weight: bold; font-size: 11px;</string>
         </property>
         <property name="text">
          <string>Сообщение:</string>
@@ -168,11 +164,17 @@ QPushButton:disabled {
       </item>
       <item>
        <widget class="QTextEdit" name="message_text">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>250</height>
+         </size>
+        </property>
         <property name="styleSheet">
          <string notr="true">QTextEdit {
     border: 1px solid #dee2e6;
     border-radius: 4px;
-    padding: 10px;
+    padding: 8px;
     background-color: #f8f9fa;
 }</string>
         </property>
@@ -191,7 +193,7 @@ QPushButton:disabled {
     background-color: white;
     border: 1px solid #e1e5eb;
     border-radius: 6px;
-    padding: 15px;
+    padding: 10px;
 }</string>
      </property>
      <property name="frameShape">
@@ -202,12 +204,12 @@ QPushButton:disabled {
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <property name="spacing">
-       <number>8</number>
+       <number>6</number>
       </property>
       <item>
        <widget class="QLabel" name="reply_label">
         <property name="styleSheet">
-         <string notr="true">font-weight: bold; margin-bottom: 8px;</string>
+         <string notr="true">font-weight: bold; font-size: 11px;</string>
         </property>
         <property name="text">
          <string>Ваш ответ:</string>
@@ -216,11 +218,17 @@ QPushButton:disabled {
       </item>
       <item>
        <widget class="QTextEdit" name="reply_text">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>80</height>
+         </size>
+        </property>
         <property name="styleSheet">
          <string notr="true">QTextEdit {
     border: 1px solid #dee2e6;
     border-radius: 4px;
-    padding: 8px;
+    padding: 6px;
 }</string>
         </property>
         <property name="placeholderText">
@@ -234,16 +242,15 @@ QPushButton:disabled {
    <item>
     <layout class="QHBoxLayout" name="button_layout">
      <property name="spacing">
-      <number>10</number>
+      <number>8</number>
      </property>
      <item>
       <widget class="QPushButton" name="close_button">
        <property name="styleSheet">
         <string notr="true">QPushButton {
-	background-color: rgb(74, 111, 165);
+    background-color: rgb(74, 111, 165);
     color: white;
-}
-</string>
+}</string>
        </property>
        <property name="text">
         <string>Закрыть</string>
@@ -267,10 +274,9 @@ QPushButton:disabled {
       <widget class="QPushButton" name="send_reply_button">
        <property name="styleSheet">
         <string notr="true">QPushButton {
-	background-color: rgb(74, 111, 165);
+    background-color: rgb(74, 111, 165);
     color: white;
-}
-</string>
+}</string>
        </property>
        <property name="text">
         <string>Отправить ответ</string>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>700</height>
+    <width>1400</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
 QGroupBox {
     font-weight: bold;
     border: 2px solid #e1e5eb;
-    border-radius: 6px;
+    border-radius: 8px;
     margin-top: 1ex;
     padding-top: 10px;
     background-color: white;
@@ -30,18 +30,19 @@ QGroupBox::title {
     subcontrol-position: top center;
     padding: 0 10px;
     background-color: white;
-    font-size: 13px;
+    font-size: 14px;
+    color: #2c3e50;
 }
 QListWidget {
     border: 1px solid #e1e5eb;
-    border-radius: 4px;
+    border-radius: 6px;
     background-color: white;
     alternate-background-color: #f8f9fa;
     font-size: 11px;
     padding: 4px;
 }
 QListWidget::item {
-    padding: 8px;
+    padding: 10px;
     border-bottom: 1px solid #e1e5eb;
     font-size: 11px;
 }
@@ -52,22 +53,15 @@ QListWidget::item:selected {
 QListWidget::item:hover {
     background-color: #f0f0f0;
 }
-QTextEdit {
-    border: 1px solid #e1e5eb;
-    border-radius: 4px;
-    background-color: white;
-    font-size: 11px;
-    padding: 6px;
-}
 QPushButton {
     background-color: #4a6fa5;
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
     font-weight: bold;
-    font-size: 11px;
-    min-height: 30px;
+    font-size: 12px;
+    min-height: 35px;
 }
 QPushButton:hover {
     background-color: #3a5a80;
@@ -77,23 +71,36 @@ QPushButton:pressed {
 }
 QPushButton#transfer_button {
     background-color: #4a6fa5;
-    font-size: 20px;
+    font-size: 18px;
     min-height: 50px;
+    min-width: 60px;
 }
 QPushButton#transfer_button:hover {
     background-color: #3a5a80;
 }
+QPushButton#refresh_button {
+    background-color: #27ae60;
+}
+QPushButton#refresh_button:hover {
+    background-color: #219653;
+}
+QPushButton#complete_all_button {
+    background-color: #e74c3c;
+}
+QPushButton#complete_all_button:hover {
+    background-color: #c0392b;
+}
 QScrollBar:vertical {
     border: none;
     background-color: #f1f3f4;
-    width: 8px;
+    width: 10px;
     margin: 0px;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 QScrollBar::handle:vertical {
     background-color: #c1c7d0;
-    border-radius: 4px;
-    min-height: 12px;
+    border-radius: 5px;
+    min-height: 15px;
 }
 QScrollBar::handle:vertical:hover {
     background-color: #a5adba;
@@ -101,14 +108,14 @@ QScrollBar::handle:vertical:hover {
 QScrollBar:horizontal {
     border: none;
     background-color: #f1f3f4;
-    height: 8px;
+    height: 10px;
     margin: 0px;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 QScrollBar::handle:horizontal {
     background-color: #c1c7d0;
-    border-radius: 4px;
-    min-width: 12px;
+    border-radius: 5px;
+    min-width: 15px;
 }
 QScrollBar::handle:horizontal:hover {
     background-color: #a5adba;
@@ -117,19 +124,19 @@ QScrollBar::handle:horizontal:hover {
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="main_layout">
     <property name="spacing">
-     <number>15</number>
+     <number>20</number>
     </property>
     <property name="leftMargin">
-     <number>15</number>
+     <number>20</number>
     </property>
     <property name="topMargin">
-     <number>15</number>
+     <number>20</number>
     </property>
     <property name="rightMargin">
-     <number>15</number>
+     <number>20</number>
     </property>
     <property name="bottomMargin">
-     <number>15</number>
+     <number>20</number>
     </property>
     <item>
      <widget class="QWidget" name="left_widget" native="true">
@@ -153,7 +160,7 @@ QScrollBar::handle:horizontal:hover {
         <widget class="QWidget" name="tasks_container" native="true">
          <layout class="QHBoxLayout" name="tasks_layout">
           <property name="spacing">
-           <number>10</number>
+           <number>15</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -169,6 +176,18 @@ QScrollBar::handle:horizontal:hover {
           </property>
           <item>
            <widget class="QGroupBox" name="all_tasks_group">
+            <property name="minimumSize">
+             <size>
+              <width>350</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>400</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <family>Arial</family>
@@ -178,7 +197,7 @@ QScrollBar::handle:horizontal:hover {
              </font>
             </property>
             <property name="title">
-             <string>Все задачи</string>
+             <string>📋 Все задачи</string>
             </property>
             <layout class="QVBoxLayout" name="all_tasks_layout">
              <item>
@@ -188,6 +207,9 @@ QScrollBar::handle:horizontal:hover {
                  <pointsize>-1</pointsize>
                 </font>
                </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::MultiSelection</enum>
+               </property>
               </widget>
              </item>
             </layout>
@@ -195,6 +217,9 @@ QScrollBar::handle:horizontal:hover {
           </item>
           <item>
            <layout class="QVBoxLayout" name="button_center_layout">
+            <property name="spacing">
+             <number>10</number>
+            </property>
             <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
@@ -212,13 +237,13 @@ QScrollBar::handle:horizontal:hover {
              <widget class="QPushButton" name="transfer_button">
               <property name="minimumSize">
                <size>
-                <width>50</width>
-                <height>62</height>
+                <width>92</width>
+                <height>66</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>50</width>
+                <width>60</width>
                 <height>50</height>
                </size>
               </property>
@@ -230,10 +255,39 @@ QScrollBar::handle:horizontal:hover {
                </font>
               </property>
               <property name="toolTip">
-               <string>Переместить выбранную задачу</string>
+               <string>Назначить выбранные задачи себе</string>
               </property>
               <property name="text">
                <string>→</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="refresh_button">
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>51</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>-1</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string>Обновить списки задач</string>
+              </property>
+              <property name="text">
+               <string>🔄</string>
               </property>
              </widget>
             </item>
@@ -254,6 +308,18 @@ QScrollBar::handle:horizontal:hover {
           </item>
           <item>
            <widget class="QGroupBox" name="accepted_tasks_group">
+            <property name="minimumSize">
+             <size>
+              <width>350</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>400</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <family>Arial</family>
@@ -263,7 +329,7 @@ QScrollBar::handle:horizontal:hover {
              </font>
             </property>
             <property name="title">
-             <string>Принятые задачи</string>
+             <string>✅ Принятые задачи</string>
             </property>
             <layout class="QVBoxLayout" name="accepted_tasks_layout">
              <item>
@@ -304,13 +370,13 @@ QScrollBar::handle:horizontal:hover {
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>42</height>
+              <height>51</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>30</height>
+              <height>40</height>
              </size>
             </property>
             <property name="font">
@@ -321,7 +387,7 @@ QScrollBar::handle:horizontal:hover {
              </font>
             </property>
             <property name="text">
-             <string>Загрузка данных</string>
+             <string>📥 Загрузка данных</string>
             </property>
            </widget>
           </item>
@@ -330,13 +396,13 @@ QScrollBar::handle:horizontal:hover {
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>42</height>
+              <height>51</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>30</height>
+              <height>40</height>
              </size>
             </property>
             <property name="font">
@@ -347,7 +413,7 @@ QScrollBar::handle:horizontal:hover {
              </font>
             </property>
             <property name="text">
-             <string>Сохранение данных</string>
+             <string>📤 Сохранение данных</string>
             </property>
            </widget>
           </item>
@@ -356,13 +422,13 @@ QScrollBar::handle:horizontal:hover {
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>42</height>
+              <height>51</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>30</height>
+              <height>40</height>
              </size>
             </property>
             <property name="font">
@@ -373,7 +439,33 @@ QScrollBar::handle:horizontal:hover {
              </font>
             </property>
             <property name="text">
-             <string>Связь с персоналом</string>
+             <string>📞 Связь с персоналом</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="complete_all_button">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>-1</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Выполнено</string>
             </property>
            </widget>
           </item>
@@ -403,6 +495,18 @@ QScrollBar::handle:horizontal:hover {
        </property>
        <item>
         <widget class="QGroupBox" name="notifications_frame">
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>350</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>Arial</family>
@@ -412,7 +516,7 @@ QScrollBar::handle:horizontal:hover {
           </font>
          </property>
          <property name="title">
-          <string>Уведомления</string>
+          <string>🔔 Уведомления</string>
          </property>
          <layout class="QVBoxLayout" name="notifications_layout"/>
         </widget>

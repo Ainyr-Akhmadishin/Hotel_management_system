@@ -20,7 +20,6 @@ class UDWindow(QDialog):
 
     def show_download(self):
         self.download_window = DownloadWindow()
-        self.download_window.closed.connect(self.show)
         if self.on_data_updated:
             self.download_window.data_updated.connect(self.on_data_updated)
         self.download_window.show()
@@ -28,7 +27,6 @@ class UDWindow(QDialog):
 
     def show_upload(self):
         self.upload_window = UploadWindow()
-        self.upload_window.closed.connect(self.show)
         self.upload_window.show()
         self.hide()
 

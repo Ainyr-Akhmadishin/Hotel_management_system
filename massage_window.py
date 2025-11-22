@@ -29,6 +29,7 @@ class MassageWindow(QDialog):
         self.recipients_list.itemClicked.connect(self.selected_recipient)
 
         self.send_button.clicked.connect(self.send_message)
+        self.cancel_button.clicked.connect(self.close)
 
     def selected_recipient(self, item):
         self.recipient = item.text()
