@@ -14,11 +14,11 @@ QPushButton {
     background-color: #4a6fa5;
     color: white;
     border: none;
-    padding: 4px 8px;
+    padding: 6px 12px;
     border-radius: 4px;
     font-weight: bold;
-    min-height: 25px;
-    font-size: 10px;
+    min-height: 30px;
+    font-size: 11px;
 }
 QPushButton:hover {
     background-color: #3a5a80;
@@ -151,17 +151,39 @@ QScrollBar::handle:horizontal:hover {
        </spacer>
       </item>
       <item>
+       <widget class="QLabel" name="current_date_label">
+            <property name="minimumSize">
+                <size>
+                    <width>0</width>
+                    <height>35</height>
+                </size>
+            </property>
+            <property name="maximumSize">
+                <size>
+                    <width>16777215</width>
+                    <height>35</height>
+                </size>
+            </property>
+            <property name="styleSheet">
+                <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 8px 12px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+            </property>
+            <property name="text">
+                <string>Текущая дата</string>
+            </property>
+        </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="exit_button">
         <property name="minimumSize">
          <size>
-          <width>60</width>
-          <height>33</height>
+          <width>70</width>
+          <height>35</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>60</width>
-          <height>25</height>
+          <width>70</width>
+          <height>35</height>
          </size>
         </property>
         <property name="text">
@@ -175,35 +197,35 @@ QScrollBar::handle:horizontal:hover {
      <layout class="QHBoxLayout" name="search_layout">
       <item>
        <widget class="QLineEdit" name="search_input">
-        <property name="minimumSize">
-         <size>
-          <width>150</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="placeholderText">
-         <string>🔍 Поиск...</string>
-        </property>
-       </widget>
+            <property name="minimumSize">
+                <size>
+                    <width>200</width>
+                    <height>35</height>
+                </size>
+            </property>
+            <property name="maximumSize">
+                <size>
+                    <width>200</width>
+                    <height>25</height>
+                </size>
+            </property>
+            <property name="placeholderText">
+                <string>🔍 Поиск...</string>
+            </property>
+        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="search_button">
         <property name="minimumSize">
          <size>
-          <width>50</width>
-          <height>33</height>
+          <width>60</width>
+          <height>35</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>50</width>
-          <height>25</height>
+          <width>60</width>
+          <height>35</height>
          </size>
         </property>
         <property name="text">
@@ -232,14 +254,14 @@ QScrollBar::handle:horizontal:hover {
        <widget class="QPushButton" name="prev_month_button">
         <property name="minimumSize">
          <size>
-          <width>80</width>
-          <height>33</height>
+          <width>90</width>
+          <height>35</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>80</width>
-          <height>25</height>
+          <width>90</width>
+          <height>35</height>
          </size>
         </property>
         <property name="text">
@@ -250,7 +272,7 @@ QScrollBar::handle:horizontal:hover {
       <item>
        <widget class="QLabel" name="current_month_label">
         <property name="styleSheet">
-         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 6px 12px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
         </property>
         <property name="text">
          <string>Текущий месяц</string>
@@ -261,14 +283,14 @@ QScrollBar::handle:horizontal:hover {
        <widget class="QPushButton" name="next_month_button">
         <property name="minimumSize">
          <size>
-          <width>80</width>
-          <height>33</height>
+          <width>90</width>
+          <height>35</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>80</width>
-          <height>25</height>
+          <width>90</width>
+          <height>35</height>
          </size>
         </property>
         <property name="text">
@@ -280,14 +302,14 @@ QScrollBar::handle:horizontal:hover {
        <widget class="QPushButton" name="Button">
         <property name="minimumSize">
          <size>
-          <width>80</width>
-          <height>33</height>
+          <width>90</width>
+          <height>35</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>80</width>
-          <height>25</height>
+          <width>90</width>
+          <height>35</height>
          </size>
         </property>
         <property name="text">
@@ -642,13 +664,13 @@ QScrollBar::handle:horizontal:hover {
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>33</height>
+              <height>35</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>25</height>
+              <height>35</height>
              </size>
             </property>
             <property name="text">
@@ -661,13 +683,13 @@ QScrollBar::handle:horizontal:hover {
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>33</height>
+              <height>35</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>25</height>
+              <height>35</height>
              </size>
             </property>
             <property name="text">
@@ -680,13 +702,13 @@ QScrollBar::handle:horizontal:hover {
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>33</height>
+              <height>35</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>25</height>
+              <height>35</height>
              </size>
             </property>
             <property name="text">
@@ -740,11 +762,24 @@ QScrollBar::handle:horizontal:hover {
         </item>
         <item>
          <widget class="QFrame" name="notifications_frame">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>485</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>600</height>
+           </size>
+          </property>
           <property name="styleSheet">
-           <string notr="true">background-color: white; 
-            border-radius: 6px; 
-            padding: 8px;
-            border: 1px solid #e1e8ed;</string>
+           <string notr="true">background-color: white;
+          border-radius: 8px;
+          padding: 8px;
+          border: 2px solid #4a6fa5;
+          box-shadow: 0 2px 8px rgba(74, 111, 165, 0.2);</string>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>

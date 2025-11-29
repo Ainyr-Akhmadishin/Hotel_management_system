@@ -16,6 +16,7 @@ class ViewMessageDialog(QDialog):
         super().__init__(parent)
         self.message_data = message_data
         self.full_name = parent.full_name  # Получаем имя текущего пользователя
+        self.is_marked_as_read = False  # Флаг, что сообщение помечено как прочитанное
 
         try:
             # Загрузка UI файла как в вашей программе
@@ -23,7 +24,7 @@ class ViewMessageDialog(QDialog):
 
             self.setup_connections()
             self.populate_data()
-            self.mark_as_read()
+            # УБИРАЕМ вызов mark_as_read() из конструктора
 
         except Exception as e:
             print(f"Ошибка инициализации диалога: {e}")
@@ -50,6 +51,10 @@ class ViewMessageDialog(QDialog):
     def mark_as_read(self):
         """Пометить сообщение как прочитанное в БД"""
         try:
+            # Проверяем, не помечено ли уже сообщение как прочитанное
+            if self.is_marked_as_read:
+                return
+
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
 
@@ -62,8 +67,12 @@ class ViewMessageDialog(QDialog):
             conn.commit()
             conn.close()
 
+            # Устанавливаем флаг, что сообщение помечено как прочитанное
+            self.is_marked_as_read = True
+
             # Отправляем сигнал что сообщение прочитано
             self.message_read.emit(self.message_data['id'])
+            print(f"Сообщение {self.message_data['id']} помечено как прочитанное")
 
         except Exception as e:
             print(f"Ошибка при обновлении статуса сообщения: {e}")
@@ -160,22 +169,11 @@ class ViewMessageDialog(QDialog):
             con.commit()
             con.close()
 
-
-            # # Очищаем поле ответа и показываем подтверждение
-            # self.reply_text.clear()
-            # self.send_reply_button.setText("✓ Отправлено!")
-            # self.send_reply_button.setStyleSheet("""
-            #     QPushButton {
-            #         background-color: #28a745;
-            #         color: white;
-            #         border: none;
-            #         padding: 8px 16px;
-            #         border-radius: 6px;
-            #         font-weight: bold;
-            #     }
-            # """)
-
             QMessageBox.information(self, "Успех", "Ответ отправлен")
+
+            # Помечаем сообщение как прочитанное при отправке ответа
+            self.mark_as_read()
+
             self.close()
             uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
             if uploader.upload_db():
@@ -194,15 +192,36 @@ class ViewMessageDialog(QDialog):
         """Закрытие диалога - БЕЗОПАСНАЯ ВЕРСИЯ"""
         try:
             print("Закрытие диалога просмотра сообщения")
+
+            # Помечаем сообщение как прочитанное при закрытии диалога
+            self.mark_as_read()
+
+            # Отключаем все соединения чтобы избежать повторных вызовов
+            try:
+                self.send_reply_button.clicked.disconnect()
+            except:
+                pass
+            try:
+                self.close_button.clicked.disconnect()
+            except:
+                pass
+
             self.accept()
         except Exception as e:
             print(f"Ошибка при закрытии диалога: {e}")
-            self.reject()  # Альтернативный способ закрытия
+            try:
+                self.reject()  # Альтернативный способ закрытия
+            except:
+                pass  # Если и это не работает, просто игнорируем
 
     def closeEvent(self, event):
         """Обработчик события закрытия окна"""
         try:
             print("Событие закрытия диалога")
+
+            # Помечаем сообщение как прочитанное при закрытии через крестик
+            self.mark_as_read()
+
             self.close_dialog()
             event.accept()
         except Exception as e:

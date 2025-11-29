@@ -83,11 +83,11 @@ class MassageWindow(QDialog):
             QMessageBox.information(self, "Успех",
                                     f"Сообщение отправлено")
             self.close()
-            uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
-            if uploader.upload_db():
-                print("Изменения загружены на Яндекс Диск")
-            else:
-                print("Не удалось загрузить изменения")
+            # uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+            # if uploader.upload_db():
+            #     print("Изменения загружены на Яндекс Диск")
+            # else:
+            #     print("Не удалось загрузить изменения")
 
         except EmptyRecipientError as e:
             QMessageBox.critical(self, "Ошибка", str(e))

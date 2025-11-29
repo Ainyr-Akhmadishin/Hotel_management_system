@@ -12,7 +12,7 @@ from PyQt6.QtGui import QBrush, QColor, QAction
 from regist.guest_registration_window import GuestRegistrationWindow
 from massage_window import MassageWindow
 
-from regist.guest_update_window import GuestUpdateWindow  # Добавьте эту строку в импорты
+from regist.guest_update_window import GuestUpdateWindow
 from regist.upload_or_download import UDWindow
 from regist.task_script import TaskWindow
 
@@ -32,7 +32,7 @@ class RegistrarWindow(QMainWindow):
 
         uic.loadUi(get_resource_path('UI/Reg/Регистратор итог.ui'), self)
         self.setWindowTitle(f"Регистратор - {self.full_name}")
-
+        self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
         self.user_id = self.get_user_id(username)
 
         # Инициализируем менеджер уведомлений
@@ -54,7 +54,7 @@ class RegistrarWindow(QMainWindow):
 
         # self.check_updating_guest_data()
 
-        # Таймер для автоматической проверки выселений раз в 24 часа
+
         self.checkout_timer = QtCore.QTimer()
         self.checkout_timer.timeout.connect(self.check_checkout_dates)
         self.checkout_timer.start(86400000)
@@ -84,7 +84,7 @@ class RegistrarWindow(QMainWindow):
         self.exit_button.clicked.connect(self.logout)
 
     def logout(self):
-        """Выход в окно авторизации при нажатии кнопки с подтверждением"""
+
         reply = QMessageBox.question(
             self,
             "Подтверждение выхода",
@@ -94,11 +94,11 @@ class RegistrarWindow(QMainWindow):
         )
 
         if reply == QMessageBox.StandardButton.Yes:
-            self.closed.emit()  # Отправляем сигнал для возврата к авторизации
+            self.closed.emit()
             self.close()
 
     def closeEvent(self, event):
-        """При закрытии крестиком - просто закрываем окно"""
+
         event.accept()
 
     def setup_task_monitoring(self):
@@ -108,12 +108,12 @@ class RegistrarWindow(QMainWindow):
 
 
     def check_task_updates(self):
-        """Проверяет изменения статусов задач для всех статусов"""
+
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
 
-            # Получаем хэш всех текущих статусов задач
+
             cursor.execute('''
                 SELECT GROUP_CONCAT(room_number || ':' || status, '|') 
                 FROM maintenance_tasks 
@@ -124,7 +124,7 @@ class RegistrarWindow(QMainWindow):
             current_status_hash = cursor.fetchone()[0] or ""
             conn.close()
 
-            # Если хэш изменился или это первая проверка - обновляем
+
             if not hasattr(self, 'last_status_hash') or current_status_hash != self.last_status_hash:
                 self.last_status_hash = current_status_hash
                 self.update_status_column()
@@ -292,14 +292,12 @@ class RegistrarWindow(QMainWindow):
             for room_data in today_checkouts:
                 room_number = room_data[0]
 
-                # ПРОВЕРЯЕМ, ЕСТЬ ЛИ УЖЕ ЗАДАНИЕ НА УБОРКУ ДЛЯ ЭТОЙ КОМНАТЫ СЕГОДНЯ
+                # ПРОВЕРЯЕМ, ЕСТЬ ЛИ УЖЕ АКТИВНОЕ ЗАДАНИЕ НА УБОРКУ ДЛЯ ЭТОЙ КОМНАТЫ
                 cursor.execute('''
                     SELECT id FROM maintenance_tasks 
                     WHERE room_number = ? 
-                    AND DATE(created_at) = ?
-                    AND description LIKE '%выезда%'
-                    AND status != 'выполнена'
-                ''', (room_number, today))
+                    AND status IN ('в работе', 'в ожидании уборки')
+                ''', (room_number,))
 
                 existing_task = cursor.fetchone()
 
@@ -313,7 +311,7 @@ class RegistrarWindow(QMainWindow):
                     except Exception as e:
                         print(f"❌ Ошибка создания задания для комнаты {room_number}: {e}")
                 else:
-                    print(f"ℹ️ Задание на уборку для комнаты {room_number} уже существует")
+                    print(f"ℹ️ Активное задание на уборку для комнаты {room_number} уже существует")
 
             conn.close()
 
@@ -355,19 +353,16 @@ class RegistrarWindow(QMainWindow):
         item.setFont(font)
 
     def update_status_column(self):
-        """Обновление столбца 'Статус' для всех комнат"""
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
 
-            # Сначала устанавливаем всем комнатам статус "убрано"
             for row in range(self.guest_table.rowCount()):
                 status_item = QTableWidgetItem("✨ Убрано")
                 status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.apply_status_text_style(status_item, "убрано")
                 self.guest_table.setItem(row, 0, status_item)
 
-            # Теперь получаем актуальные статусы из базы данных
             cursor.execute('''
                 SELECT DISTINCT room_number, status 
                 FROM maintenance_tasks 
@@ -378,7 +373,6 @@ class RegistrarWindow(QMainWindow):
 
             active_tasks = cursor.fetchall()
 
-            # Обновляем статусы для комнат с активными заданиями
             for room_number, status in active_tasks:
                 row = self.find_room_row(room_number)
                 if row != -1:
@@ -394,7 +388,6 @@ class RegistrarWindow(QMainWindow):
             print(f"Ошибка обновления столбца статусов: {e}")
 
     def find_room_row(self, room_number):
-        """Найти строку таблицы по номеру комнаты"""
         for row in range(self.guest_table.rowCount()):
             header_item = self.guest_table.verticalHeaderItem(row)
             if header_item and header_item.text() == str(room_number):
@@ -788,7 +781,7 @@ class RegistrarWindow(QMainWindow):
                 if row == -1:
                     continue
 
-                first_day_set = False  # Флаг для отслеживания первой ячейки
+                first_day_set = False
                 for column in range(1, self.guest_table.columnCount()):
                     header = self.guest_table.horizontalHeaderItem(column)
                     if header:
@@ -801,29 +794,25 @@ class RegistrarWindow(QMainWindow):
                                 item = QTableWidgetItem(guest_name)
                                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-                                # ОПРЕДЕЛЯЕМ ЦВЕТ В ЗАВИСИМОСТИ ОТ СТАТУСА БРОНИ
+
                                 if check_out_date < today:
-                                    # Бронь началась и закончилась ДО текущего дня - серый
-                                    color = "#B0B0B0"  # Серый
+
+                                    color = "#B0B0B0"
                                     status = "прошла"
                                 elif check_in_date <= today <= check_out_date:
-                                    # Бронь началась в прошлом и идет СЕЙЧАС - зеленый
-                                    color = "#74E868"  # Зеленый
+
+                                    color = "#74E868"
                                     status = "сейчас"
                                 else:
-                                    # Бронь начинается и заканчивается в БУДУЩЕМ - голубой
-                                    color = "#68B5E8"  # Голубой
+
+                                    color = "#68B5E8"
                                     status = "будет"
 
                                 item.setBackground(QBrush(QColor(color)))
-
-                                # Делаем текст видимым только в первой ячейке заезда
                                 if not first_day_set and header_date == check_in_date:
-                                    # Первая ячейка - видимый текст (черный)
                                     first_day_set = True
-                                    item.setForeground(QBrush(QColor("#000000")))  # Черный текст
+                                    item.setForeground(QBrush(QColor("#000000")))
                                 else:
-                                    # Остальные ячейки - текст совпадает с фоном
                                     item.setForeground(QBrush(QColor(color)))
 
                                 self.guest_table.setItem(row, column, item)
@@ -898,8 +887,6 @@ class RegistrarWindow(QMainWindow):
                 self.guest_table.setVerticalHeaderItem(row, item)
 
             conn.close()
-
-
 
         except sqlite3.Error as e:
             QMessageBox.critical(self, "Ошибка загрузки данных о постояльцах", str(e))

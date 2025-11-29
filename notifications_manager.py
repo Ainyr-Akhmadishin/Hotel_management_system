@@ -5,6 +5,8 @@ from datetime import datetime
 from PyQt6.QtWidgets import QFrame, QVBoxLayout, QLabel, QScrollArea, QWidget
 from PyQt6.QtCore import QTimer, Qt, QObject, pyqtSignal
 from view_message_dialog import ViewMessageDialog
+import pytz
+from datetime import datetime, timezone
 
 
 class SimpleNotificationWidget(QFrame):
@@ -20,6 +22,10 @@ class SimpleNotificationWidget(QFrame):
     def setup_ui(self):
         self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.setLineWidth(1)
+
+        # ДЕЛАЕМ УВЕДОМЛЕНИЯ ЧУТЬ УЖЕ ШИРИНЫ ПАНЕЛИ
+        self.setMaximumWidth(220)  # Было 230, делаем немного уже
+        self.setMinimumWidth(210)  # Добавляем минимальную ширину
 
         # Разные стили только для непрочитанных сообщений
         if not self.message_data.get('is_read', False):
@@ -52,14 +58,17 @@ class SimpleNotificationWidget(QFrame):
         self.message_label = QLabel(message_text)
         self.message_label.setStyleSheet("font-size: 10px; color: #5a6c7d;")
         self.message_label.setWordWrap(True)
+        self.message_label.setMaximumWidth(204)  # 220 - 16 (padding)
 
         # Информация об отправителе и времени
         sender_name = self.message_data.get('sender_name', 'Неизвестный')
-        time_str = self.format_time(self.message_data.get('created_at', ''))
+        time_str = self.message_data.get('created_at', '')
         info_text = f"От: {sender_name} • {time_str}"
 
         self.info_label = QLabel(info_text)
         self.info_label.setStyleSheet("font-size: 9px; color: #8798a7;")
+        self.info_label.setWordWrap(True)
+        self.info_label.setMaximumWidth(204)  # 220 - 16 (padding)
 
         layout.addWidget(self.message_label)
         layout.addWidget(self.info_label)
@@ -75,39 +84,7 @@ class SimpleNotificationWidget(QFrame):
             self.clicked.emit(self.message_data)
         super().mousePressEvent(event)
 
-    def format_time(self, timestamp):
-        """Форматирование времени для отображения"""
-        if isinstance(timestamp, bytes):
-            timestamp = timestamp.decode('utf-8', errors='ignore')
 
-        if isinstance(timestamp, str):
-            try:
-                for fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d']:
-                    try:
-                        timestamp = datetime.strptime(timestamp, fmt)
-                        break
-                    except ValueError:
-                        continue
-            except:
-                return str(timestamp)
-
-        if isinstance(timestamp, datetime):
-            now = datetime.now()
-            diff = now - timestamp
-
-            if diff.days == 0:
-                if diff.seconds < 3600:
-                    minutes = diff.seconds // 60
-                    return f"{minutes} мин. назад"
-                else:
-                    hours = diff.seconds // 3600
-                    return f"{hours} ч. назад"
-            elif diff.days == 1:
-                return "Вчера"
-            else:
-                return timestamp.strftime("%d.%m.%Y")
-
-        return str(timestamp)
 
 
 class SimpleNotificationsManager(QObject):
@@ -129,23 +106,12 @@ class SimpleNotificationsManager(QObject):
 
         self.setup_notifications_panel()
         self.safe_load_notifications()
-        self.update_timer.start(30000)  # 30 секунд
+        self.update_timer.start(15000)  # 30 секунд
 
     def setup_notifications_panel(self):
         """Настройка панели уведомлений с прокруткой"""
         if not self.is_widget_valid(self.notifications_frame):
             return
-
-        self.notifications_frame.setMaximumWidth(250)
-        self.notifications_frame.setStyleSheet("""
-                QFrame {
-                    background-color: white; 
-                    border-radius: 6px; 
-                    padding: 8px;
-                    border: 1px solid #e1e8ed;
-                    max-width: 250px;
-                }
-            """)
 
         layout = self.notifications_frame.layout()
         if layout:
@@ -161,30 +127,21 @@ class SimpleNotificationsManager(QObject):
             QScrollArea {
                 border: none;
                 background-color: transparent;
-            }
-            QScrollBar:vertical {
-                width: 10px;
-                background-color: #f1f3f4;
-            }
-            QScrollBar::handle:vertical {
-                background-color: #c1c7d0;
-                border-radius: 5px;
+                padding: 0px;  /* УБИРАЕМ ВНУТРЕННИЕ ОТСТУПЫ */
+                margin: 0px;
             }
         """)
 
         self.scroll_widget = QWidget()
+        self.scroll_widget.setStyleSheet("background-color: white; border: none; padding: 0px; margin: 0px;")
         self.scroll_layout = QVBoxLayout(self.scroll_widget)
         self.scroll_layout.setSpacing(4)
-        self.scroll_layout.setContentsMargins(2, 2, 2, 2)
+        # УМЕНЬШАЕМ ОТСТУПЫ ДО МИНИМУМА
+        self.scroll_layout.setContentsMargins(2, 2, 2, 2)  # Минимальные отступы
         self.scroll_layout.addStretch()
 
         self.scroll_area.setWidget(self.scroll_widget)
         layout.addWidget(self.scroll_area)
-
-        # Сообщение когда уведомлений нет
-        self.empty_label = QLabel("Нет непрочитанных сообщений")
-        self.empty_label.setStyleSheet("font-size: 10px; color: #8798a7; text-align: center; padding: 20px;")
-        self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def is_widget_valid(self, widget):
         """Проверка что виджет еще существует"""
@@ -219,7 +176,6 @@ class SimpleNotificationsManager(QObject):
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
 
-            # Загружаем ТОЛЬКО НЕПРОЧИТАННЫЕ сообщения для текущего пользователя
             cursor.execute('''
                 SELECT m.id, m.text, m.created_at, m.from_user, 
                        s.first_name, s.last_name, s.position, m.is_read
@@ -237,7 +193,7 @@ class SimpleNotificationsManager(QObject):
 
         except Exception as e:
             print(f"Ошибка загрузки сообщений из БД: {e}")
-            self.display_empty_message()
+            # При ошибке тоже не показываем сообщение
 
     def display_notifications(self, messages):
         """Отображение ТОЛЬКО НЕПРОЧИТАННЫХ сообщений в панели"""
@@ -254,11 +210,11 @@ class SimpleNotificationsManager(QObject):
             print(f"Ошибка очистки уведомлений: {e}")
             return
 
-        self.scroll_layout.addStretch()
+        self.scroll_layout.addStretch()  # Добавляем растяжку
         self.notification_widgets.clear()
 
         if not messages:
-            self.display_empty_message()
+            # Если сообщений нет - просто оставляем пустую панель с растяжкой
             return
 
         # Добавляем только непрочитанные сообщения
@@ -271,8 +227,8 @@ class SimpleNotificationsManager(QObject):
 
             message_data = {
                 'id': msg_id,
-                'text': self.convert_to_display_text(text),  # Обрезанный текст для списка
-                'full_text': full_text,  # Полный текст для диалога
+                'text': self.convert_to_display_text(text),
+                'full_text': full_text,
                 'created_at': self.format_time(created_at),
                 'sender_name': f"{self.convert_to_string(first_name)} {self.convert_to_string(last_name)}",
                 'position': self.convert_to_string(position),
@@ -296,7 +252,7 @@ class SimpleNotificationsManager(QObject):
     def convert_to_display_text(self, data):
         """Конвертация для отображения в списке (укороченный текст)"""
         text = self.convert_to_string(data)
-        if len(text) > 20:
+        if len(text) > 20:  # УМЕНЬШАЕМ ДЛИНУ ДЛЯ УЗКОЙ ПАНЕЛИ
             return text[:20] + "..."
         return text
 
@@ -329,7 +285,7 @@ class SimpleNotificationsManager(QObject):
         return decoded_data
 
     def format_time(self, timestamp):
-        """Форматирование времени для отображения"""
+        """Форматирование времени для отображения в формате ЧЧ:ММ ДД.ММ.ГГ с автоматической коррекцией часового пояса"""
         if isinstance(timestamp, bytes):
             timestamp = timestamp.decode('utf-8', errors='ignore')
 
@@ -345,20 +301,15 @@ class SimpleNotificationsManager(QObject):
                 return str(timestamp)
 
         if isinstance(timestamp, datetime):
-            now = datetime.now()
-            diff = now - timestamp
+            # Если время не имеет информации о часовом поясе, считаем его UTC
+            if timestamp.tzinfo is None:
+                timestamp = timestamp.replace(tzinfo=timezone.utc)
 
-            if diff.days == 0:
-                if diff.seconds < 3600:
-                    minutes = diff.seconds // 60
-                    return f"{minutes} мин. назад"
-                else:
-                    hours = diff.seconds // 3600
-                    return f"{hours} ч. назад"
-            elif diff.days == 1:
-                return "Вчера"
-            else:
-                return timestamp.strftime("%d.%m.%Y %H:%M")
+            # Конвертируем в локальный часовой пояс системы
+            local_timezone = datetime.now().astimezone().tzinfo
+            local_time = timestamp.astimezone(local_timezone)
+
+            return local_time.strftime("%H:%M %d.%m.%Y")
 
         return str(timestamp)
 
@@ -377,17 +328,25 @@ class SimpleNotificationsManager(QObject):
         """Немедленное удаление уведомления при закрытии диалога"""
         print(f"Немедленное удаление уведомления: {message_id}")
 
-        # Удаляем виджет уведомления сразу
-        if message_id in self.notification_widgets:
-            widget = self.notification_widgets[message_id]
-            self.scroll_layout.removeWidget(widget)
-            widget.deleteLater()
-            del self.notification_widgets[message_id]
-            print(f"Уведомление {message_id} удалено")
+        try:
+            if message_id in self.notification_widgets:
+                widget = self.notification_widgets[message_id]
 
-        # Если уведомлений не осталось, показываем сообщение
-        if not self.notification_widgets:
-            self.display_empty_message()
+                if (self.is_widget_valid(widget) and
+                        self.is_widget_valid(self.scroll_widget) and
+                        self.scroll_layout is not None):
+                    self.scroll_layout.removeWidget(widget)
+                    widget.deleteLater()
+                    del self.notification_widgets[message_id]
+                    print(f"Уведомление {message_id} удалено")
+
+            # УБИРАЕМ вызов display_empty_message
+            # Если уведомлений не осталось - просто оставляем пустую панель
+
+        except Exception as e:
+            print(f"Ошибка при удалении уведомления {message_id}: {e}")
+            if message_id in self.notification_widgets:
+                del self.notification_widgets[message_id]
 
     def on_message_read(self, message_id):
         """Обработка прочтения сообщения (оставлено для обратной совместимости)"""
@@ -413,3 +372,35 @@ class SimpleNotificationsManager(QObject):
         self.is_active = False
         if hasattr(self, 'update_timer'):
             self.update_timer.stop()
+
+    def on_notification_clicked(self, message_data):
+        """Обработка клика на уведомлении"""
+        try:
+            print(f"Открытие диалога для сообщения {message_data['id']}")
+
+            # ОСТАНАВЛИВАЕМ ТАЙМЕР при открытии диалога
+            if hasattr(self, 'update_timer') and self.update_timer.isActive():
+                self.update_timer.stop()
+                print("Таймер автообновления остановлен")
+
+            dialog = ViewMessageDialog(message_data, self.main_window)
+
+            def safe_remove():
+                try:
+                    self.immediately_remove_notification(message_data['id'])
+                except Exception as e:
+                    print(f"Ошибка при удалении уведомления из safe_remove: {e}")
+                finally:
+                    # ЗАПУСКАЕМ ТАЙМЕР снова при закрытии диалога
+                    if hasattr(self, 'update_timer') and not self.update_timer.isActive():
+                        self.update_timer.start(30000)
+                        print("Таймер автообновления запущен")
+
+            dialog.finished.connect(safe_remove)
+            dialog.exec()
+
+        except Exception as e:
+            print(f"Ошибка открытия диалога сообщения: {e}")
+            # Если произошла ошибка, все равно запускаем таймер
+            if hasattr(self, 'update_timer') and not self.update_timer.isActive():
+                self.update_timer.start(30000)

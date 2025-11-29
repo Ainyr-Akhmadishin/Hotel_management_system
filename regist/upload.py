@@ -38,7 +38,6 @@ class UploadWindow(QMainWindow):
             )
 
     def show_ud_window(self):
-        """Показывает окно выбора сохранить или загрузить"""
         from regist.upload_or_download import UDWindow
         self.ud_window = UDWindow()
         self.ud_window.show()
@@ -200,6 +199,5 @@ class UploadWindow(QMainWindow):
             QMessageBox.critical(self, "Ошибка загрузки данных", f"Произошла непредвиденная ошибка:\n{str(e)}")
 
     def closeEvent(self, event):
-        """При закрытии крестиком - просто закрываем окно"""
         self.closed.emit()
         event.accept()

@@ -25,7 +25,7 @@ class DownloadWindow(QMainWindow):
         self.cancelButton.clicked.connect(self.show_ud_window)
 
     def show_ud_window(self):
-        """Показывает окно выбора сохранить или загрузить"""
+        
         from regist.upload_or_download import UDWindow
         self.ud_window = UDWindow()
         self.ud_window.show()
@@ -123,7 +123,7 @@ class DownloadWindow(QMainWindow):
             QMessageBox.critical(self,"Ошибка","Ошибка базы данных")
 
     def check_data(self):
-        errors_data = []  # список кортежей (номер_строки, данные, ошибка)
+        errors_data = []
 
         for i, row in enumerate(self.data):
             try:
@@ -151,7 +151,7 @@ class DownloadWindow(QMainWindow):
         return errors_data
 
     def download(self):
-        """Основная функция загрузки с валидацией"""
+
         if not hasattr(self, 'data') or not self.data:
             QMessageBox.warning(self, "Ошибка", "Сначала загрузите файл с данными")
             return
@@ -159,31 +159,30 @@ class DownloadWindow(QMainWindow):
         errors_data = self.check_data()
 
         if errors_data:
-            # Показываем диалог с выбором действий для каждой строки
+
             dialog = DataValidationDialog(errors_data, self)
             result = dialog.exec()
 
             if result == QDialog.DialogCode.Accepted:
-                # Получаем отмененные строки
+
                 cancelled_rows = dialog.get_cancelled_rows()
 
-                # Обрабатываем строки согласно выбранным действиям
+
                 rows_to_remove = []
                 for i, (row_num, row_data, error) in enumerate(errors_data):
                     if i in cancelled_rows:
-                        # Помечаем строку для удаления
-                        original_index = row_num - 1  # переводим в 0-based индекс
+
+                        original_index = row_num - 1
                         rows_to_remove.append(original_index)
 
-                # Удаляем отмеченные строки (в обратном порядке чтобы индексы не сдвигались)
+
                 for index in sorted(rows_to_remove, reverse=True):
                     if index < len(self.data):
                         del self.data[index]
 
-                # Обновляем таблицу предпросмотра
+
                 self.update_preview_after_correction()
 
-                # Показываем результат
                 cancelled_count = len(rows_to_remove)
                 remaining_count = len(self.data)
 
@@ -231,12 +230,11 @@ class DownloadWindow(QMainWindow):
                                         "Загруженные данные добавлены в базу данных")
             except Exception as e:
                 print(str(e))
-            # Если ошибок нет
 
 
 
     def update_preview_after_correction(self):
-        """Обновление таблицы после удаления строк"""
+
         self.previewTable.setRowCount(len(self.data))
 
         for i, row in enumerate(self.data):
@@ -309,6 +307,5 @@ class DownloadWindow(QMainWindow):
             QMessageBox.critical(self, "Ошибка", f"Не удалось загрузить файл: {str(e)}")
 
     def closeEvent(self, event):
-        """При закрытии крестиком - просто закрываем окно"""
         self.closed.emit()
         event.accept()
