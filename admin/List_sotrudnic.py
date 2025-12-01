@@ -1,10 +1,113 @@
+# List_sotrudnic.py
 from PyQt6 import QtWidgets, uic
-from PyQt6.QtWidgets import QMessageBox, QDialog, QFileDialog
+from PyQt6.QtWidgets import QDialog, QMessageBox, QFileDialog, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QPushButton, \
+    QLabel
 from PyQt6.QtCore import QDate
+from PyQt6.QtGui import QColor
 import sqlite3
 import csv
-from datetime import datetime
+import os
 from utils import get_resource_path
+
+
+class ImportPreviewDialog(QDialog):
+    """Диалог предпросмотра импорта"""
+
+    def __init__(self, file_path, parent=None):
+        super().__init__(parent)
+        self.file_path = file_path
+        self.setWindowTitle("Предпросмотр импорта")
+        self.setModal(True)
+        self.setFixedSize(800, 600)
+
+        self.setup_ui()
+        self.load_preview_data()
+
+    def setup_ui(self):
+        """Настройка интерфейса диалога предпросмотра"""
+        layout = QVBoxLayout(self)
+
+        # Заголовок
+        title_label = QLabel(f"Предпросмотр данных из файла: {os.path.basename(self.file_path)}")
+        title_label.setStyleSheet("font-size: 14px; font-weight: bold; margin: 10px;")
+        layout.addWidget(title_label)
+
+        # Таблица предпросмотра
+        self.preview_table = QtWidgets.QTableWidget()
+        self.preview_table.setAlternatingRowColors(True)
+        self.preview_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        layout.addWidget(self.preview_table)
+
+        # Информация о данных
+        self.info_label = QLabel()
+        self.info_label.setStyleSheet("margin: 5px; color: #666;")
+        layout.addWidget(self.info_label)
+
+        # Кнопки
+        button_layout = QHBoxLayout()
+
+        self.cancel_btn = QPushButton("Отмена")
+        self.cancel_btn.clicked.connect(self.reject)
+
+        self.import_btn = QPushButton("Импортировать")
+        self.import_btn.clicked.connect(self.accept)
+        self.import_btn.setStyleSheet("background-color: #4a6fa5; color: white; font-weight: bold;")
+
+        button_layout.addStretch()
+        button_layout.addWidget(self.cancel_btn)
+        button_layout.addWidget(self.import_btn)
+
+        layout.addLayout(button_layout)
+
+    def load_preview_data(self):
+        """Загрузка данных для предпросмотра"""
+        try:
+            with open(self.file_path, 'r', encoding='utf-8-sig') as file:
+                # Автоопределение разделителя
+                sample = file.read(4096)
+                file.seek(0)
+
+                delimiter = ';' if ';' in sample else ','
+
+                reader = csv.reader(file, delimiter=delimiter)
+                rows = list(reader)
+
+                if not rows:
+                    self.info_label.setText("Файл пуст")
+                    return
+
+                # Настройка таблицы
+                headers = rows[0]
+                self.preview_table.setColumnCount(len(headers))
+                self.preview_table.setHorizontalHeaderLabels(headers)
+
+                # Показываем только первые 20 строк для предпросмотра
+                preview_rows = rows[1:21]  # Пропускаем заголовок
+                self.preview_table.setRowCount(len(preview_rows))
+
+                for row_idx, row_data in enumerate(preview_rows):
+                    for col_idx, cell_data in enumerate(row_data):
+                        if col_idx < len(headers):
+                            item = QTableWidgetItem(cell_data)
+                            item.setForeground(QColor(0, 0, 0))
+                            self.preview_table.setItem(row_idx, col_idx, item)
+
+                # Информация о файле
+                total_rows = len(rows) - 1  # Без заголовка
+                preview_count = len(preview_rows)
+                self.info_label.setText(
+                    f"Всего строк: {total_rows}. Показано: {preview_rows}. "
+                    f"Разделитель: '{delimiter}'. Колонки: {len(headers)}"
+                )
+
+                # Настройка ширины столбцов
+                header = self.preview_table.horizontalHeader()
+                for i in range(len(headers)):
+                    header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+
+        except Exception as e:
+            self.info_label.setText(f"Ошибка чтения файла: {str(e)}")
+
 
 class EmployeeListDialog(QDialog):
     def __init__(self, parent=None):
@@ -18,187 +121,238 @@ class EmployeeListDialog(QDialog):
         self.conn = sqlite3.connect('Hotel_bd.db')
         self.cursor = self.conn.cursor()
 
-        # Подключаем кнопки
+        # Настройка таблицы
+        self.setup_table()
+
+        # Загрузка данных
+        self.load_employees_data()
+
+        # Подключение сигналов
         self.export_button.clicked.connect(self.export_data)
-        self.add_button.clicked.connect(self.add_employee)
-        self.refresh_button.clicked.connect(self.load_employees)
+        self.import_button.clicked.connect(self.import_data)
+        self.refresh_button.clicked.connect(self.load_employees_data)
+        self.search_lineEdit.textChanged.connect(self.filter_employees)
         self.sort_comboBox.currentTextChanged.connect(self.sort_employees)
-        self.search_lineEdit.textChanged.connect(self.search_employees)
 
-        # Список меток для сотрудников
-        self.employee_labels = []
-        for i in range(3, 23):  # label_3 to label_22
-            label = getattr(self, f'label_{i}')
-            self.employee_labels.append(label)
+    def setup_table(self):
+        """Настройка QTableWidget"""
+        # Устанавливаем заголовки столбцов
+        self.employees_table.setColumnCount(5)
+        self.employees_table.setHorizontalHeaderLabels([
+            'Фамилия', 'Имя', 'Отчество', 'Должность', 'Логин'
+        ])
 
-        # Загружаем сотрудников
-        self.all_employees = []
-        self.load_employees()
+        # Настройка внешнего вида таблицы
+        header = self.employees_table.horizontalHeader()
+        header.setStretchLastSection(True)
+        self.employees_table.setAlternatingRowColors(True)
+        self.employees_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.employees_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
 
-    def load_employees(self):
-        """Загрузка сотрудников из БД"""
+        # Настройка ширины столбцов
+        self.employees_table.setColumnWidth(0, 150)  # Фамилия
+        self.employees_table.setColumnWidth(1, 120)  # Имя
+        self.employees_table.setColumnWidth(2, 150)  # Отчество
+        self.employees_table.setColumnWidth(3, 200)  # Должность
+
+    def load_employees_data(self):
+        """Загрузка данных сотрудников из БД в таблицу"""
         try:
             self.cursor.execute("""
-                SELECT first_name, last_name, patronymic, position 
+                SELECT last_name, first_name, patronymic, position, login 
                 FROM staff 
                 ORDER BY last_name, first_name
             """)
-            self.all_employees = self.cursor.fetchall()
-            self.display_employees(self.all_employees)
+            employees = self.cursor.fetchall()
+
+            self.employees_table.setRowCount(len(employees))
+
+            for row_idx, employee in enumerate(employees):
+                for col_idx, data in enumerate(employee):
+                    item = QTableWidgetItem(str(data) if data is not None else "")
+                    # Устанавливаем черный цвет текста
+                    item.setForeground(QColor(0, 0, 0))  # Черный цвет
+                    self.employees_table.setItem(row_idx, col_idx, item)
+
+            self.update_status(f"Загружено {len(employees)} сотрудников")
 
         except sqlite3.Error as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка загрузки сотрудников: {str(e)}")
+            QMessageBox.warning(self, "Ошибка", f"Ошибка загрузки данных: {str(e)}")
 
-    def display_employees(self, employees):
-        """Отображение сотрудников в интерфейсе"""
-        # Очищаем метки
-        for label in self.employee_labels:
-            label.setText("")
-            label.setStyleSheet("padding: 4px 8px; border-radius: 3px;")
+    def filter_employees(self):
+        """Фильтрация сотрудников по поисковому запросу"""
+        search_text = self.search_lineEdit.text().lower()
 
-        # Заполняем метки
-        for i, (first_name, last_name, patronymic, position) in enumerate(employees):
-            if i >= len(self.employee_labels):
-                break
-
-            full_name = f"{last_name} {first_name}"
-            if patronymic:
-                full_name += f" {patronymic}"
-
-            # Добавляем должность в скобках
-            full_name += f" ({position})"
-
-            self.employee_labels[i].setText(full_name)
-
-            # Разные цвета для разных должностей
-            if position == 'администратор':
-                self.employee_labels[i].setStyleSheet(
-                    "padding: 4px 8px; border-radius: 3px; background-color: #e3f2fd; font-weight: bold;"
-                )
-            elif position == 'регистратор':
-                self.employee_labels[i].setStyleSheet(
-                    "padding: 4px 8px; border-radius: 3px; background-color: #e8f5e8;"
-                )
-            else:
-                self.employee_labels[i].setStyleSheet(
-                    "padding: 4px 8px; border-radius: 3px; background-color: #fff3cd;"
-                )
+        for row in range(self.employees_table.rowCount()):
+            match = False
+            for col in range(self.employees_table.columnCount()):
+                item = self.employees_table.item(row, col)
+                if item and search_text in item.text().lower():
+                    match = True
+                    break
+            self.employees_table.setRowHidden(row, not match)
 
     def sort_employees(self):
         """Сортировка сотрудников"""
-        sort_option = self.sort_comboBox.currentText()
+        sort_type = self.sort_comboBox.currentText()
 
-        if not self.all_employees:
-            return
+        try:
+            if sort_type == "Сортировка по Фамилии":
+                self.cursor.execute("""
+                    SELECT last_name, first_name, patronymic, position, login 
+                    FROM staff 
+                    ORDER BY last_name, first_name
+                """)
+            else:  # Сортировка по Должности
+                self.cursor.execute("""
+                    SELECT last_name, first_name, patronymic, position, login 
+                    FROM staff 
+                    ORDER BY position, last_name
+                """)
 
-        if sort_option == "Сортировка по Фамилии":
-            sorted_employees = sorted(self.all_employees, key=lambda x: x[1])  # last_name
-        elif sort_option == "Сортировка по Имени":
-            sorted_employees = sorted(self.all_employees, key=lambda x: x[0])  # first_name
-        elif sort_option == "Сортировка по Должности":
-            sorted_employees = sorted(self.all_employees, key=lambda x: x[3])  # position
-        else:
-            sorted_employees = self.all_employees
+            employees = self.cursor.fetchall()
 
-        self.display_employees(sorted_employees)
+            self.employees_table.setRowCount(len(employees))
 
-    def search_employees(self):
-        """Поиск сотрудников"""
-        search_text = self.search_lineEdit.text().strip().lower()
+            for row_idx, employee in enumerate(employees):
+                for col_idx, data in enumerate(employee):
+                    item = QTableWidgetItem(str(data) if data is not None else "")
+                    # Устанавливаем черный цвет текста
+                    item.setForeground(QColor(0, 0, 0))  # Черный цвет
+                    self.employees_table.setItem(row_idx, col_idx, item)
 
-        if not search_text:
-            self.display_employees(self.all_employees)
-            return
-
-        filtered_employees = []
-        for first_name, last_name, patronymic, position in self.all_employees:
-            if (search_text in first_name.lower() or
-                    search_text in last_name.lower() or
-                    search_text in (patronymic or "").lower() or
-                    search_text in position.lower()):
-                filtered_employees.append((first_name, last_name, patronymic, position))
-
-        self.display_employees(filtered_employees)
+        except sqlite3.Error as e:
+            QMessageBox.warning(self, "Ошибка", f"Ошибка сортировки: {str(e)}")
 
     def export_data(self):
-        """Экспорт данных в CSV"""
+        """Экспорт данных в CSV файл"""
         try:
             file_path, _ = QFileDialog.getSaveFileName(
-                self, "Экспорт данных", f"сотрудники_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                self,
+                "Экспорт данных сотрудников",
+                f"сотрудники_{QDate.currentDate().toString('dd_MM_yyyy')}.csv",
                 "CSV Files (*.csv)"
             )
 
             if file_path:
-                with open(file_path, 'w', newline='', encoding='utf-8') as file:
-                    writer = csv.writer(file)
-                    writer.writerow(['Фамилия', 'Имя', 'Отчество', 'Должность', 'Дата экспорта'])
-
-                    for first_name, last_name, patronymic, position in self.all_employees:
-                        writer.writerow([
-                            last_name,
-                            first_name,
-                            patronymic or '',
-                            position,
-                            datetime.now().strftime('%d.%m.%Y %H:%M:%S')
-                        ])
-
+                self.export_to_csv(file_path)
                 QMessageBox.information(self, "Успех", f"Данные экспортированы в {file_path}")
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка экспорта данных: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка экспорта: {str(e)}")
 
-    def add_employee(self):
-        """Добавление нового сотрудника"""
+    def export_to_csv(self, file_path):
+        """Экспорт данных таблицы в CSV файл"""
         try:
-            from PyQt6.QtWidgets import QInputDialog
-            import hashlib
+            with open(file_path, 'w', newline='', encoding='utf-8-sig') as file:
+                writer = csv.writer(file, delimiter=';')
 
-            first_name, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите имя:")
-            if not ok or not first_name.strip():
-                return
+                # Записываем заголовки
+                headers = []
+                for col in range(self.employees_table.columnCount()):
+                    header = self.employees_table.horizontalHeaderItem(col)
+                    headers.append(header.text() if header else f"Column {col}")
+                writer.writerow(headers)
 
-            last_name, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите фамилию:")
-            if not ok or not last_name.strip():
-                return
+                # Записываем данные
+                for row in range(self.employees_table.rowCount()):
+                    if not self.employees_table.isRowHidden(row):
+                        row_data = []
+                        for col in range(self.employees_table.columnCount()):
+                            item = self.employees_table.item(row, col)
+                            row_data.append(item.text() if item else "")
+                        writer.writerow(row_data)
 
-            patronymic, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите отчество:")
-            if not ok:
-                patronymic = ""
-
-            position, ok = QInputDialog.getItem(self, "Добавление сотрудника", "Выберите должность:",
-                                                ['администратор', 'регистратор', 'обслуживающий персонал'], 0, False)
-            if not ok:
-                return
-
-            login, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите логин:")
-            if not ok or not login.strip():
-                return
-
-            password, ok = QInputDialog.getText(self, "Добавление сотрудника", "Введите пароль:")
-            if not ok or not password.strip():
-                return
-
-            # Хешируем пароль
-            password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-            # Добавляем в БД
-            self.cursor.execute('''
-                INSERT INTO staff (first_name, last_name, patronymic, login, password_hash, position)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (first_name.strip(), last_name.strip(), patronymic.strip(), login.strip(), password_hash, position))
-
-            self.conn.commit()
-
-            QMessageBox.information(self, "Успех", "Сотрудник успешно добавлен!")
-            self.load_employees()
-
-        except sqlite3.IntegrityError:
-            QMessageBox.warning(self, "Ошибка", "Сотрудник с таким логином уже существует!")
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка добавления сотрудника: {str(e)}")
+            raise Exception(f"Ошибка записи файла: {str(e)}")
+
+    def import_data(self):
+        """Импорт данных из CSV файла с предпросмотром"""
+        try:
+            file_path, _ = QFileDialog.getOpenFileName(
+                self,
+                "Импорт данных сотрудников",
+                "",
+                "CSV Files (*.csv)"
+            )
+
+            if file_path:
+                # Показываем диалог предпросмотра
+                preview_dialog = ImportPreviewDialog(file_path, self)
+                if preview_dialog.exec() == QDialog.DialogCode.Accepted:
+                    # Если пользователь подтвердил импорт
+                    self.import_from_csv(file_path)
+                    QMessageBox.information(self, "Успех", "Данные успешно импортированы")
+                else:
+                    self.update_status("Импорт отменен")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Ошибка импорта: {str(e)}")
+
+    def import_from_csv(self, file_path):
+        """Импорт данных из CSV файла"""
+        try:
+            with open(file_path, 'r', encoding='utf-8-sig') as file:
+                # Автоопределение разделителя
+                sample = file.read(4096)
+                file.seek(0)
+
+                delimiter = ';' if ';' in sample else ','
+
+                reader = csv.reader(file, delimiter=delimiter)
+                rows = list(reader)
+
+                if not rows or len(rows) < 2:
+                    QMessageBox.warning(self, "Ошибка", "Файл не содержит данных")
+                    return
+
+                # Проверяем соответствие структуры
+                expected_headers = ['Фамилия', 'Имя', 'Отчество', 'Должность', 'Логин']
+                file_headers = [h.strip() for h in rows[0]]
+
+                # Если заголовки не совпадают, предупреждаем пользователя
+                if file_headers != expected_headers:
+                    reply = QMessageBox.question(
+                        self,
+                        "Несоответствие структуры",
+                        f"Заголовки в файле: {file_headers}\n"
+                        f"Ожидаемые заголовки: {expected_headers}\n\n"
+                        "Продолжить импорт? Данные будут сопоставлены по порядку столбцов.",
+                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+                    )
+
+                    if reply == QMessageBox.StandardButton.No:
+                        return
+
+                # Пропускаем заголовок и добавляем данные в таблицу
+                data_rows = rows[1:]
+                self.employees_table.setRowCount(len(data_rows))
+
+                imported_count = 0
+                for row_idx, row_data in enumerate(data_rows):
+                    # Пропускаем пустые строки
+                    if not any(row_data):
+                        continue
+
+                    for col_idx, cell_data in enumerate(row_data):
+                        if col_idx < self.employees_table.columnCount():
+                            item = QTableWidgetItem(cell_data.strip())
+                            # Устанавливаем черный цвет текста
+                            item.setForeground(QColor(0, 0, 0))  # Черный цвет
+                            self.employees_table.setItem(row_idx, col_idx, item)
+                    imported_count += 1
+
+                self.update_status(f"Импортировано {imported_count} сотрудников")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Ошибка импорта: {str(e)}")
+
+    def update_status(self, message):
+        """Обновление статусной строки"""
+        self.statusbar.showMessage(message, 3000)  # Показываем сообщение 3 секунды
 
     def closeEvent(self, event):
-        """Закрытие соединения с БД"""
+        """Закрытие соединения с БД при закрытии окна"""
         try:
             self.conn.close()
         except:

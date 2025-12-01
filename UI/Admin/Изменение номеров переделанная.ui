@@ -6,16 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>688</height>
+    <width>507</width>
+    <height>760</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Управление номерами</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow {
-    background-color: #f8f9fa;
+   <string notr="true">QDialog {
+    background-color: white;
+}
+QWidget {
+    background-color: white;
 }
 QPushButton {
     background-color: #4a6fa5;
@@ -36,6 +39,7 @@ QPushButton:pressed {
 QLabel {
     font-size: 11px;
     color: #2c3e50;
+    background-color: white;
 }
 QLineEdit {
     padding: 4px 8px;
@@ -44,6 +48,7 @@ QLineEdit {
     background-color: white;
     font-size: 11px;
     height: 25px;
+    color: black;
 }
 QLineEdit:focus {
     border-color: #4a6fa5;
@@ -57,6 +62,14 @@ QComboBox {
     font-size: 11px;
     min-width: 80px;
     height: 25px;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    border: 1px solid #e1e5eb;
+    color: black;
+    selection-background-color: #4a6fa5;
+    selection-color: white;
 }
 QComboBox:focus {
     border-color: #4a6fa5;
@@ -75,9 +88,29 @@ QScrollBar::handle:vertical {
 }
 QScrollBar::handle:vertical:hover {
     background-color: #a5adba;
+}
+QFrame {
+    background-color: white;
+}
+QMenuBar {
+    background-color: white;
+}
+QStatusBar {
+    background-color: white;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>41</y>
+     <width>452</width>
+     <height>665</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: white;</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>15</number>
@@ -97,12 +130,28 @@ QScrollBar::handle:vertical:hover {
     <item>
      <layout class="QHBoxLayout" name="header_layout">
       <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QLabel" name="title_label">
         <property name="styleSheet">
-         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50;</string>
+         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50; background-color: white; padding-bottom: 5px;</string>
         </property>
         <property name="text">
          <string>Управление номерами</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -132,9 +181,22 @@ QScrollBar::handle:vertical:hover {
      </layout>
     </item>
     <item>
+     <widget class="QFrame" name="header_line">
+      <property name="styleSheet">
+       <string notr="true">background-color: #4a6fa5; height: 2px; border: none;</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::HLine</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QLabel" name="label">
       <property name="styleSheet">
-       <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50; text-align: center;</string>
+       <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50; text-align: center; background-color: white;</string>
       </property>
       <property name="text">
        <string>Изменение номеров</string>
@@ -157,8 +219,8 @@ QScrollBar::handle:vertical:hover {
         <item>
          <widget class="QFrame" name="rooms_frame">
           <property name="styleSheet">
-           <string notr="true">background-color: white; 
-            border-radius: 6px; 
+           <string notr="true">background-color: white;
+            border-radius: 6px;
             padding: 15px;
             border: 1px solid #e1e8ed;</string>
           </property>
@@ -169,140 +231,10 @@ QScrollBar::handle:vertical:hover {
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="styleSheet">
-              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 6px 10px; border-radius: 4px;</string>
-             </property>
-             <property name="text">
-              <string>Номера</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_3">
-             <property name="styleSheet">
-              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 6px 10px; border-radius: 4px;</string>
-             </property>
-             <property name="text">
-              <string>Проживает (+/-)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="pushButton_2">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>101</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="label_4">
-             <property name="styleSheet">
-              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: #ffeaea; padding: 6px 10px; border-radius: 4px;</string>
-             </property>
-             <property name="text">
-              <string>-</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="pushButton_5">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>102</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label_5">
-             <property name="styleSheet">
-              <string notr="true">font-size: 14px; font-weight: bold; color: #27ae60; text-align: center; background-color: #e8f8ef; padding: 6px 10px; border-radius: 4px;</string>
-             </property>
-             <property name="text">
-              <string>+</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QPushButton" name="pushButton_6">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>103</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLabel" name="label_6">
-             <property name="styleSheet">
-              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: #ffeaea; padding: 6px 10px; border-radius: 4px;</string>
-             </property>
-             <property name="text">
-              <string>-</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QPushButton" name="pushButton_15">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>104</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QLabel" name="label_7">
-             <property name="styleSheet">
-              <string notr="true">font-size: 14px; font-weight: bold; color: #27ae60; text-align: center; background-color: #e8f8ef; padding: 6px 10px; border-radius: 4px;</string>
-             </property>
-             <property name="text">
-              <string>+</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QPushButton" name="pushButton_13">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>105</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLabel" name="label_8">
-             <property name="styleSheet">
-              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: #ffeaea; padding: 6px 10px; border-radius: 4px;</string>
-             </property>
-             <property name="text">
-              <string>-</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QPushButton" name="pushButton_11">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>106</string>
-             </property>
-            </widget>
-           </item>
            <item row="6" column="1">
             <widget class="QLabel" name="label_9">
              <property name="styleSheet">
-              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: #ffeaea; padding: 6px 10px; border-radius: 4px;</string>
+              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
              </property>
              <property name="text">
               <string>-</string>
@@ -312,7 +244,7 @@ QScrollBar::handle:vertical:hover {
            <item row="7" column="0">
             <widget class="QPushButton" name="pushButton_8">
              <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
+              <string notr="true">background-color: white; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
              </property>
              <property name="text">
               <string>107</string>
@@ -322,7 +254,137 @@ QScrollBar::handle:vertical:hover {
            <item row="7" column="1">
             <widget class="QLabel" name="label_10">
              <property name="styleSheet">
-              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: #ffeaea; padding: 6px 10px; border-radius: 4px;</string>
+              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_3">
+             <property name="styleSheet">
+              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+             </property>
+             <property name="text">
+              <string>Проживает (+/-)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="styleSheet">
+              <string notr="true">background-color: white; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>101</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="styleSheet">
+              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+             </property>
+             <property name="text">
+              <string>Номера</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_5">
+             <property name="styleSheet">
+              <string notr="true">font-size: 14px; font-weight: bold; color: #27ae60; text-align: center; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="label_4">
+             <property name="styleSheet">
+              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="pushButton_6">
+             <property name="styleSheet">
+              <string notr="true">background-color: white; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>103</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="pushButton_5">
+             <property name="styleSheet">
+              <string notr="true">background-color: white; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>102</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="label_7">
+             <property name="styleSheet">
+              <string notr="true">font-size: 14px; font-weight: bold; color: #27ae60; text-align: center; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QPushButton" name="pushButton_15">
+             <property name="styleSheet">
+              <string notr="true">background-color: white; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>104</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="label_6">
+             <property name="styleSheet">
+              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QPushButton" name="pushButton_13">
+             <property name="styleSheet">
+              <string notr="true">background-color: white; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>105</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="pushButton_11">
+             <property name="styleSheet">
+              <string notr="true">background-color: white; color: #2c3e50; border: 1px solid #e1e5eb; text-align: center; padding: 8px 12px;</string>
+             </property>
+             <property name="text">
+              <string>106</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="label_8">
+             <property name="styleSheet">
+              <string notr="true">font-size: 14px; font-weight: bold; color: #e74c3c; text-align: center; background-color: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
              </property>
              <property name="text">
               <string>-</string>
@@ -362,7 +424,7 @@ QScrollBar::handle:vertical:hover {
         <item>
          <widget class="QLabel" name="search_label">
           <property name="styleSheet">
-           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50;</string>
+           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white;</string>
           </property>
           <property name="text">
            <string>Поиск номеров</string>
@@ -370,7 +432,7 @@ QScrollBar::handle:vertical:hover {
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="search_lineEdit">
+         <widget class="QLineEdit" name="lineEdit">
           <property name="minimumSize">
            <size>
             <width>200</width>
@@ -405,7 +467,7 @@ QScrollBar::handle:vertical:hover {
         <item>
          <widget class="QLabel" name="sort_label">
           <property name="styleSheet">
-           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50;</string>
+           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white;</string>
           </property>
           <property name="text">
            <string>Сортировка</string>
@@ -413,36 +475,21 @@ QScrollBar::handle:vertical:hover {
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="sort_comboBox">
+         <widget class="QComboBox" name="comboBox">
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>98</width>
             <height>25</height>
            </size>
           </property>
           <item>
            <property name="text">
-            <string>Без сортировки</string>
+            <string>Сортировать по &quot;+&quot;</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Сначала занятые (+)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Сначала свободные (-)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>По номеру (возрастание)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>По номеру (убывание)</string>
+            <string>Сортировать по &quot;-&quot;</string>
            </property>
           </item>
          </widget>
@@ -463,7 +510,16 @@ QScrollBar::handle:vertical:hover {
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>3</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

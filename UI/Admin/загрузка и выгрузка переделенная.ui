@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>804</width>
+    <height>573</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,10 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
-    background-color: #f8f9fa;
+    background-color: #ffffff;
+}
+QWidget {
+    background-color: #ffffff;
 }
 QPushButton {
     background-color: #4a6fa5;
@@ -40,6 +43,7 @@ QPushButton:disabled {
 QLabel {
     font-size: 11px;
     color: #2c3e50;
+    background-color: #ffffff;
 }
 QDateEdit {
     padding: 4px 8px;
@@ -48,14 +52,17 @@ QDateEdit {
     background-color: white;
     font-size: 11px;
     height: 25px;
+    color: #000000;
 }
 QDateEdit:focus {
     border-color: #4a6fa5;
     background-color: #fafbfc;
+    color: #000000;
 }
 QDateEdit:invalid {
     border-color: #dc3545;
     background-color: #fff5f5;
+    color: #000000;
 }
 QScrollBar:vertical {
     border: none;
@@ -71,9 +78,96 @@ QScrollBar::handle:vertical {
 }
 QScrollBar::handle:vertical:hover {
     background-color: #a5adba;
+}
+QFrame {
+    background-color: #ffffff;
+}
+QMenuBar {
+    background-color: #ffffff;
+}
+QStatusBar {
+    background-color: #ffffff;
+}
+QFileDialog {
+    background-color: #ffffff;
+}
+QFileDialog QLabel {
+    color: #000000;
+}
+QFileDialog QTreeView, QFileDialog QListView {
+    background-color: #ffffff;
+    color: #000000;
+}
+QFileDialog QLineEdit {
+    background-color: #ffffff;
+    color: #000000;
+}
+QComboBox {
+    background-color: #ffffff;
+    color: #000000;
+}
+QComboBox QAbstractItemView {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Стили для календаря */
+QCalendarWidget {
+    background-color: white;
+    color: black;
+}
+
+QCalendarWidget QWidget {
+    alternate-background-color: white;
+    background-color: white;
+    color: black;
+}
+
+QCalendarWidget QToolButton {
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+QCalendarWidget QMenu {
+    background-color: white;
+    color: black;
+}
+
+QCalendarWidget QSpinBox {
+    background-color: white;
+    color: black;
+    selection-background-color: #4a6fa5;
+    selection-color: white;
+}
+
+QCalendarWidget QWidget#qt_calendar_navigationbar {
+    background-color: white;
+    color: black;
+}
+
+QCalendarWidget QAbstractItemView:enabled {
+    background-color: white;
+    color: black;
+    selection-background-color: #4a6fa5;
+    selection-color: white;
+}
+
+QCalendarWidget QAbstractItemView:disabled {
+    background-color: #f0f0f0;
+    color: #a0a0a0;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>30</y>
+     <width>561</width>
+     <height>411</height>
+    </rect>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>15</number>
@@ -93,9 +187,22 @@ QScrollBar::handle:vertical:hover {
     <item>
      <layout class="QHBoxLayout" name="header_layout">
       <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QLabel" name="title_label">
         <property name="styleSheet">
-         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50;</string>
+         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50; background-color: #ffffff; padding-bottom: 8px;</string>
         </property>
         <property name="text">
          <string>Аналитика отеля</string>
@@ -118,7 +225,7 @@ QScrollBar::handle:vertical:hover {
       <item>
        <widget class="QLabel" name="current_date_label">
         <property name="styleSheet">
-         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #ffffff; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
         </property>
         <property name="text">
          <string>Текущая дата</string>
@@ -128,9 +235,34 @@ QScrollBar::handle:vertical:hover {
      </layout>
     </item>
     <item>
+     <widget class="QFrame" name="blue_line">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>2</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>2</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #4a6fa5;</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::HLine</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QLabel" name="label">
       <property name="styleSheet">
-       <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50; text-align: center;</string>
+       <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50; text-align: center; background-color: #ffffff;</string>
       </property>
       <property name="text">
        <string>Данные об отеле</string>
@@ -148,7 +280,7 @@ QScrollBar::handle:vertical:hover {
       <item>
        <widget class="QLabel" name="label_4">
         <property name="styleSheet">
-         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50;</string>
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #ffffff;</string>
         </property>
         <property name="text">
          <string>Выбрать период с</string>
@@ -163,18 +295,18 @@ QScrollBar::handle:vertical:hover {
           <height>25</height>
          </size>
         </property>
-        <property name="calendarPopup">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string>Выберите начальную дату периода</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_5">
         <property name="styleSheet">
-         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50;</string>
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #ffffff;</string>
         </property>
         <property name="text">
          <string>по</string>
@@ -189,11 +321,11 @@ QScrollBar::handle:vertical:hover {
           <height>25</height>
          </size>
         </property>
-        <property name="calendarPopup">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string>Выберите конечную дату периода</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -215,7 +347,7 @@ QScrollBar::handle:vertical:hover {
     <item>
      <widget class="QLabel" name="date_error_label">
       <property name="styleSheet">
-       <string notr="true">color: #dc3545; font-size: 10px; padding: 2px; text-align: center;</string>
+       <string notr="true">color: #dc3545; font-size: 10px; padding: 2px; text-align: center; background-color: #ffffff;</string>
       </property>
       <property name="text">
        <string/>
@@ -233,8 +365,8 @@ QScrollBar::handle:vertical:hover {
       <item>
        <widget class="QFrame" name="stats_frame">
         <property name="styleSheet">
-         <string notr="true">background-color: white; 
-          border-radius: 6px; 
+         <string notr="true">background-color: #ffffff;
+          border-radius: 6px;
           padding: 20px;
           border: 1px solid #e1e8ed;</string>
         </property>
@@ -268,7 +400,7 @@ QScrollBar::handle:vertical:hover {
          <item row="1" column="0">
           <widget class="QLabel" name="attendance_value">
            <property name="styleSheet">
-            <string notr="true">font-size: 24px; font-weight: bold; color: #4a6fa5; text-align: center; padding: 20px;</string>
+            <string notr="true">font-size: 24px; font-weight: bold; color: #4a6fa5; text-align: center; padding: 20px; background-color: #ffffff;</string>
            </property>
            <property name="text">
             <string>0</string>
@@ -281,7 +413,7 @@ QScrollBar::handle:vertical:hover {
          <item row="1" column="1">
           <widget class="QLabel" name="profit_value">
            <property name="styleSheet">
-            <string notr="true">font-size: 24px; font-weight: bold; color: #27ae60; text-align: center; padding: 20px;</string>
+            <string notr="true">font-size: 24px; font-weight: bold; color: #27ae60; text-align: center; padding: 20px; background-color: #ffffff;</string>
            </property>
            <property name="text">
             <string>0 ₽</string>
@@ -317,14 +449,14 @@ QScrollBar::handle:vertical:hover {
           <property name="minimumSize">
            <size>
             <width>150</width>
-            <height>35</height>
+            <height>46</height>
            </size>
-          </property>
-          <property name="text">
-           <string>📊 Выгрузить данные</string>
           </property>
           <property name="toolTip">
            <string>Выгрузить данные за выбранный период</string>
+          </property>
+          <property name="text">
+           <string>📊 Выгрузить данные</string>
           </property>
          </widget>
         </item>
@@ -333,14 +465,14 @@ QScrollBar::handle:vertical:hover {
           <property name="minimumSize">
            <size>
             <width>150</width>
-            <height>35</height>
+            <height>46</height>
            </size>
-          </property>
-          <property name="text">
-           <string>📁 Загрузить данные</string>
           </property>
           <property name="toolTip">
            <string>Загрузить данные из файла</string>
+          </property>
+          <property name="text">
+           <string>📁 Загрузить данные</string>
           </property>
          </widget>
         </item>
@@ -373,7 +505,16 @@ QScrollBar::handle:vertical:hover {
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>3</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

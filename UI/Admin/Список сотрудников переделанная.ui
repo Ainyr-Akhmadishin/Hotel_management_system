@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1200</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,11 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
-    background-color: #f8f9fa;
+    background-color: #ffffff;
+}
+QWidget {
+    background-color: #ffffff;
+    color: #000000; /* Черный цвет текста по умолчанию */
 }
 QPushButton {
     background-color: #4a6fa5;
@@ -35,7 +39,8 @@ QPushButton:pressed {
 }
 QLabel {
     font-size: 11px;
-    color: #2c3e50;
+    color: #000000; /* Черный цвет текста */
+    background-color: #ffffff;
 }
 QComboBox {
     padding: 4px 8px;
@@ -45,6 +50,13 @@ QComboBox {
     font-size: 11px;
     min-width: 80px;
     height: 25px;
+    color: #000000; /* Черный цвет текста */
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: #000000; /* Черный цвет текста */
+    selection-background-color: #4a6fa5;
+    selection-color: white;
 }
 QComboBox:focus {
     border-color: #4a6fa5;
@@ -63,9 +75,67 @@ QScrollBar::handle:vertical {
 }
 QScrollBar::handle:vertical:hover {
     background-color: #a5adba;
+}
+QFrame {
+    background-color: #ffffff;
+}
+QLineEdit {
+    background-color: white;
+    color: #000000; /* Черный цвет текста */
+    border: 1px solid #e1e5eb;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+}
+QTableWidget {
+    gridline-color: #d1d5db;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    background-color: white;
+    alternate-background-color: #f8f9fa;
+    selection-background-color: #4a6fa5;
+    color: #000000; /* Черный цвет текста */
+    font-size: 11px;
+}
+QTableWidget::item {
+    padding: 6px;
+    border-bottom: 1px solid #e1e8ed;
+    color: #000000; /* Черный цвет текста */
+    background-color: white;
+}
+QTableWidget::item:alternate {
+    background-color: #f8f9fa;
+    color: #000000; /* Черный цвет текста */
+}
+QTableWidget::item:selected {
+    background-color: #4a6fa5;
+    color: white;
+}
+QHeaderView::section {
+    background-color: #4a6fa5;
+    color: white;
+    padding: 8px;
+    border: none;
+    font-weight: bold;
+    font-size: 11px;
+}
+QStatusBar {
+    color: #000000; /* Черный цвет текста */
+    background-color: #ffffff;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>40</y>
+     <width>1091</width>
+     <height>569</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #ffffff; color: #000000;</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>15</number>
@@ -83,37 +153,82 @@ QScrollBar::handle:vertical:hover {
      <number>15</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="header_layout">
+     <layout class="QVBoxLayout" name="header_container_layout">
+      <property name="spacing">
+       <number>8</number>
+      </property>
       <item>
-       <widget class="QLabel" name="title_label">
-        <property name="styleSheet">
-         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50;</string>
-        </property>
-        <property name="text">
-         <string>Система управления персоналом</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="header_layout">
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>98</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="title_label">
+          <property name="styleSheet">
+           <string notr="true">font-size: 20px; font-weight: bold; color: #000000; background-color: #ffffff;</string>
+          </property>
+          <property name="text">
+           <string>Система управления персоналом</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="current_date_label">
+          <property name="styleSheet">
+           <string notr="true">font-size: 12px; font-weight: bold; color: #000000; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+          </property>
+          <property name="text">
+           <string>Текущая дата</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
+       <widget class="QWidget" name="blue_line" native="true">
+        <property name="minimumSize">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>0</width>
+          <height>3</height>
          </size>
         </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="current_date_label">
-        <property name="styleSheet">
-         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>3</height>
+         </size>
         </property>
-        <property name="text">
-         <string>Текущая дата</string>
+        <property name="styleSheet">
+         <string notr="true">background-color: #4a6fa5;</string>
         </property>
        </widget>
       </item>
@@ -121,18 +236,14 @@ QScrollBar::handle:vertical:hover {
     </item>
     <item>
      <widget class="QLabel" name="label">
-      <property name="enabled">
-       <bool>false</bool>
+      <property name="styleSheet">
+       <string notr="true">font-size: 16px; font-weight: bold; color: #000000; background-color: #ffffff;</string>
       </property>
       <property name="text">
-       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt;                      Список сотрудников&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>Список сотрудников</string>
       </property>
-      <property name="margin">
-       <number>-1</number>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>
@@ -147,221 +258,13 @@ p, li { white-space: pre-wrap; }
          <number>10</number>
         </property>
         <item>
-         <widget class="QFrame" name="employees_frame">
-          <property name="styleSheet">
-           <string notr="true">background-color: white; 
-            border-radius: 6px; 
-            padding: 10px;
-            border: 1px solid #e1e8ed;</string>
+         <widget class="QTableWidget" name="employees_table">
+          <property name="minimumSize">
+           <size>
+            <width>800</width>
+            <height>400</height>
+           </size>
           </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="styleSheet">
-              <string notr="true">background-color: #e3f2fd; padding: 4px 8px; border-radius: 3px; font-weight: bold;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_5">
-             <property name="styleSheet">
-              <string notr="true">background-color: #e3f2fd; padding: 4px 8px; border-radius: 3px; font-weight: bold;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="label_4">
-             <property name="styleSheet">
-              <string notr="true">background-color: #e3f2fd; padding: 4px 8px; border-radius: 3px; font-weight: bold;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QLabel" name="label_8">
-             <property name="styleSheet">
-              <string notr="true">background-color: #e3f2fd; padding: 4px 8px; border-radius: 3px; font-weight: bold;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="label_7">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLabel" name="label_9">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="label_10">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_11">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label_12">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QLabel" name="label_13">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="QLabel" name="label_14">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_15">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLabel" name="label_16">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="2">
-            <widget class="QLabel" name="label_17">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="3">
-            <widget class="QLabel" name="label_18">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_19">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QLabel" name="label_20">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="2">
-            <widget class="QLabel" name="label_21">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="3">
-            <widget class="QLabel" name="label_22">
-             <property name="styleSheet">
-              <string notr="true">padding: 4px 8px; border-radius: 3px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </widget>
         </item>
         <item>
@@ -371,17 +274,12 @@ p, li { white-space: pre-wrap; }
             <property name="minimumSize">
              <size>
               <width>98</width>
-              <height>25</height>
+              <height>30</height>
              </size>
             </property>
             <item>
              <property name="text">
               <string>Сортировка по Фамилии</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Сортировка по Имени</string>
              </property>
             </item>
             <item>
@@ -395,12 +293,12 @@ p, li { white-space: pre-wrap; }
            <widget class="QLineEdit" name="search_lineEdit">
             <property name="minimumSize">
              <size>
-              <width>120</width>
-              <height>25</height>
+              <width>200</width>
+              <height>30</height>
              </size>
             </property>
             <property name="placeholderText">
-             <string>Поиск...</string>
+             <string>🔍Поиск...</string>
             </property>
            </widget>
           </item>
@@ -447,21 +345,27 @@ p, li { white-space: pre-wrap; }
             <height>46</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #4a6fa5; color: white; font-weight: bold;</string>
+          </property>
           <property name="text">
-           <string>Выгрузить данные</string>
+           <string>Экспорт</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="add_button">
+         <widget class="QPushButton" name="import_button">
           <property name="minimumSize">
            <size>
             <width>150</width>
             <height>46</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #4a6fa5; color: white; font-weight: bold;</string>
+          </property>
           <property name="text">
-           <string>Добавить сотрудника</string>
+           <string>Импорт</string>
           </property>
          </widget>
         </item>
@@ -472,6 +376,9 @@ p, li { white-space: pre-wrap; }
             <width>150</width>
             <height>46</height>
            </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #4a6fa5; color: white; font-weight: bold;</string>
           </property>
           <property name="text">
            <string>Обновить список</string>
@@ -502,12 +409,21 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1200</width>
      <height>26</height>
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>3</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

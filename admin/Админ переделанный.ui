@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>700</height>
+    <width>882</width>
+    <height>647</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -74,122 +74,57 @@ QScrollBar::handle:vertical {
 }
 QScrollBar::handle:vertical:hover {
     background-color: #a5adba;
-}
-QTextEdit {
-    background-color: white;
-    border: 1px solid #e1e5eb;
-    border-radius: 6px;
-    padding: 8px;
-    font-size: 11px;
-    color: #2c3e50;
-}
-QScrollArea {
-    background-color: white;
-    border: none;
-}
-QFrame#header_line {
-    background-color: #4a6fa5;
-    border: none;
-}
-</string>
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
-     <number>10</number>
+     <number>15</number>
     </property>
     <property name="leftMargin">
-     <number>20</number>
+     <number>15</number>
     </property>
     <property name="topMargin">
      <number>15</number>
     </property>
     <property name="rightMargin">
-     <number>20</number>
+     <number>15</number>
     </property>
     <property name="bottomMargin">
      <number>15</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="header_main_layout">
-      <property name="spacing">
-       <number>5</number>
-      </property>
+     <layout class="QHBoxLayout" name="header_layout">
       <item>
-       <layout class="QHBoxLayout" name="header_layout">
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="title_label">
-          <property name="styleSheet">
-           <string notr="true">font-size: 22px; font-weight: bold; color: #2c3e50; padding-bottom: 8px;</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="text">
-           <string>Система управления</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="current_date_label">
-          <property name="styleSheet">
-           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #f8f9fa; padding: 6px 12px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
-          </property>
-          <property name="text">
-           <string>Текущая дата</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QLabel" name="title_label">
+        <property name="styleSheet">
+         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50;</string>
+        </property>
+        <property name="text">
+         <string>Система управления</string>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QFrame" name="header_line">
-        <property name="minimumSize">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>0</width>
-          <height>2</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>2</height>
-         </size>
-        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="current_date_label">
         <property name="styleSheet">
-         <string notr="true">background-color: #4a6fa5; border: none;</string>
+         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
         </property>
-        <property name="frameShape">
-         <enum>QFrame::HLine</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
+        <property name="text">
+         <string>Текущая дата</string>
         </property>
        </widget>
       </item>
@@ -198,20 +133,17 @@ QFrame#header_line {
     <item>
      <layout class="QHBoxLayout" name="main_content_layout">
       <property name="spacing">
-       <number>30</number>
+       <number>20</number>
       </property>
       <item>
        <layout class="QVBoxLayout" name="left_panel">
         <property name="spacing">
-         <number>15</number>
+         <number>10</number>
         </property>
         <item>
          <widget class="QLabel" name="label">
           <property name="styleSheet">
-           <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50;</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50;</string>
           </property>
           <property name="text">
            <string>Список работников на смене</string>
@@ -221,9 +153,9 @@ QFrame#header_line {
         <item>
          <widget class="QFrame" name="frame">
           <property name="styleSheet">
-           <string notr="true">background-color: white;
-            border-radius: 8px;
-            padding: 15px;
+           <string notr="true">background-color: white; 
+            border-radius: 6px; 
+            padding: 10px;
             border: 1px solid #e1e8ed;</string>
           </property>
           <property name="frameShape">
@@ -234,17 +166,88 @@ QFrame#header_line {
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <layout class="QGridLayout" name="gridLayout">
-             <property name="horizontalSpacing">
-              <number>20</number>
-             </property>
+            <layout class="QFormLayout" name="formLayout">
              <property name="verticalSpacing">
-              <number>12</number>
+              <number>15</number>
+             </property>
+             <property name="horizontalSpacing">
+              <number>10</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_22">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>№</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="text">
+                <string>2</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="text">
+                <string>3</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QGridLayout" name="gridLayout">
+             <property name="verticalSpacing">
+              <number>10</number>
+             </property>
+             <property name="horizontalSpacing">
+              <number>15</number>
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_3">
                <property name="styleSheet">
-                <string notr="true">font-weight: bold; font-size: 12px;</string>
+                <string notr="true">font-weight: bold;</string>
                </property>
                <property name="text">
                 <string>Регистратура</string>
@@ -254,10 +257,20 @@ QFrame#header_line {
              <item row="0" column="1">
               <widget class="QLabel" name="label_4">
                <property name="styleSheet">
-                <string notr="true">font-weight: bold; font-size: 12px;</string>
+                <string notr="true">font-weight: bold;</string>
                </property>
                <property name="text">
                 <string>Персонал</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_13">
+               <property name="styleSheet">
+                <string notr="true">font-weight: bold;</string>
+               </property>
+               <property name="text">
+                <string>Время на смене</string>
                </property>
               </widget>
              </item>
@@ -275,6 +288,9 @@ QFrame#header_line {
                </property>
               </widget>
              </item>
+             <item row="1" column="2">
+              <widget class="QTimeEdit" name="timeEdit"/>
+             </item>
              <item row="2" column="0">
               <widget class="QLabel" name="label_7">
                <property name="text">
@@ -288,6 +304,9 @@ QFrame#header_line {
                 <string>ФИО</string>
                </property>
               </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QTimeEdit" name="timeEdit_2"/>
              </item>
              <item row="3" column="0">
               <widget class="QLabel" name="label_10">
@@ -303,6 +322,9 @@ QFrame#header_line {
                </property>
               </widget>
              </item>
+             <item row="3" column="2">
+              <widget class="QTimeEdit" name="timeEdit_3"/>
+             </item>
             </layout>
            </item>
           </layout>
@@ -311,37 +333,25 @@ QFrame#header_line {
         <item>
          <layout class="QHBoxLayout" name="sort_buttons_layout">
           <property name="spacing">
-           <number>15</number>
+           <number>10</number>
           </property>
           <item>
            <widget class="QPushButton" name="sort_registry_btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
+            <property name="text">
+             <string>Отсортировать регистратуру</string>
             </property>
             <property name="toolTip">
              <string>Для сортировки необходим список работников</string>
-            </property>
-            <property name="text">
-             <string>Отсортировать регистратуру</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="sort_staff_btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
+            <property name="text">
+             <string>Отсортировать персонал</string>
             </property>
             <property name="toolTip">
              <string>Для сортировки необходим список работников</string>
-            </property>
-            <property name="text">
-             <string>Отсортировать персонал</string>
             </property>
            </widget>
           </item>
@@ -349,89 +359,66 @@ QFrame#header_line {
         </item>
         <item>
          <layout class="QGridLayout" name="buttons_grid">
-          <property name="horizontalSpacing">
-           <number>15</number>
-          </property>
-          <property name="verticalSpacing">
-           <number>12</number>
+          <property name="spacing">
+           <number>10</number>
           </property>
           <item row="0" column="0">
            <widget class="QPushButton" name="manage_employees_btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
+            <property name="text">
+             <string>Уволить/Добавить сотрудника</string>
             </property>
             <property name="toolTip">
              <string>Требуется доступ к базе данных сотрудников</string>
-            </property>
-            <property name="text">
-             <string>Уволить/Добавить сотрудника</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QPushButton" name="employees_list_btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
+            <property name="text">
+             <string>Список работников</string>
             </property>
             <property name="toolTip">
              <string>База данных сотрудников должна быть доступна</string>
             </property>
-            <property name="text">
-             <string>Список работников</string>
-            </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QPushButton" name="change_numbers_btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
+           <widget class="QPushButton" name="contact_registry_btn">
+            <property name="text">
+             <string>Связь с регистратурой</string>
             </property>
             <property name="toolTip">
-             <string>Требуются права администратора для изменения</string>
-            </property>
-            <property name="text">
-             <string>Изменение номеров</string>
+             <string>Необходимо выбрать сотрудника регистратуры</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QPushButton" name="data_export_btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Требуется доступ к файловой системе</string>
-            </property>
+           <widget class="QPushButton" name="contact_staff_btn">
             <property name="text">
-             <string>Выгрузка/Загрузка данных</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QPushButton" name="staff_button">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
+             <string>Связь с персоналом</string>
             </property>
             <property name="toolTip">
              <string>Необходимо выбрать сотрудника персонала</string>
             </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="change_numbers_btn">
             <property name="text">
-             <string>Связь с персоналом</string>
+             <string>Изменение номеров</string>
+            </property>
+            <property name="toolTip">
+             <string>Требуются права администратора для изменения</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QPushButton" name="data_export_btn">
+            <property name="text">
+             <string>Выгрузка/Загрузка данных</string>
+            </property>
+            <property name="toolTip">
+             <string>Требуется доступ к файловой системе</string>
             </property>
            </widget>
           </item>
@@ -442,15 +429,12 @@ QFrame#header_line {
       <item>
        <layout class="QVBoxLayout" name="right_panel">
         <property name="spacing">
-         <number>15</number>
+         <number>10</number>
         </property>
         <item>
          <widget class="QLabel" name="label_42">
           <property name="styleSheet">
-           <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50;</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50;</string>
           </property>
           <property name="text">
            <string>Сообщения</string>
@@ -458,11 +442,11 @@ QFrame#header_line {
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="notifications_frame">
+         <widget class="QFrame" name="frame_2">
           <property name="styleSheet">
-           <string notr="true">background-color: white;
-            border-radius: 8px;
-            padding: 0px;
+           <string notr="true">background-color: white; 
+            border-radius: 6px; 
+            padding: 10px;
             border: 1px solid #e1e8ed;</string>
           </property>
           <property name="frameShape">
@@ -472,37 +456,18 @@ QFrame#header_line {
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
            <item>
-            <widget class="QTextEdit" name="messages_textedit">
-             <property name="styleSheet">
-              <string notr="true">background-color: white; color: #2c3e50; border: none; padding: 15px;</string>
-             </property>
-             <property name="placeholderText">
-              <string>Сообщения будут отображаться здесь...</string>
+            <widget class="QListView" name="listView">
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>300</height>
+              </size>
              </property>
             </widget>
            </item>
           </layout>
          </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </item>
@@ -515,8 +480,8 @@ QFrame#header_line {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
-     <height>18</height>
+     <width>882</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>

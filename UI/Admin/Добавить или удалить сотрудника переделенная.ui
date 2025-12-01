@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>683</height>
+    <width>794</width>
+    <height>811</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,13 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
-    background-color: #f8f9fa;
+    background-color: #ffffff;
+}
+QDialog {
+    background-color: #ffffff;
+}
+QWidget {
+    background-color: #ffffff;
 }
 QPushButton {
     background-color: #4a6fa5;
@@ -37,9 +43,32 @@ QPushButton:disabled {
     background-color: #cccccc;
     color: #666666;
 }
+QComboBox {
+    color: #000000;
+}
+QComboBox QAbstractItemView {
+    color: #000000;
+}
+QInputDialog QLabel {
+    color: #000000;
+}
+QInputDialog QLineEdit {
+    color: #000000;
+}
+QInputDialog QComboBox {
+    color: #000000;
+}
+QListView {
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    background-color: white;
+    padding: 3px;
+    font-size: 11px;
+}
 QLabel {
     font-size: 11px;
     color: #2c3e50;
+    background-color: transparent;
 }
 QLineEdit {
     padding: 4px 8px;
@@ -48,10 +77,11 @@ QLineEdit {
     background-color: white;
     font-size: 11px;
     height: 25px;
+    color: #000000;
 }
 QLineEdit:focus {
     border-color: #4a6fa5;
-    background-color: #fafbfc;
+    background-color: #ffffff;
 }
 QLineEdit:invalid {
     border-color: #dc3545;
@@ -71,67 +101,148 @@ QScrollBar::handle:vertical {
 }
 QScrollBar::handle:vertical:hover {
     background-color: #a5adba;
+}
+QTextEdit {
+    background-color: white;
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 11px;
+}
+QScrollArea {
+    background-color: white;
+    border: none;
+}
+QFrame#header_line {
+    background-color: #4a6fa5;
+    border: none;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>-10</y>
+     <width>776</width>
+     <height>804</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #ffffff;</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>15</number>
     </property>
     <property name="leftMargin">
-     <number>15</number>
+     <number>20</number>
     </property>
     <property name="topMargin">
      <number>15</number>
     </property>
     <property name="rightMargin">
-     <number>15</number>
+     <number>20</number>
     </property>
     <property name="bottomMargin">
      <number>15</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="header_layout">
+     <layout class="QVBoxLayout" name="header_main_layout">
+      <property name="spacing">
+       <number>5</number>
+      </property>
       <item>
-       <widget class="QLabel" name="title_label">
-        <property name="styleSheet">
-         <string notr="true">font-size: 18px; font-weight: bold; color: #2c3e50;</string>
-        </property>
-        <property name="text">
-         <string>Управление персоналом</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="header_layout">
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="title_label">
+          <property name="styleSheet">
+           <string notr="true">font-size: 22px; font-weight: bold; color: #2c3e50; padding-bottom: 8px; background-color: transparent;</string>
+          </property>
+          <property name="text">
+           <string>Управление персоналом</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="current_date_label">
+          <property name="styleSheet">
+           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #ffffff; padding: 6px 12px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+          </property>
+          <property name="text">
+           <string>Текущая дата</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
+       <widget class="QFrame" name="header_line">
+        <property name="minimumSize">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>0</width>
+          <height>2</height>
          </size>
         </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="current_date_label">
-        <property name="styleSheet">
-         <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e1e8ed;</string>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>2</height>
+         </size>
         </property>
-        <property name="text">
-         <string>Текущая дата</string>
+        <property name="styleSheet">
+         <string notr="true">background-color: #4a6fa5; border: none;</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::HLine</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
         </property>
        </widget>
       </item>
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="search_add_layout">
+     <layout class="QHBoxLayout" name="admin_search_layout">
       <property name="spacing">
        <number>20</number>
       </property>
+      <item>
+       <layout class="QVBoxLayout" name="admin_layout">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+       </layout>
+      </item>
       <item>
        <layout class="QVBoxLayout" name="search_layout">
         <property name="spacing">
@@ -140,7 +251,7 @@ QScrollBar::handle:vertical:hover {
         <item>
          <widget class="QLabel" name="search_label">
           <property name="styleSheet">
-           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50;</string>
+           <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: transparent;</string>
           </property>
           <property name="text">
            <string>Поиск сотрудников</string>
@@ -151,9 +262,12 @@ QScrollBar::handle:vertical:hover {
          <widget class="QLineEdit" name="search_edit">
           <property name="minimumSize">
            <size>
-            <width>200</width>
+            <width>250</width>
             <height>25</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Введите ФИО сотрудника (только русские буквы, минимум 2 символа)</string>
           </property>
           <property name="maxLength">
            <number>50</number>
@@ -161,15 +275,12 @@ QScrollBar::handle:vertical:hover {
           <property name="placeholderText">
            <string>🔍 Введите ФИО для поиска...</string>
           </property>
-          <property name="toolTip">
-           <string>Введите ФИО сотрудника (только русские буквы, минимум 2 символа)</string>
-          </property>
          </widget>
         </item>
         <item>
          <widget class="QLabel" name="search_error_label">
           <property name="styleSheet">
-           <string notr="true">color: #dc3545; font-size: 10px; padding: 2px;</string>
+           <string notr="true">color: #dc3545; font-size: 10px; padding: 2px; background-color: transparent;</string>
           </property>
           <property name="text">
            <string/>
@@ -179,7 +290,7 @@ QScrollBar::handle:vertical:hover {
        </layout>
       </item>
       <item>
-       <spacer name="horizontalSpacer_2">
+       <spacer name="horizontalSpacer_4">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -199,11 +310,17 @@ QScrollBar::handle:vertical:hover {
           <height>46</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Добавить нового сотрудника в систему</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #28a745; color: #white; font-weight: bold;</string>
+        </property>
         <property name="text">
          <string>➕ Добавить сотрудника</string>
         </property>
-        <property name="toolTip">
-         <string>Добавить нового сотрудника в систему</string>
+        <property name="shortcut">
+         <string/>
         </property>
        </widget>
       </item>
@@ -212,22 +329,25 @@ QScrollBar::handle:vertical:hover {
     <item>
      <layout class="QHBoxLayout" name="main_content_layout">
       <property name="spacing">
-       <number>20</number>
+       <number>30</number>
       </property>
       <item>
        <layout class="QVBoxLayout" name="employees_list_layout">
         <property name="spacing">
-         <number>10</number>
+         <number>15</number>
         </property>
         <item>
          <layout class="QHBoxLayout" name="fire_employee_header">
           <item>
            <widget class="QLabel" name="fire_employee_label">
             <property name="styleSheet">
-             <string notr="true">font-size: 14px; font-weight: bold; color: #2c3e50;</string>
+             <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50; background-color: transparent;</string>
             </property>
             <property name="text">
              <string>Уволить сотрудника</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -245,18 +365,24 @@ QScrollBar::handle:vertical:hover {
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="fire_selected_btn" native="true">
-            <property name="styleSheet">
-             <string notr="true">background-color: #dc3545; color: white; font-weight: bold;</string>
-            </property>
-            <property name="text">
-             <string>🚫 Уволить выбранного</string>
-            </property>
+           <widget class="QPushButton" name="fire_selected_btn">
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>204</width>
+              <height>46</height>
+             </size>
+            </property>
             <property name="toolTip">
              <string>Уволить выбранного сотрудника</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: #dc3545; color: white; font-weight: bold; min-width: 180px;</string>
+            </property>
+            <property name="text">
+             <string>🚫 Уволить выбранного</string>
             </property>
            </widget>
           </item>
@@ -265,7 +391,7 @@ QScrollBar::handle:vertical:hover {
         <item>
          <widget class="QLabel" name="selected_employee_label">
           <property name="styleSheet">
-           <string notr="true">font-size: 11px; color: #28a745; background-color: #f8f9fa; padding: 4px 8px; border-radius: 4px; border: 1px solid #28a745;</string>
+           <string notr="true">font-size: 11px; color: #28a745; background-color: #ffffff; padding: 6px 12px; border-radius: 4px; border: 1px solid #28a745;</string>
           </property>
           <property name="text">
            <string>Выбран: нет</string>
@@ -275,8 +401,8 @@ QScrollBar::handle:vertical:hover {
         <item>
          <widget class="QFrame" name="employees_frame">
           <property name="styleSheet">
-           <string notr="true">background-color: white; 
-            border-radius: 6px; 
+           <string notr="true">background-color: #ffffff;
+            border-radius: 8px;
             padding: 15px;
             border: 1px solid #e1e8ed;</string>
           </property>
@@ -287,46 +413,61 @@ QScrollBar::handle:vertical:hover {
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="registry_label">
+           <property name="horizontalSpacing">
+            <number>15</number>
+           </property>
+           <property name="verticalSpacing">
+            <number>10</number>
+           </property>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="employee_btn_2">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
              <property name="styleSheet">
-              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 6px 10px; border-radius: 4px;</string>
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
              </property>
              <property name="text">
-              <string>Регистратура</string>
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
+           <item row="2" column="1">
+            <widget class="QPushButton" name="employee_btn_3">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
             <widget class="QLabel" name="staff_label">
              <property name="styleSheet">
-              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 6px 10px; border-radius: 4px;</string>
+              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 8px 12px; border-radius: 6px;</string>
              </property>
              <property name="text">
               <string>Персонал</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="employee_btn_1">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="1">
-            <widget class="QPushButton" name="employee_btn_2">
+            <widget class="QPushButton" name="employee_btn_1">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
              </property>
              <property name="text">
               <string>ФИО</string>
@@ -334,191 +475,127 @@ QScrollBar::handle:vertical:hover {
              <property name="checkable">
               <bool>true</bool>
              </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
-             </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="employee_btn_3">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
+           <item row="2" column="2">
             <widget class="QPushButton" name="employee_btn_4">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
              </property>
              <property name="text">
               <string>ФИО</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QPushButton" name="employee_btn_5">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
              </property>
             </widget>
            </item>
            <item row="3" column="1">
+            <widget class="QPushButton" name="employee_btn_5">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
             <widget class="QPushButton" name="employee_btn_6">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
              </property>
              <property name="text">
               <string>ФИО</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QPushButton" name="employee_btn_7">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QPushButton" name="employee_btn_8">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QPushButton" name="employee_btn_9">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
              </property>
             </widget>
            </item>
            <item row="5" column="1">
+            <widget class="QPushButton" name="employee_btn_9">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="2">
             <widget class="QPushButton" name="employee_btn_10">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
              </property>
              <property name="text">
               <string>ФИО</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QPushButton" name="employee_btn_11">
+           <item row="4" column="2">
+            <widget class="QPushButton" name="employee_btn_8">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
              </property>
              <property name="text">
               <string>ФИО</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
-            <widget class="QPushButton" name="employee_btn_12">
+           <item row="4" column="1">
+            <widget class="QPushButton" name="employee_btn_7">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
              </property>
              <property name="text">
               <string>ФИО</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
-            <widget class="QPushButton" name="employee_btn_13">
-             <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
-             </property>
-             <property name="text">
-              <string>ФИО</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Нажмите для выбора сотрудника</string>
              </property>
             </widget>
            </item>
            <item row="7" column="1">
-            <widget class="QPushButton" name="employee_btn_14">
+            <widget class="QPushButton" name="employee_btn_13">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: #f8f9fa; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 8px 12px;</string>
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
              </property>
              <property name="text">
               <string>ФИО</string>
@@ -526,8 +603,185 @@ QScrollBar::handle:vertical:hover {
              <property name="checkable">
               <bool>true</bool>
              </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QPushButton" name="employee_btn_12">
              <property name="toolTip">
               <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QPushButton" name="employee_btn_11">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="2">
+            <widget class="QPushButton" name="employee_btn_14">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="registry_label">
+             <property name="styleSheet">
+              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 8px 12px; border-radius: 6px;</string>
+             </property>
+             <property name="text">
+              <string>Регистратура</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="registry_label_2">
+             <property name="styleSheet">
+              <string notr="true">font-size: 12px; font-weight: bold; color: #2c3e50; background-color: #e3f2fd; padding: 8px 12px; border-radius: 6px;</string>
+             </property>
+             <property name="text">
+              <string>Администратор</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="employee_btn_15">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="employee_btn_16">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="employee_btn_17">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QPushButton" name="employee_btn_18">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QPushButton" name="employee_btn_19">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="employee_btn_20">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QPushButton" name="employee_btn_21">
+             <property name="toolTip">
+              <string>Нажмите для выбора сотрудника</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;</string>
+             </property>
+             <property name="text">
+              <string>ФИО</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -545,12 +799,21 @@ QScrollBar::handle:vertical:hover {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>26</height>
+     <width>1000</width>
+     <height>18</height>
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>3</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
