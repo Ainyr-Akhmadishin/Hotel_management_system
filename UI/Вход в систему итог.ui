@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>220</height>
+    <width>400</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>300</width>
-    <height>220</height>
+    <width>400</width>
+    <height>380</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>300</width>
-    <height>220</height>
+    <width>400</width>
+    <height>380</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -32,17 +32,16 @@
 }
 QLabel {
     color: #333333;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
 }
 QLineEdit {
     background-color: white;
     border: 1px solid #cccccc;
-    border-radius: 3px;
-    padding: 5px 8px;
-    font-size: 11px;
-    min-height: 16px;
-    max-height: 20px;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 12px;
+    min-height: 20px;
 }
 QLineEdit:focus {
     border-color: #0078d4;
@@ -52,11 +51,12 @@ QPushButton {
     background-color: #0078d4;
     color: white;
     border: none;
-    border-radius: 3px;
-    padding: 6px 12px;
-    font-size: 11px;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 12px;
     font-weight: bold;
-    min-height: 18px;
+    min-height: 25px;
+    min-width: 80px;
 }
 QPushButton:hover {
     background-color: #106ebe;
@@ -64,13 +64,40 @@ QPushButton:hover {
 QPushButton:pressed {
     background-color: #005a9e;
 }
-QPushButton:disabled {
-    background-color: #cccccc;
-    color: #666666;
+QCheckBox {
+    font-size: 12px;
+    color: #333333;
+    spacing: 6px;
+}
+QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+}
+QCheckBox::indicator:unchecked {
+    border: 1px solid #cccccc;
+    background-color: white;
+    border-radius: 2px;
+}
+QCheckBox::indicator:checked {
+    border: 1px solid #0078d4;
+    background-color: #0078d4;
+    border-radius: 2px;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>30</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>30</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
     <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
@@ -79,7 +106,7 @@ QPushButton:disabled {
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>15</height>
+        <height>20</height>
        </size>
       </property>
      </spacer>
@@ -94,10 +121,8 @@ QPushButton:disabled {
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">font-size: 16px;
+       <string notr="true">font-size: 20px;
 font-weight: bold;
-margin: 3px 0px;
-padding: 3px;
 color: rgb(74, 111, 165);</string>
       </property>
       <property name="text">
@@ -111,9 +136,9 @@ color: rgb(74, 111, 165);</string>
     <item>
      <widget class="QLabel" name="label_5">
       <property name="styleSheet">
-       <string notr="true">font-size: 9px;
+       <string notr="true">font-size: 11px;
 color: #666666;
-margin-bottom: 10px;</string>
+margin: 5px 0px 15px 0px;</string>
       </property>
       <property name="text">
        <string>Введите логин и пароль для доступа</string>
@@ -126,10 +151,10 @@ margin-bottom: 10px;</string>
     <item>
      <layout class="QFormLayout" name="formLayout">
       <property name="horizontalSpacing">
-       <number>10</number>
+       <number>15</number>
       </property>
       <property name="verticalSpacing">
-       <number>8</number>
+       <number>12</number>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
@@ -143,6 +168,12 @@ margin-bottom: 10px;</string>
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="lineEdit">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="placeholderText">
          <string>Введите логин</string>
         </property>
@@ -163,6 +194,12 @@ margin-bottom: 10px;</string>
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="lineEdit_3">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="echoMode">
          <enum>QLineEdit::Password</enum>
         </property>
@@ -171,6 +208,16 @@ margin-bottom: 10px;</string>
         </property>
         <property name="clearButtonEnabled">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="remember_me_checkbox">
+        <property name="text">
+         <string>Запомнить меня</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -184,7 +231,7 @@ margin-bottom: 10px;</string>
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>10</height>
+        <height>20</height>
        </size>
       </property>
      </spacer>
@@ -237,24 +284,13 @@ margin-bottom: 10px;</string>
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>15</height>
+        <height>20</height>
        </size>
       </property>
      </spacer>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>300</width>
-     <height>18</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

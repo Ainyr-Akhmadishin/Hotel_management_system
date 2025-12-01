@@ -244,7 +244,7 @@ color: #666666;</string>
        <widget class="QPushButton" name="cancelButton">
         <property name="styleSheet">
          <string notr="true">QPushButton {
-    background-color: #6c757d;
+background-color: rgb(74, 111, 165);
     min-width: 80px;
 }
 QPushButton:hover {
@@ -302,7 +302,7 @@ background-color: rgb(74, 111, 165);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>500</width>
+     <width>700</width>
      <height>18</height>
     </rect>
    </property>

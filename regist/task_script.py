@@ -18,6 +18,7 @@ class TaskWindow(QDialog):
         self.setWindowTitle("Создание задания на уборку")
         self.room_label.setText(f"Номер комнаты: {room_number}")
         self.send_button.clicked.connect(lambda: self.create_task(user_id))
+        self.cancel_button.clicked.connect(self.close)
 
     def create_task(self, user_id):
         try:

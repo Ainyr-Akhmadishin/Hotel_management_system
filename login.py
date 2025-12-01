@@ -1,6 +1,8 @@
 import sys
 import sqlite3
 import hashlib
+
+from PyQt6.QtCore import QSettings
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt6 import uic
 
@@ -12,6 +14,12 @@ from staff.staff_script import StaffWindow
 from sync_update import SimpleAutoSync
 
 from utils import get_resource_path
+
+class EmptyCredentialsError(Exception):
+    pass
+
+class InvalidCredentialsError(Exception):
+    pass
 
 class LoginWindow(QMainWindow):
     def __init__(self):
@@ -27,6 +35,41 @@ class LoginWindow(QMainWindow):
         self.employee_window = None
         self.admin_window = None
         self.registrar_window = None
+        self.load_saved_credentials()
+
+    def load_saved_credentials(self):
+        """Загружает сохраненные логин и пароль"""
+        settings = QSettings("HotelApp", "Login")
+
+        # Проверяем, была ли отмечена "Запомнить меня"
+        remember_me = settings.value("remember_me", False, type=bool)
+
+        if remember_me:
+            # Загружаем сохраненные данные
+            username = settings.value("username", "")
+            password = settings.value("password", "")
+
+            # Заполняем поля
+            self.lineEdit.setText(username)
+            self.lineEdit_3.setText(password)
+
+            # Устанавливаем чекбокс в отмеченное состояние
+            self.remember_me_checkbox.setChecked(True)
+
+    def save_credentials(self, username, password, remember_me):
+        """Сохраняет или удаляет логин и пароль"""
+        settings = QSettings("HotelApp", "Login")
+
+        if remember_me:
+            # Сохраняем данные
+            settings.setValue("remember_me", True)
+            settings.setValue("username", username)
+            settings.setValue("password", password)
+        else:
+            # Удаляем сохраненные данные
+            settings.remove("remember_me")
+            settings.remove("username")
+            settings.remove("password")
 
     def start_sync(self):
         try:
@@ -70,23 +113,39 @@ class LoginWindow(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self, "Ошибка", "Неизвестная ошибка")
 
+
+
     def login(self):
-        username = self.lineEdit.text()
-        password = self.lineEdit_3.text()
+        try:
+            username = self.lineEdit.text()
+            password = self.lineEdit_3.text()
 
-        if not username or not password:
-            QMessageBox.warning(self, "Ошибка", "Введите логин и пароль")
-            return
+            # Проверка пустых полей
+            if not username or not password:
+                raise EmptyCredentialsError("Введите логин и пароль")
 
+            user_info = self.verify_credentials(username, password)
 
-        user_info = self.verify_credentials(username, password)
+            # Проверка валидности учетных данных
+            if not user_info:
+                raise InvalidCredentialsError("Неверный логин или пароль")
 
-        if user_info:
+            # Получаем состояние чекбокса "Запомнить меня"
+            remember_me = self.remember_me_checkbox.isChecked()
+
+            # Сохраняем или удаляем данные
+            self.save_credentials(username, password, remember_me)
+
             position = user_info['position']
             full_name = f"{user_info['first_name']} {user_info['last_name']}"
             self.open_role_window(position, full_name, username)
-        else:
-            QMessageBox.warning(self, "Ошибка", "Неверный логин или пароль")
+
+        except EmptyCredentialsError as e:
+            QMessageBox.warning(self, "Ошибка ввода", str(e))
+        except InvalidCredentialsError as e:
+            QMessageBox.warning(self, "Ошибка авторизации", str(e))
+        except Exception as e:
+            QMessageBox.critical(self, "Неизвестная ошибка", f"Произошла непредвиденная ошибка: {str(e)}")
 
     def open_role_window(self, position, full_name, username):
         self.hide()

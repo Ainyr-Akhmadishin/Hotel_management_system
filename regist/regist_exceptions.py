@@ -24,6 +24,9 @@ class PhoneError(Exception):
 class EmptyPathError(Exception):
     pass
 
+class InvalidFileFormatError(Exception):
+    pass
+
 class BookingError(Exception):
     pass
 class RoomError(Exception):

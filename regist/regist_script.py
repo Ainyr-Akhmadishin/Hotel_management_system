@@ -12,7 +12,7 @@ from PyQt6.QtGui import QBrush, QColor, QAction
 from regist.guest_registration_window import GuestRegistrationWindow
 from massage_window import MassageWindow
 
-from regist.guest_update_window import GuestUpdateWindow  # Добавьте эту строку в импорты
+from regist.guest_update_window import GuestUpdateWindow
 from regist.upload_or_download import UDWindow
 from regist.task_script import TaskWindow
 
@@ -32,7 +32,7 @@ class RegistrarWindow(QMainWindow):
 
         uic.loadUi(get_resource_path('UI/Reg/Регистратор итог.ui'), self)
         self.setWindowTitle(f"Регистратор - {self.full_name}")
-
+        self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
         self.user_id = self.get_user_id(username)
 
         # Инициализируем менеджер уведомлений
@@ -54,7 +54,7 @@ class RegistrarWindow(QMainWindow):
 
         # self.check_updating_guest_data()
 
-        # Таймер для автоматической проверки выселений раз в 24 часа
+
         self.checkout_timer = QtCore.QTimer()
         self.checkout_timer.timeout.connect(self.check_checkout_dates)
         self.checkout_timer.start(86400000)
@@ -64,8 +64,10 @@ class RegistrarWindow(QMainWindow):
 
         QtCore.QTimer.singleShot(50, self.scroll_to_current_date)
 
+        self.last_status_count = 0
+        self.setup_task_monitoring()
 
-        self.current_month_label.mousePressEvent = self.on_month_label_click
+        # self.current_month_label.mousePressEvent = self.on_month_label_click
 
         self.book_button.clicked.connect(self.guest_registration)
         self.staff_button.clicked.connect(self.open_massage)
@@ -78,6 +80,65 @@ class RegistrarWindow(QMainWindow):
 
         self.search_button.clicked.connect(self.search_guest)
         self.search_input.returnPressed.connect(self.search_guest)  # Поиск по Enter
+
+        self.exit_button.clicked.connect(self.logout)
+
+    def logout(self):
+
+        reply = QMessageBox.question(
+            self,
+            "Подтверждение выхода",
+            "Вы уверены, что хотите выйти из аккаунта?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            self.closed.emit()
+            self.close()
+
+    def closeEvent(self, event):
+
+        event.accept()
+
+    def setup_task_monitoring(self):
+        self.task_check_timer = QtCore.QTimer()
+        self.task_check_timer.timeout.connect(self.check_task_updates)
+        self.task_check_timer.start(15000)
+
+
+    def check_task_updates(self):
+
+        try:
+            conn = sqlite3.connect('Hotel_bd.db')
+            cursor = conn.cursor()
+
+
+            cursor.execute('''
+                SELECT GROUP_CONCAT(room_number || ':' || status, '|') 
+                FROM maintenance_tasks 
+                WHERE status IN ('в работе', 'в ожидании уборки', 'убрано')
+                ORDER BY room_number
+            ''')
+
+            current_status_hash = cursor.fetchone()[0] or ""
+            conn.close()
+
+
+            if not hasattr(self, 'last_status_hash') or current_status_hash != self.last_status_hash:
+                self.last_status_hash = current_status_hash
+                self.update_status_column()
+
+        except Exception as e:
+            print(f"Ошибка проверки задач: {e}")
+
+    def closeEvent(self, event):
+        if hasattr(self, 'task_check_timer'):
+            self.task_check_timer.stop()
+        if hasattr(self, 'notifications_manager'):
+            self.notifications_manager.stop_updates()
+        super().closeEvent(event)
+
 
     def scroll_to_current_date(self):
         """Прокручивает таблицу к текущей дате + 8 дней или к последнему дню месяца"""
@@ -209,7 +270,7 @@ class RegistrarWindow(QMainWindow):
             print(f"Ошибка подсветки: {e}")
 
     def check_checkout_dates(self):
-        """Проверяет даты выселения и создает задания на уборку"""
+        """Проверяет даты выселения и создает задания на уборку, если их еще нет"""
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
@@ -222,32 +283,43 @@ class RegistrarWindow(QMainWindow):
                 SELECT DISTINCT r.room_number
                 FROM bookings b
                 JOIN rooms r ON b.room_id = r.id
-                LEFT JOIN maintenance_tasks mt ON r.room_number = mt.room_number 
-                    AND DATE(mt.created_at) = ?
-                    AND mt.description LIKE '%выезда%'
                 WHERE b.check_out_date = ?
-                AND mt.id IS NULL
-            ''', (today, today))
+            ''', (today,))
 
             today_checkouts = cursor.fetchall()
+            created_tasks_count = 0
 
             for room_data in today_checkouts:
                 room_number = room_data[0]
-                # СОЗДАЕМ ЗАДАНИЕ НА УБОРКУ ПРЯМО ЗДЕСЬ
-                try:
-                    cleaning_task = TaskWindow(room_number, self.user_id)
-                    cleaning_task.create_task(self.user_id)
-                    print(f"✅ Создано задание на уборку комнаты {room_number} после выселения")
-                except Exception as e:
-                    print(f"❌ Ошибка создания задания для комнаты {room_number}: {e}")
+
+                # ПРОВЕРЯЕМ, ЕСТЬ ЛИ УЖЕ АКТИВНОЕ ЗАДАНИЕ НА УБОРКУ ДЛЯ ЭТОЙ КОМНАТЫ
+                cursor.execute('''
+                    SELECT id FROM maintenance_tasks 
+                    WHERE room_number = ? 
+                    AND status IN ('в работе', 'в ожидании уборки')
+                ''', (room_number,))
+
+                existing_task = cursor.fetchone()
+
+                # Если задания нет - создаем новое
+                if not existing_task:
+                    try:
+                        cleaning_task = TaskWindow(room_number, self.user_id)
+                        cleaning_task.create_task(self.user_id)
+                        created_tasks_count += 1
+                        print(f"✅ Создано задание на уборку комнаты {room_number} после выселения")
+                    except Exception as e:
+                        print(f"❌ Ошибка создания задания для комнаты {room_number}: {e}")
+                else:
+                    print(f"ℹ️ Активное задание на уборку для комнаты {room_number} уже существует")
 
             conn.close()
 
-            if today_checkouts:
-                print(f"✅ Создано {len(today_checkouts)} заданий на уборку для выселений сегодня")
+            if created_tasks_count > 0:
+                print(f"✅ Создано {created_tasks_count} заданий на уборку для выселений сегодня")
                 self.update_status_column()
             else:
-                print("ℹ️ На сегодня нет выселений для создания заданий")
+                print("ℹ️ На сегодня нет выселений для создания новых заданий или задания уже существуют")
 
         except Exception as e:
             print(f"❌ Ошибка проверки дат выселения: {e}")
@@ -281,19 +353,16 @@ class RegistrarWindow(QMainWindow):
         item.setFont(font)
 
     def update_status_column(self):
-        """Обновление столбца 'Статус' для всех комнат"""
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
 
-            # Сначала устанавливаем всем комнатам статус "убрано"
             for row in range(self.guest_table.rowCount()):
                 status_item = QTableWidgetItem("✨ Убрано")
                 status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.apply_status_text_style(status_item, "убрано")
                 self.guest_table.setItem(row, 0, status_item)
 
-            # Теперь получаем актуальные статусы из базы данных
             cursor.execute('''
                 SELECT DISTINCT room_number, status 
                 FROM maintenance_tasks 
@@ -304,7 +373,6 @@ class RegistrarWindow(QMainWindow):
 
             active_tasks = cursor.fetchall()
 
-            # Обновляем статусы для комнат с активными заданиями
             for room_number, status in active_tasks:
                 row = self.find_room_row(room_number)
                 if row != -1:
@@ -320,7 +388,6 @@ class RegistrarWindow(QMainWindow):
             print(f"Ошибка обновления столбца статусов: {e}")
 
     def find_room_row(self, room_number):
-        """Найти строку таблицы по номеру комнаты"""
         for row in range(self.guest_table.rowCount()):
             header_item = self.guest_table.verticalHeaderItem(row)
             if header_item and header_item.text() == str(room_number):
@@ -667,34 +734,6 @@ class RegistrarWindow(QMainWindow):
 
         # Устанавливаем фокус политику - запрещаем фокусировку на ячейках
         self.guest_table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-    # def start_auto_refresh(self):
-    #     self.refresh_timer = QtCore.QTimer()
-    #     self.refresh_timer.timeout.connect(self.check_updating_guest_data)
-    #     self.refresh_timer.start(2000)
-    #
-    #     self.check_updating_guest_data()
-    #
-    # def check_updating_guest_data(self):
-    #     conn = sqlite3.connect('Hotel_bd.db')
-    #     cursor = conn.cursor()
-    #
-    #     cursor.execute('''
-    #                     SELECT COUNT(*)
-    #                     FROM bookings
-    #                 ''', )
-    #     current_count = cursor.fetchone()[0]
-    #
-    #     if not hasattr(self, 'previous_guest_count'):
-    #         self.previous_guest_count = current_count
-    #         self.updating_guest_data()
-    #         return
-    #
-    #     if current_count != self.previous_guest_count:
-    #         self.previous_guest_count = current_count
-    #         self.updating_guest_data()
-    #
-    #     conn.close()
-
 
     def clear_table_data(self):
         for row in range(self.guest_table.rowCount()):
@@ -724,7 +763,8 @@ class RegistrarWindow(QMainWindow):
             ''', (last_day_of_month_str, first_day_of_month))
 
             guests = cursor.fetchall()
-            guest_set = False
+            today = datetime.now().date()
+
             for guest in guests:
                 room_number = guest[0]
                 guest_name = guest[1]
@@ -741,7 +781,7 @@ class RegistrarWindow(QMainWindow):
                 if row == -1:
                     continue
 
-                first_day_set = False  # Флаг для отслеживания первой ячейки
+                first_day_set = False
                 for column in range(1, self.guest_table.columnCount()):
                     header = self.guest_table.horizontalHeaderItem(column)
                     if header:
@@ -753,15 +793,27 @@ class RegistrarWindow(QMainWindow):
                             if check_in_date <= header_date <= check_out_date:
                                 item = QTableWidgetItem(guest_name)
                                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                                item.setBackground(QBrush(QColor("#74E868")))
 
-                                # Делаем текст видимым только в первой ячейке заезда
-                                if not first_day_set and header_date == check_in_date:
-                                    # Первая ячейка - видимый текст
-                                    first_day_set = True
+
+                                if check_out_date < today:
+
+                                    color = "#B0B0B0"
+                                    status = "прошла"
+                                elif check_in_date <= today <= check_out_date:
+
+                                    color = "#74E868"
+                                    status = "сейчас"
                                 else:
-                                    # Остальные ячейки - невидимый текст (но данные есть!)
-                                    item.setForeground(QBrush(QColor("#74E868")))  # Тот же цвет что и фон
+
+                                    color = "#68B5E8"
+                                    status = "будет"
+
+                                item.setBackground(QBrush(QColor(color)))
+                                if not first_day_set and header_date == check_in_date:
+                                    first_day_set = True
+                                    item.setForeground(QBrush(QColor("#000000")))
+                                else:
+                                    item.setForeground(QBrush(QColor(color)))
 
                                 self.guest_table.setItem(row, column, item)
 
@@ -835,8 +887,6 @@ class RegistrarWindow(QMainWindow):
                 self.guest_table.setVerticalHeaderItem(row, item)
 
             conn.close()
-
-
 
         except sqlite3.Error as e:
             QMessageBox.critical(self, "Ошибка загрузки данных о постояльцах", str(e))

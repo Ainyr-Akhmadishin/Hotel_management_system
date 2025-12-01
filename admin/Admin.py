@@ -76,7 +76,7 @@ class AdminWindow(QMainWindow):
         self.load_employees_data()
         #
         # # Модель для списка сообщений
-        # self.model = QtWidgets.QStringListModel()
+        # self.model = QtWidgets.QStringListModel()git push origin main
         # self.listView.setModel(self.model)
 
     def open_massage(self):

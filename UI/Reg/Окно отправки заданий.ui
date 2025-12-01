@@ -22,14 +22,6 @@ QLabel {
     color: #2c3e50;
     font-weight: bold;
 }
-QLineEdit {
-    border: 1px solid #e1e5eb;
-    border-radius: 4px;
-    padding: 6px 8px;
-    font-size: 11px;
-    background-color: white;
-    min-height: 25px;
-}
 QTextEdit {
     border: 1px solid #e1e5eb;
     border-radius: 4px;
@@ -37,7 +29,7 @@ QTextEdit {
     font-size: 11px;
     background-color: white;
 }
-QLineEdit:focus, QTextEdit:focus {
+QTextEdit:focus {
     border-color: #4a6fa5;
 }
 QPushButton {
@@ -86,27 +78,14 @@ QPushButton:pressed {
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="room_layout">
-     <property name="spacing">
-      <number>6</number>
+    <widget class="QLabel" name="room_label">
+     <property name="styleSheet">
+      <string notr="true">font-size: 16px; font-weight: bold; color: #2c3e50;</string>
      </property>
-     <item>
-      <widget class="QLabel" name="room_label">
-       <property name="minimumSize">
-        <size>
-         <width>70</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Номер комнаты:</string>
-       </property>
-       <property name="margin">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     <property name="text">
+      <string>Номер комнаты: 101</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="comment_label">

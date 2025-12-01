@@ -6,28 +6,32 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMainWindow, QDialog, QTableWidgetItem, QFileDialog, QMessageBox
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6 import uic
-from regist.regist_exceptions import EmptyPathError, InvalidFileFormatError
 
-class UploadWindow(QMainWindow):
+
+class EmptyPathError(Exception):
+    pass
+
+class InvalidFileFormatError(Exception):
+    pass
+
+class UploadCleaningWindow(QMainWindow):
     closed = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
         uic.loadUi('UI/Reg/Окно сохранения данных.ui', self)
-        self.setWindowTitle(f"Сохранение данных о брони")
+        self.setWindowTitle(f"Сохранение данных об уборке")
         self.get_data()
-
         self.allowed_formats = ['.csv', '.txt']
+
 
         self.monthRadio.toggled.connect(self.get_data)
         self.sixMonthsRadio.toggled.connect(self.get_data)
-
         self.yearRadio.toggled.connect(self.get_data)
 
         self.browseButton.clicked.connect(self.browse)
-
         self.exportButton.clicked.connect(self.save)
-        self.cancelButton.clicked.connect(self.show_ud_window)
 
     def validate_file_format(self, file_path):
         file_extension = file_path[file_path.rfind('.'):].lower()
@@ -37,11 +41,6 @@ class UploadWindow(QMainWindow):
                 f"Разрешены только: {', '.join(self.allowed_formats)}"
             )
 
-    def show_ud_window(self):
-        from regist.upload_or_download import UDWindow
-        self.ud_window = UDWindow()
-        self.ud_window.show()
-        self.close()
 
     def save(self):
         try:
@@ -57,21 +56,19 @@ class UploadWindow(QMainWindow):
             else:
                 self.save_as_csv(current_file_path)
 
-            QMessageBox.information(self, "Успех", f"Отчет успешно сохранен в:\n{current_file_path}")
+            QMessageBox.information(self, "Успех", f"Отчет об уборке успешно сохранен в:\n{current_file_path}")
             self.filePathEdit.clear()
-        except EmptyPathError:
-            QMessageBox.critical(self, "Ошибка пустого пути", "Выберите путь для записи")
 
         except InvalidFileFormatError as e:
             QMessageBox.critical(self, "Ошибка формата файла", str(e))
+        except EmptyPathError:
+            QMessageBox.critical(self, "Ошибка пустого пути", "Выберите путь для записи")
         except PermissionError:
             QMessageBox.critical(self, "Ошибка доступа", "Файл заблокирован или нет прав для записи")
-
         except FileNotFoundError:
             QMessageBox.critical(self, "Ошибка пути", "Указан неверный путь к файлу")
         except UnicodeEncodeError:
             QMessageBox.critical(self, "Ошибка кодировки", "Ошибка при сохранении русских символов")
-
         except Exception as e:
             QMessageBox.critical(self, "Неизвестная ошибка", f"Произошла непредвиденная ошибка:\n{str(e)}")
 
@@ -82,11 +79,14 @@ class UploadWindow(QMainWindow):
                 delimiter=';',
                 quotechar='"',
                 quoting=csv.QUOTE_MINIMAL)
+
+
             writer.writerow(
                 [self.previewTable.horizontalHeaderItem(i).text()
                  for i in range(self.previewTable.columnCount())
                  ]
             )
+
 
             for i in self.data:
                 writer.writerow(i)
@@ -94,15 +94,13 @@ class UploadWindow(QMainWindow):
     def save_as_txt(self, file_path):
         with open(file_path, 'w', encoding='utf-8') as f:
 
-            f.write("ОТЧЕТ О БРОНИРОВАНИЯХ\n")
-            f.write("=" * 100 + "\n")
+            f.write("ОТЧЕТ ОБ УБОРКЕ ПОМЕЩЕНИЙ\n")
+            f.write("=" * 120 + "\n")
             f.write(
                 f"Период: с {self.start_date.strftime('%d.%m.%Y')} по {datetime.now().date().strftime('%d.%m.%Y')}\n")
-            f.write("=" * 100 + "\n\n")
-
+            f.write("=" * 120 + "\n\n")
 
             headers = [self.previewTable.horizontalHeaderItem(i).text() for i in range(self.previewTable.columnCount())]
-
 
             col_widths = [len(header) for header in headers]
             for row in self.data:
@@ -110,7 +108,6 @@ class UploadWindow(QMainWindow):
                     col_widths[i] = max(col_widths[i], len(str(cell)))
 
             col_widths = [width + 2 for width in col_widths]
-
 
             header_line = "".join([headers[i].ljust(col_widths[i]) for i in range(len(headers))])
             f.write(header_line + "\n")
@@ -120,15 +117,14 @@ class UploadWindow(QMainWindow):
                 row_line = "".join([str(cell).ljust(col_widths[i]) for i, cell in enumerate(row)])
                 f.write(row_line + "\n")
 
-            f.write("\n" + "=" * 100 + "\n")
+            f.write("\n" + "=" * 120 + "\n")
 
     def browse(self):
-
         try:
             file_path, _ = QFileDialog.getSaveFileName(
                 self,
-                "Сохранить отчет о бронированиях",
-                f"отчет_бронирования_за_период_{self.start_date.strftime('%d.%m.%Y')}-{datetime.now().date().strftime('%d.%m.%Y')}",
+                "Сохранить отчет об уборке",
+                f"отчет_уборки_за_период_{self.start_date.strftime('%d.%m.%Y')}-{datetime.now().date().strftime('%d.%m.%Y')}",
                 "CSV Files (*.csv);;Text Files (*.txt)"
             )
 
@@ -144,7 +140,12 @@ class UploadWindow(QMainWindow):
                 self.previewTable.setRowCount(0)
                 return
 
-            headers = ['Номер', 'Гость', 'Заезд', 'Выезд', 'Ночей', 'Тип', 'Стоимость', 'Общая стоимость', 'Статус']
+            headers = [
+                'ID задачи', 'Комната', 'Тип уборки', 'Описание',
+                'Создал', 'Должность создателя', 'Исполнитель', 'Должность исполнителя',
+                'Создана', 'Начата', 'Завершена', 'Статус', 'Длительность (ч)', 'Примечания'
+            ]
+
             self.previewTable.setColumnCount(len(headers))
             self.previewTable.setHorizontalHeaderLabels(headers)
 
@@ -160,41 +161,92 @@ class UploadWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Ошибка обновления таблицы", f"Не удалось обновить таблицу")
 
+    def get_cleaning_data_query(self):
+        return """
+        SELECT 
+            mt.id as task_id,
+            mt.room_number as room,
+
+            -- Тип уборки
+            CASE 
+                WHEN mt.description LIKE '%полная%' OR mt.description LIKE '%генеральная%' THEN 'Полная уборка'
+                WHEN mt.description LIKE '%ежедневная%' OR mt.description LIKE '%регулярная%' THEN 'Ежедневная уборка'
+                WHEN mt.description LIKE '%после выезда%' THEN 'Уборка после выезда'
+                WHEN mt.description LIKE '%ремонт%' OR mt.description LIKE '%починка%' THEN 'Ремонтные работы'
+                ELSE 'Стандартная уборка'
+            END as cleaning_type,
+
+            mt.description as task_description,
+
+            -- Кто создал задачу
+            creator.first_name || ' ' || creator.last_name as created_by,
+            creator.position as creator_position,
+
+            -- Кто принял задачу
+            COALESCE(assignee.first_name || ' ' || assignee.last_name, 'Не назначена') as assigned_to,
+            COALESCE(assignee.position, 'Не назначена') as assignee_position,
+
+            -- Время создания задачи
+            strftime('%d.%m.%Y %H:%M', mt.created_at) as task_created,
+
+            -- Время начала задачи
+            CASE 
+                WHEN mt.status = 'в работе' OR mt.status = 'выполнена' THEN strftime('%d.%m.%Y %H:%M', mt.created_at)
+                ELSE 'Не начата' 
+            END as task_started,
+
+            -- Время завершения задачи
+            CASE 
+                WHEN mt.completed_at IS NOT NULL THEN strftime('%d.%m.%Y %H:%M', mt.completed_at)
+                ELSE 'Не завершена' 
+            END as task_completed,
+
+            -- Статус задачи
+            mt.status as task_status,
+
+            -- Длительность выполнения (в часах)
+            CASE 
+                WHEN mt.completed_at IS NOT NULL AND mt.created_at IS NOT NULL THEN
+                    ROUND((JULIANDAY(mt.completed_at) - JULIANDAY(mt.created_at)) * 24, 2)
+                ELSE NULL
+            END as duration_hours,
+
+            -- Примечания к задаче
+            COALESCE(mt.notes, 'Нет примечаний') as task_notes
+
+        FROM maintenance_tasks mt
+        LEFT JOIN staff creator ON mt.created_by = creator.id
+        LEFT JOIN staff assignee ON mt.assigned_to = assignee.id
+        WHERE date(mt.created_at) BETWEEN date(?) AND date('now')
+        ORDER BY mt.created_at DESC
+        """
+
     def get_data(self):
         try:
             self.filePathEdit.clear()
             today = datetime.now().date()
+
             if self.monthRadio.isChecked():
                 self.start_date = today - timedelta(days=30)
             elif self.sixMonthsRadio.isChecked():
                 self.start_date = today - timedelta(days=180)
             elif self.yearRadio.isChecked():
                 self.start_date = today - timedelta(days=365)
+            else:
+                self.start_date = today - timedelta(days=30)  # По умолчанию месяц
+
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
-            cursor.execute('''SELECT 
-                                         room_number, 
-                                         last_name || '.' || SUBSTR(first_name,1,1) || '.' || SUBSTR(patronymic,1,1) as guest_initials, 
-                                         check_in_date, 
-                                         check_out_date,
-                                         CAST(JULIANDAY(check_out_date) - JULIANDAY(check_in_date) AS INTEGER) as nights,
-                                         room_type, 
-                                         price_per_night, 
-                                         (CAST(JULIANDAY(check_out_date) - JULIANDAY(check_in_date) AS INTEGER) * price_per_night) as total_cost,
-                                         CASE 
-                                           WHEN date(check_out_date) < date('now') THEN 'Завершено'
-                                           WHEN date(check_in_date) <= date('now') THEN 'Активно'
-                                           ELSE 'Ожидается'
-                                         END as booking_status
-                                FROM rooms JOIN bookings ON rooms.id = bookings.room_id 
-                                JOIN guests ON bookings.guest_id = guests.id
-                                WHERE check_in_date BETWEEN date(?) AND date('now')
-                                ORDER BY check_in_date, room_number''', (self.start_date.strftime('%Y-%m-%d'),))
 
+            cursor.execute(self.get_cleaning_data_query(), (self.start_date.strftime('%Y-%m-%d'),))
             self.data = cursor.fetchall()
+
             self.update_preview_table(self.data)
+
+            conn.close()
+
         except sqlite3.Error as e:
-            QMessageBox.critical(self, "Ошибка базы данных", f"Не удалось загрузить базу данных")
+            QMessageBox.critical(self, "Ошибка базы данных", f"Не удалось загрузить данные об уборке: {str(e)}")
         except Exception as e:
             QMessageBox.critical(self, "Ошибка загрузки данных", f"Произошла непредвиденная ошибка:\n{str(e)}")
 

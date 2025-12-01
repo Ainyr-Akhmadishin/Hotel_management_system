@@ -3,9 +3,19 @@ import sqlite3
 
 from PyQt6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
+from django.db.models.sql.datastructures import Empty
 
 from bd_manager import YandexDiskUploader
 from utils import get_resource_path
+
+
+class EmptyRecipientError(Exception):
+    pass
+
+
+class EmptyMassageError(Exception):
+    pass
+
 
 class MassageWindow(QDialog):
     def __init__(self,full_name, parent=None):
@@ -19,6 +29,7 @@ class MassageWindow(QDialog):
         self.recipients_list.itemClicked.connect(self.selected_recipient)
 
         self.send_button.clicked.connect(self.send_message)
+        self.cancel_button.clicked.connect(self.close)
 
     def selected_recipient(self, item):
         self.recipient = item.text()
@@ -33,26 +44,25 @@ class MassageWindow(QDialog):
 
 
             if not hasattr(self, 'recipient') or not self.recipient:
-                raise ValueError("Не выбран получатель")
+                raise EmptyRecipientError("Не выбран получатель")
 
             if not self.message_text_edit.toPlainText().strip():
-                raise ValueError("Введите текст сообщения")
-
+                raise EmptyMassageError("Введите текст сообщения")
 
             recipient_parts = self.recipient.split()
-            if len(recipient_parts) < 2:
-                raise ValueError("Некорректное имя получателя")
-
+            # if len(recipient_parts) < 2:
+            #     raise ValueError("Некорректное имя получателя")
+            #
             sender_parts = self.full_name.split()
-            if len(sender_parts) < 2:
-                raise ValueError("Некорректное имя отправителя")
+            # if len(sender_parts) < 2:
+            #     raise ValueError("Некорректное имя отправителя")
 
 
             cur.execute('''SELECT id FROM staff WHERE last_name = ? AND first_name = ?''',
                         (recipient_parts[0], recipient_parts[1]))
             recipient_result = cur.fetchone()
             if not recipient_result:
-                raise ValueError("Получатель не найден в базе данных")
+                raise sqlite3.Error("Получатель не найден в базе данных")
             self.id_recipient = recipient_result[0]
 
 
@@ -73,13 +83,15 @@ class MassageWindow(QDialog):
             QMessageBox.information(self, "Успех",
                                     f"Сообщение отправлено")
             self.close()
-            uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
-            if uploader.upload_db():
-                print("Изменения загружены на Яндекс Диск")
-            else:
-                print("Не удалось загрузить изменения")
+            # uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+            # if uploader.upload_db():
+            #     print("Изменения загружены на Яндекс Диск")
+            # else:
+            #     print("Не удалось загрузить изменения")
 
-        except ValueError as e:
+        except EmptyRecipientError as e:
+            QMessageBox.critical(self, "Ошибка", str(e))
+        except EmptyMassageError as e:
             QMessageBox.critical(self, "Ошибка", str(e))
         except sqlite3.Error as e:
             QMessageBox.critical(self, "Ошибка", str(e))
