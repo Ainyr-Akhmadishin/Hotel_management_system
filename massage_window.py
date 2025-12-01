@@ -3,7 +3,7 @@ import sqlite3
 
 from PyQt6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
-from django.db.models.sql.datastructures import Empty
+
 
 from bd_manager import YandexDiskUploader
 from utils import get_resource_path

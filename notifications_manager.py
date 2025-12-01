@@ -5,7 +5,6 @@ from datetime import datetime
 from PyQt6.QtWidgets import QFrame, QVBoxLayout, QLabel, QScrollArea, QWidget
 from PyQt6.QtCore import QTimer, Qt, QObject, pyqtSignal
 from view_message_dialog import ViewMessageDialog
-import pytz
 from datetime import datetime, timezone
 
 
