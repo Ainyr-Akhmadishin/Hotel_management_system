@@ -8,6 +8,18 @@ from datetime import datetime
 from utils import get_resource_path
 
 
+class ExportDataError(Exception):
+    pass  # Исключение для ошибок экспорта данных
+
+class ImportDataError(Exception):
+    pass  # Исключение для ошибок импорта данных
+
+class InvalidDateError(Exception):
+    pass  # Исключение для невалидных дат
+
+class DatabaseConnectionError(Exception):
+    pass  # Исключение для ошибок подключения к базе данных
+
 class DataExportDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -40,15 +52,11 @@ class DataExportDialog(QDialog):
         end_date = self.end_date_edit.date()
         today = QDate.currentDate()
 
-        errors = []
-
         if start_date > end_date:
-            errors.append("❌ Начальная дата не может быть больше конечной!")
+            raise InvalidDateError("Начальная дата не может быть больше конечной!")
 
         if end_date > today:
-            errors.append("❌ Невозможно выгрузить будущие данные!")
-
-        return errors
+            raise InvalidDateError("Невозможно выгрузить будущие данные!")
 
     def update_stats(self):
         """Обновление статистики"""
@@ -57,14 +65,14 @@ class DataExportDialog(QDialog):
             end_date = self.end_date_edit.date().toString("yyyy-MM-dd")
 
             # Проверяем корректность дат
-            errors = self.validate_dates()
-            if errors:
-                self.date_error_label.setText("\n".join(errors))
+            try:
+                self.validate_dates()
+                self.date_error_label.setText("")
+            except InvalidDateError as e:
+                self.date_error_label.setText(f"❌ {str(e)}")
                 self.attendance_value.setText("0")
                 self.profit_value.setText("0 ₽")
                 return
-            else:
-                self.date_error_label.setText("")
 
             # Статистика по бронированиям
             self.cursor.execute("""
@@ -82,15 +90,16 @@ class DataExportDialog(QDialog):
             self.profit_value.setText(f"{estimated_profit:,} ₽".replace(",", " "))
 
         except sqlite3.Error as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка загрузки статистики: {str(e)}")
+            raise DatabaseConnectionError(f"Ошибка загрузки статистики")
 
     def export_data(self):
         """Экспорт данных за период"""
         try:
             # Проверяем корректность дат перед экспортом
-            errors = self.validate_dates()
-            if errors:
-                QMessageBox.warning(self, "Ошибка в датах", "\n".join(errors))
+            try:
+                self.validate_dates()
+            except InvalidDateError as e:
+                QMessageBox.warning(self, "Ошибка в датах", str(e))
                 return
 
             start_date = self.start_date_edit.date().toString("yyyy-MM-dd")
@@ -128,8 +137,10 @@ class DataExportDialog(QDialog):
 
                 QMessageBox.information(self, "Успех", f"Данные экспортированы в {file_path}")
 
+        except ExportDataError as e:
+            QMessageBox.critical(self, "Ошибка экспорта", str(e))
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка экспорта данных: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка экспорта данных")
 
     def export_to_csv(self, file_path, data_type, start_date, end_date):
         """Экспорт в CSV с правильной кодировкой UTF-8"""
@@ -239,8 +250,10 @@ class DataExportDialog(QDialog):
                     for row in data:
                         writer.writerow(row)
 
+        except IOError as e:
+            raise ExportDataError(f"Ошибка записи файла: {str(e)}")
         except Exception as e:
-            raise Exception(f"Ошибка при экспорте в CSV: {str(e)}")
+            raise ExportDataError(f"Ошибка при экспорте в CSV")
 
     def export_to_json(self, file_path, data_type, start_date, end_date):
         """Экспорт в JSON с правильной кодировкой"""
@@ -356,8 +369,10 @@ class DataExportDialog(QDialog):
             with open(file_path, 'w', encoding='utf-8') as file:
                 json.dump(data, file, ensure_ascii=False, indent=2)
 
+        except IOError as e:
+            raise ExportDataError(f"Ошибка записи файла: {str(e)}")
         except Exception as e:
-            raise Exception(f"Ошибка при экспорте в JSON: {str(e)}")
+            raise ExportDataError(f"Ошибка при экспорте в JSON: {str(e)}")
 
     def load_data(self):
         """Загрузка данных из файла"""
@@ -376,8 +391,10 @@ class DataExportDialog(QDialog):
                 QMessageBox.information(self, "Успех", "Данные успешно загружены!")
                 self.update_stats()  # Обновляем статистику
 
+        except ImportDataError as e:
+            QMessageBox.critical(self, "Ошибка импорта", str(e))
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка загрузки данных: {str(e)}")
+            QMessageBox.critical(self, "Ошибка", f"Ошибка загрузки данных")
 
     def import_from_csv(self, file_path):
         """Импорт из CSV с правильной кодировкой"""
@@ -387,8 +404,10 @@ class DataExportDialog(QDialog):
                 for row in reader:
                     print(row)  # Для отладки - посмотреть что импортируется
             QMessageBox.information(self, "Информация", "Данные CSV успешно прочитаны")
+        except FileNotFoundError:
+            raise ImportDataError("Файл не найден")
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка чтения CSV файла: {str(e)}")
+            raise ImportDataError(f"Ошибка чтения CSV файла")
 
     def import_from_json(self, file_path):
         """Импорт из JSON с правильной кодировкой"""
@@ -397,8 +416,10 @@ class DataExportDialog(QDialog):
                 data = json.load(file)
                 print(data)  # Для отладки - посмотреть что импортируется
             QMessageBox.information(self, "Информация", "Данные JSON успешно прочитаны")
+        except FileNotFoundError:
+            raise ImportDataError("Файл не найден")
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Ошибка чтения JSON файла: {str(e)}")
+            raise ImportDataError(f"Ошибка чтения JSON файла")
 
     def closeEvent(self, event):
         """Закрытие соединения с БД"""

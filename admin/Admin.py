@@ -18,6 +18,28 @@ from notifications_manager import SimpleNotificationsManager
 from massage_window import MassageWindow
 
 
+class SortRegistryError(Exception):
+    pass #Исключение для ошибок сортировки регистратуры
+
+class SortStaffError(Exception):
+    pass #Исключение для ошибок сортировки персонала
+
+class OpenEmployeeManagementError(Exception):
+    pass #Исключение для ошибок открытия управления сотрудниками
+
+class OpenEmployeeListError(Exception):
+    pass #Исключение для ошибок открытия списка сотрудников
+
+class OpenRoomManagementError(Exception):
+    pass #Исключение для ошибок открытия управления номерами
+
+class OpenDataExportError(Exception):
+    pass #Исключение для ошибок открытия экспорта данных
+
+class OpenMassageWindowError(Exception):
+    pass #Исключение для ошибок открытия окна сообщений
+
+
 class AdminWindow(QMainWindow):
     closed = pyqtSignal()
 
@@ -58,8 +80,11 @@ class AdminWindow(QMainWindow):
         # self.listView.setModel(self.model)
 
     def open_massage(self):
-        self.massage_window = MassageWindow(full_name=self.full_name)
-        self.massage_window.show()
+        try:
+            self.massage_window = MassageWindow(full_name=self.full_name)
+            self.massage_window.show()
+        except Exception as e:
+            self.show_error_message(f"Ошибка открытия окна сообщений: {str(e)}")
 
     def get_user_id(self, username):
         """Получение ID пользователя по логину"""
@@ -186,7 +211,8 @@ class AdminWindow(QMainWindow):
             # self.add_message("✅ Регистратура отсортирована")
             self.show_success_message("Регистратура успешно отсортирована по алфавиту!")
         except Exception as e:
-            self.show_error_message(f"Ошибка при сортировке регистратуры: {str(e)}")
+            # Перехватываем исключение и показываем сообщение об ошибке
+            self.show_error_message(f"Ошибка при сортировке регистратуры")
 
     def sort_staff(self):
         """Сортировка персонала по фамилии, имени, отчеству"""
@@ -205,7 +231,8 @@ class AdminWindow(QMainWindow):
             # self.add_message("✅ Персонал отсортирован")
             self.show_success_message("Персонал успешно отсортирован по алфавиту!")
         except Exception as e:
-            self.show_error_message(f"Ошибка при сортировке персонала: {str(e)}")
+            # Перехватываем исключение и показываем сообщение об ошибке
+            self.show_error_message(f"Ошибка при сортировке персонала")
 
     def manage_employees(self):
         """Управление сотрудниками"""
@@ -215,7 +242,8 @@ class AdminWindow(QMainWindow):
             # Обновляем данные после закрытия диалога
             self.load_employees_data()
         except Exception as e:
-            self.show_error_message(f"Ошибка открытия управления сотрудниками: {str(e)}")
+            # Перехватываем исключение и показываем сообщение об ошибке
+            self.show_error_message(f"Ошибка открытия управления сотрудниками")
 
     def show_employees_list(self):
         """Показать список работников"""
@@ -223,7 +251,8 @@ class AdminWindow(QMainWindow):
             dialog = EmployeeListDialog(self)
             dialog.exec()
         except Exception as e:
-            self.show_error_message(f"Ошибка открытия списка сотрудников: {str(e)}")
+            # Перехватываем исключение и показываем сообщение об ошибке
+            self.show_error_message(f"Ошибка открытия списка сотрудников")
 
     def contact_registry(self):
         """Связь с регистратурой"""
@@ -257,7 +286,7 @@ class AdminWindow(QMainWindow):
                 self.add_message(f"📞 Связь с регистратурой: {employee}")
 
         except Exception as e:
-            self.show_error_message(f"Ошибка связи с регистратурой: {str(e)}")
+            self.show_error_message(f"Ошибка связи с регистратурой")
 
     def contact_staff(self):
         """Связь с персоналом"""
@@ -291,7 +320,7 @@ class AdminWindow(QMainWindow):
                 self.add_message(f"📞 Связь с персоналом: {employee}")
 
         except Exception as e:
-            self.show_error_message(f"Ошибка связи с персоналом: {str(e)}")
+            self.show_error_message(f"Ошибка связи с персоналом")
 
     def change_numbers(self):
         """Изменение номеров"""
@@ -299,7 +328,8 @@ class AdminWindow(QMainWindow):
             dialog = RoomManagementDialog(self)
             dialog.exec()
         except Exception as e:
-            self.show_error_message(f"Ошибка открытия управления номерами: {str(e)}")
+            # Перехватываем исключение и показываем сообщение об ошибке
+            self.show_error_message(f"Ошибка открытия управления номерами")
 
     def data_export_import(self):
         """Выгрузка/загрузка данных"""
@@ -307,7 +337,8 @@ class AdminWindow(QMainWindow):
             dialog = DataExportDialog(self)
             dialog.exec()
         except Exception as e:
-            self.show_error_message(f"Ошибка открытия экспорта данных: {str(e)}")
+            # Перехватываем исключение и показываем сообщение об ошибке
+            self.show_error_message(f"Ошибка открытия экспорта данных")
 
     def closeEvent(self, event):
         """Закрытие соединения с БД при закрытии приложения"""

@@ -211,9 +211,14 @@ def clear_maintenance_tasks():
 
 # Использование
 # clear_maintenance_tasks()
+class YandexDiskUploader:
+    pass
+
+
 if __name__ == "__main__":
     # delete_tables_only()
-    # y = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+    y = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+    y.download()
     # y.upload_db()
     # for i in print_data():
     #     print(i)

@@ -24,10 +24,12 @@ QLineEdit {
     background-color: white;
     font-size: 12px;
     height: 35px;
+    color: black;
 }
 QLineEdit:focus {
     border-color: #4a6fa5;
     background-color: #fafbfc;
+    color: black;
 }
 QListWidget {
     border: 1px solid #e1e5eb;
@@ -36,15 +38,18 @@ QListWidget {
     padding: 3px;
     font-size: 12px;
     outline: none;
+    color: black;
 }
 QListWidget::item {
     padding: 8px 12px;
     border-bottom: 1px solid #f1f3f4;
+    color: black;
 }
 QListWidget::item:selected {
     background-color: #7B9ED2;
     border: 1px solid #4a6fa5;
     border-radius: 4px;
+    color: white;
 }
 QListWidget::item:hover {
     background-color: #7B9ED2;
@@ -56,9 +61,11 @@ QTextEdit {
     background-color: white;
     padding: 12px;
     font-size: 12px;
+    color: black;
 }
 QTextEdit:focus {
     border-color: #4a6fa5;
+    color: black;
 }
 QPushButton {
     background-color: #4a6fa5;

@@ -19,6 +19,7 @@
 }
 QWidget {
     background-color: #ffffff;
+    color: #000000; /* Черный цвет текста по умолчанию */
 }
 QPushButton {
     background-color: #4a6fa5;
@@ -38,7 +39,7 @@ QPushButton:pressed {
 }
 QLabel {
     font-size: 11px;
-    color: #000000;
+    color: #000000; /* Черный цвет текста */
     background-color: #ffffff;
 }
 QComboBox {
@@ -49,11 +50,11 @@ QComboBox {
     font-size: 11px;
     min-width: 80px;
     height: 25px;
-    color: #000000;
+    color: #000000; /* Черный цвет текста */
 }
 QComboBox QAbstractItemView {
     background-color: white;
-    color: #000000;
+    color: #000000; /* Черный цвет текста */
     selection-background-color: #4a6fa5;
     selection-color: white;
 }
@@ -80,7 +81,47 @@ QFrame {
 }
 QLineEdit {
     background-color: white;
-    color: #000000;
+    color: #000000; /* Черный цвет текста */
+    border: 1px solid #e1e5eb;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+}
+QTableWidget {
+    gridline-color: #d1d5db;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    background-color: white;
+    alternate-background-color: #f8f9fa;
+    selection-background-color: #4a6fa5;
+    color: #000000; /* Черный цвет текста */
+    font-size: 11px;
+}
+QTableWidget::item {
+    padding: 6px;
+    border-bottom: 1px solid #e1e8ed;
+    color: #000000; /* Черный цвет текста */
+    background-color: white;
+}
+QTableWidget::item:alternate {
+    background-color: #f8f9fa;
+    color: #000000; /* Черный цвет текста */
+}
+QTableWidget::item:selected {
+    background-color: #4a6fa5;
+    color: white;
+}
+QHeaderView::section {
+    background-color: #4a6fa5;
+    color: white;
+    padding: 8px;
+    border: none;
+    font-weight: bold;
+    font-size: 11px;
+}
+QStatusBar {
+    color: #000000; /* Черный цвет текста */
+    background-color: #ffffff;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -93,7 +134,7 @@ QLineEdit {
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: #ffffff;</string>
+    <string notr="true">background-color: #ffffff; color: #000000;</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
@@ -217,287 +258,13 @@ QLineEdit {
          <number>10</number>
         </property>
         <item>
-         <widget class="QFrame" name="employees_frame">
+         <widget class="QTableWidget" name="employees_table">
           <property name="minimumSize">
            <size>
             <width>800</width>
             <height>400</height>
            </size>
           </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: white;
-            border-radius: 6px;
-            padding: 15px;
-            border: 1px solid #e1e8ed;</string>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="styleSheet">
-              <string notr="true">background-color: #e3f2fd; padding: 6px 10px; border-radius: 3px; font-weight: bold; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Иванов Иван Иванович</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_5">
-             <property name="styleSheet">
-              <string notr="true">background-color: #e3f2fd; padding: 6px 10px; border-radius: 3px; font-weight: bold; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Петров Петр Петрович</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="label_4">
-             <property name="styleSheet">
-              <string notr="true">background-color: #e3f2fd; padding: 6px 10px; border-radius: 3px; font-weight: bold; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Сидорова Анна Владимировна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QLabel" name="label_8">
-             <property name="styleSheet">
-              <string notr="true">background-color: #e3f2fd; padding: 6px 10px; border-radius: 3px; font-weight: bold; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Козлов Дмитрий Сергеевич</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Николаев Алексей Викторович</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="label_7">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Федорова Мария Олеговна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLabel" name="label_9">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Васильев Игорь Николаевич</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="label_10">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Павлова Елена Дмитриевна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_11">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Семенов Артем Игоревич</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label_12">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Михайлова Ольга Петровна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QLabel" name="label_13">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Алексеев Сергей Владимирович</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="QLabel" name="label_14">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Романова Татьяна Александровна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_15">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Григорьев Павел Олегович</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLabel" name="label_16">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Захарова Юлия Игоревна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="2">
-            <widget class="QLabel" name="label_17">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Борисов Константин Викторович</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="3">
-            <widget class="QLabel" name="label_18">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Киселева Надежда Сергеевна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_19">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Тимофеев Андрей Анатольевич</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QLabel" name="label_20">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Орлова Виктория Денисовна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="2">
-            <widget class="QLabel" name="label_21">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Филиппов Максим Романович</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="3">
-            <widget class="QLabel" name="label_22">
-             <property name="styleSheet">
-              <string notr="true">padding: 6px 10px; border-radius: 3px; color: #000000;</string>
-             </property>
-             <property name="text">
-              <string>Данилова Екатерина Павловна</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </widget>
         </item>
         <item>
@@ -582,7 +349,23 @@ QLineEdit {
            <string notr="true">background-color: #4a6fa5; color: white; font-weight: bold;</string>
           </property>
           <property name="text">
-           <string>Выгрузить данные</string>
+           <string>Экспорт</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="import_button">
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>46</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #4a6fa5; color: white; font-weight: bold;</string>
+          </property>
+          <property name="text">
+           <string>Импорт</string>
           </property>
          </widget>
         </item>

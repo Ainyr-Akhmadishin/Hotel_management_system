@@ -43,6 +43,21 @@ QPushButton:disabled {
     background-color: #cccccc;
     color: #666666;
 }
+QComboBox {
+    color: #000000;
+}
+QComboBox QAbstractItemView {
+    color: #000000;
+}
+QInputDialog QLabel {
+    color: #000000;
+}
+QInputDialog QLineEdit {
+    color: #000000;
+}
+QInputDialog QComboBox {
+    color: #000000;
+}
 QListView {
     border: 1px solid #e1e5eb;
     border-radius: 6px;

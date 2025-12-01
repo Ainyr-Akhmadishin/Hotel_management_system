@@ -71,7 +71,6 @@ class DownloadWindow(QMainWindow):
             raise DateError("Неверный формат даты")
 
     def RoomNumberCheck(self, room_number):
-        """Проверка что номер существует в базе данных"""
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
@@ -116,7 +115,6 @@ class DownloadWindow(QMainWindow):
             QMessageBox.critical(self,"Ошибка","Ошибка базы данных")
 
     def check_data(self):
-        """Проверка данных и возврат информации об ошибках"""
         errors_data = []  # список кортежей (номер_строки, данные, ошибка)
 
         for i, row in enumerate(self.data):
@@ -257,11 +255,11 @@ class DownloadWindow(QMainWindow):
             QMessageBox.critical(self, "Ошибка выбора файла", f"Не удалось выбрать файл:\n{str(e)}")
 
     def load_from_txt(self, file_path):
-        """Загрузка данных из TXT файла - так же как из CSV"""
+
         with open(file_path, encoding='utf-8') as f:
             reader = csv.reader(f, delimiter=';', quotechar='"')
 
-            # Читаем первую строку как заголовки
+
             titel = next(reader)
             self.previewTable.setColumnCount(len(titel))
             self.previewTable.setHorizontalHeaderLabels(titel)
