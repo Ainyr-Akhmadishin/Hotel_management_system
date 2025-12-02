@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>804</width>
-    <height>573</height>
+    <width>591</width>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -457,22 +457,6 @@ QCalendarWidget QAbstractItemView:disabled {
           </property>
           <property name="text">
            <string>📊 Выгрузить данные</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="load_data_btn">
-          <property name="minimumSize">
-           <size>
-            <width>150</width>
-            <height>46</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Загрузить данные из файла</string>
-          </property>
-          <property name="text">
-           <string>📁 Загрузить данные</string>
           </property>
          </widget>
         </item>

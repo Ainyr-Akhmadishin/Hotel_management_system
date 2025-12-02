@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>507</width>
+    <width>883</width>
     <height>760</height>
    </rect>
   </property>
@@ -104,8 +104,8 @@ QStatusBar {
     <rect>
      <x>0</x>
      <y>41</y>
-     <width>452</width>
-     <height>665</height>
+     <width>593</width>
+     <height>684</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -518,6 +518,62 @@ QStatusBar {
      <width>3</width>
      <height>21</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="add_nomer">
+   <property name="geometry">
+    <rect>
+     <x>600</x>
+     <y>180</y>
+     <width>201</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>46</height>
+    </size>
+   </property>
+   <property name="toolTip">
+    <string>Добавить нового сотрудника в систему</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #28a745; color: #white; font-weight: bold;</string>
+   </property>
+   <property name="text">
+    <string>➕ Добавить номер</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="fire_selected_btn">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>600</x>
+     <y>240</y>
+     <width>204</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>204</width>
+     <height>46</height>
+    </size>
+   </property>
+   <property name="toolTip">
+    <string>Уволить выбранного сотрудника</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #dc3545; color: white; font-weight: bold; min-width: 180px;</string>
+   </property>
+   <property name="text">
+    <string>🚫 Удалить номер</string>
    </property>
   </widget>
  </widget>
