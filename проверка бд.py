@@ -217,8 +217,8 @@ class YandexDiskUploader:
 
 if __name__ == "__main__":
     # delete_tables_only()
-    y = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
-    y.download()
+    # y = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
+    # y.download()
     # y.upload_db()
     # for i in print_data():
     #     print(i)
@@ -228,3 +228,28 @@ if __name__ == "__main__":
     # select_staff()
     # fill_task_table()
     # clear_maintenance_tasks()
+    # Проверяем существование колонки shift_date и добавляем если нет
+    conn = sqlite3.connect('Hotel_bd.db')
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT shift_date FROM staff LIMIT 1")
+    except sqlite3.OperationalError:
+        # Колонки нет, добавляем
+        cursor.execute('ALTER TABLE staff ADD COLUMN shift_date DATE')
+        print("✅ Добавлена колонка shift_date в таблицу staff")
+
+        # Обновляем существующие записи с датами смен
+        update_dates = [
+            ("2024-01-15", 1),
+            ("2024-01-20", 2),
+            ("2024-01-10", 3),
+            ("2024-01-25", 4),
+            ("2024-01-18", 5),
+            ("2024-01-22", 6),
+            ("2024-01-12", 7),
+            ("2024-01-28", 8)
+        ]
+
+        for shift_date, staff_id in update_dates:
+            cursor.execute('UPDATE staff SET shift_date = ? WHERE id = ?', (shift_date, staff_id))
+        print("✅ Обновлены даты смен для существующих сотрудников")
