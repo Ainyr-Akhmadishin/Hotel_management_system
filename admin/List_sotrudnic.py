@@ -1,4 +1,3 @@
-# List_sotrudnic.py
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtWidgets import QDialog, QMessageBox, QFileDialog, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QPushButton, \
     QLabel
@@ -11,7 +10,7 @@ from utils import get_resource_path
 
 
 class ImportPreviewDialog(QDialog):
-    """Диалог предпросмотра импорта"""
+    #Диалог предпросмотра импорта
 
     def __init__(self, file_path, parent=None):
         super().__init__(parent)
@@ -24,7 +23,7 @@ class ImportPreviewDialog(QDialog):
         self.load_preview_data()
 
     def setup_ui(self):
-        """Настройка интерфейса диалога предпросмотра"""
+        #Настройка интерфейса диалога предпросмотра
         layout = QVBoxLayout(self)
 
         # Заголовок
@@ -60,7 +59,7 @@ class ImportPreviewDialog(QDialog):
         layout.addLayout(button_layout)
 
     def load_preview_data(self):
-        """Загрузка данных для предпросмотра"""
+        #Загрузка данных для предпросмотра
         try:
             with open(self.file_path, 'r', encoding='utf-8-sig') as file:
                 # Автоопределение разделителя
@@ -135,7 +134,6 @@ class EmployeeListDialog(QDialog):
         self.sort_comboBox.currentTextChanged.connect(self.sort_employees)
 
     def setup_table(self):
-        """Настройка QTableWidget"""
         # Устанавливаем заголовки столбцов
         self.employees_table.setColumnCount(5)
         self.employees_table.setHorizontalHeaderLabels([
@@ -156,7 +154,7 @@ class EmployeeListDialog(QDialog):
         self.employees_table.setColumnWidth(3, 200)  # Должность
 
     def load_employees_data(self):
-        """Загрузка данных сотрудников из БД в таблицу"""
+        #Загрузка из бд
         try:
             self.cursor.execute("""
                 SELECT last_name, first_name, patronymic, position, login 
@@ -180,7 +178,7 @@ class EmployeeListDialog(QDialog):
             QMessageBox.warning(self, "Ошибка", f"Ошибка загрузки данных: {str(e)}")
 
     def filter_employees(self):
-        """Фильтрация сотрудников по поисковому запросу"""
+        #Фильтрация сотрудников
         search_text = self.search_lineEdit.text().lower()
 
         for row in range(self.employees_table.rowCount()):
@@ -193,7 +191,7 @@ class EmployeeListDialog(QDialog):
             self.employees_table.setRowHidden(row, not match)
 
     def sort_employees(self):
-        """Сортировка сотрудников"""
+        #Сортировка сотрудников
         sort_type = self.sort_comboBox.currentText()
 
         try:
@@ -217,7 +215,6 @@ class EmployeeListDialog(QDialog):
             for row_idx, employee in enumerate(employees):
                 for col_idx, data in enumerate(employee):
                     item = QTableWidgetItem(str(data) if data is not None else "")
-                    # Устанавливаем черный цвет текста
                     item.setForeground(QColor(0, 0, 0))  # Черный цвет
                     self.employees_table.setItem(row_idx, col_idx, item)
 
@@ -225,7 +222,7 @@ class EmployeeListDialog(QDialog):
             QMessageBox.warning(self, "Ошибка", f"Ошибка сортировки: {str(e)}")
 
     def export_data(self):
-        """Экспорт данных в CSV файл"""
+        #Экспорт данных в CSV файл
         try:
             file_path, _ = QFileDialog.getSaveFileName(
                 self,
@@ -242,7 +239,7 @@ class EmployeeListDialog(QDialog):
             QMessageBox.critical(self, "Ошибка", f"Ошибка экспорта: {str(e)}")
 
     def export_to_csv(self, file_path):
-        """Экспорт данных таблицы в CSV файл"""
+        #Экспорт данных таблицы в CSV файл
         try:
             with open(file_path, 'w', newline='', encoding='utf-8-sig') as file:
                 writer = csv.writer(file, delimiter=';')
@@ -267,7 +264,7 @@ class EmployeeListDialog(QDialog):
             raise Exception(f"Ошибка записи файла: {str(e)}")
 
     def import_data(self):
-        """Импорт данных из CSV файла с предпросмотром"""
+        #Импорт данных из CSV
         try:
             file_path, _ = QFileDialog.getOpenFileName(
                 self,
@@ -290,7 +287,7 @@ class EmployeeListDialog(QDialog):
             QMessageBox.critical(self, "Ошибка", f"Ошибка импорта: {str(e)}")
 
     def import_from_csv(self, file_path):
-        """Импорт данных из CSV файла"""
+        #Импорт данных из CSV файла
         try:
             with open(file_path, 'r', encoding='utf-8-sig') as file:
                 # Автоопределение разделителя
@@ -337,8 +334,7 @@ class EmployeeListDialog(QDialog):
                     for col_idx, cell_data in enumerate(row_data):
                         if col_idx < self.employees_table.columnCount():
                             item = QTableWidgetItem(cell_data.strip())
-                            # Устанавливаем черный цвет текста
-                            item.setForeground(QColor(0, 0, 0))  # Черный цвет
+                            item.setForeground(QColor(0, 0, 0))
                             self.employees_table.setItem(row_idx, col_idx, item)
                     imported_count += 1
 
@@ -348,11 +344,9 @@ class EmployeeListDialog(QDialog):
             QMessageBox.critical(self, "Ошибка", f"Ошибка импорта: {str(e)}")
 
     def update_status(self, message):
-        """Обновление статусной строки"""
         self.statusbar.showMessage(message, 3000)  # Показываем сообщение 3 секунды
 
     def closeEvent(self, event):
-        """Закрытие соединения с БД при закрытии окна"""
         try:
             self.conn.close()
         except:

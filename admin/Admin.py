@@ -17,13 +17,6 @@ from notifications_manager import SimpleNotificationsManager
 
 from massage_window import MassageWindow
 
-
-class SortRegistryError(Exception):
-    pass #Исключение для ошибок сортировки регистратуры
-
-class SortStaffError(Exception):
-    pass #Исключение для ошибок сортировки персонала
-
 class OpenEmployeeManagementError(Exception):
     pass #Исключение для ошибок открытия управления сотрудниками
 
@@ -57,27 +50,17 @@ class AdminWindow(QMainWindow):
         )
 
         self.init_database()
-        #
-        # # Подключаем кнопки
-        self.sort_registry_btn.clicked.connect(self.sort_registry)
-        self.sort_staff_btn.clicked.connect(self.sort_staff)
+        # Подключаем кнопки
         self.manage_employees_btn.clicked.connect(self.manage_employees)
         self.employees_list_btn.clicked.connect(self.show_employees_list)
-        # self.contact_registry_btn.clicked.connect(self.contact_registry)
-
         self.staff_button.clicked.connect(self.open_massage)
         self.change_numbers_btn.clicked.connect(self.change_numbers)
         self.data_export_btn.clicked.connect(self.data_export_import)
-        #
-        # # Устанавливаем текущую дату
+        self.exit_button.clicked.connect(self.logout)  # Добавляем кнопку выхода
+        # Устанавливаем текущую дату
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
-        #
-        # # Загружаем данные сотрудников
+        # Загружаем данные сотрудников
         self.load_employees_data()
-        #
-        # # Модель для списка сообщений
-        # self.model = QtWidgets.QStringListModel()git push origin main
-        # self.listView.setModel(self.model)
 
     def open_massage(self):
         try:
@@ -87,7 +70,7 @@ class AdminWindow(QMainWindow):
             self.show_error_message(f"Ошибка открытия окна сообщений: {str(e)}")
 
     def get_user_id(self, username):
-        """Получение ID пользователя по логину"""
+        #Получение ID по логину
         try:
             conn = sqlite3.connect('Hotel_bd.db')
             cursor = conn.cursor()
@@ -100,13 +83,13 @@ class AdminWindow(QMainWindow):
             return 1
 
     def closeEvent(self, event):
-        """Останавливаем обновления уведомлений при закрытии"""
+        #Останавливаем обновления уведомлений при закрытии
         if hasattr(self, 'notifications_manager'):
             self.notifications_manager.stop_updates()
         super().closeEvent(event)
 
     def init_database(self):
-        """Инициализация базы данных"""
+        #Baza dannih
         try:
             self.conn = sqlite3.connect('Hotel_bd.db')
             self.cursor = self.conn.cursor()
@@ -114,7 +97,7 @@ class AdminWindow(QMainWindow):
             QMessageBox.critical(self, "Ошибка БД", f"Не удалось подключиться к базе данных: {str(e)}")
 
     def load_employees_data(self):
-        """Загрузка данных сотрудников для отображения в главном окне"""
+        #Загрузка данных сотрудников для отображения в главном окне
         try:
             # Загружаем администраторов и регистраторов
             self.cursor.execute("""
@@ -164,193 +147,111 @@ class AdminWindow(QMainWindow):
             print(f"Ошибка загрузки данных сотрудников: {e}")
 
     def add_message(self, message):
-        """Добавление сообщения в список"""
+        #Добавление сообщения в список
         current_list = self.model.stringList()
         current_list.append(f"{QDate.currentDate().toString('dd.MM.yyyy')} - {message}")
         self.model.setStringList(current_list)
         self.listView.scrollToBottom()
 
     def show_success_message(self, message):
-        """Показать сообщение об успехе с белым фоном"""
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle("Успех")
         msg_box.setText(message)
         msg_box.setIcon(QMessageBox.Icon.Information)
-
-        # Устанавливаем белый фон
         msg_box.setStyleSheet("QMessageBox { background-color: white; }")
-
         msg_box.exec()
 
     def show_error_message(self, message):
-        """Показать сообщение об ошибке с белым фоном"""
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle("Ошибка")
         msg_box.setText(message)
         msg_box.setIcon(QMessageBox.Icon.Critical)
-
-        # Устанавливаем белый фон
         msg_box.setStyleSheet("QMessageBox { background-color: white; }")
-
         msg_box.exec()
 
-    def sort_registry(self):
-        """Сортировка регистратуры по фамилии, имени, отчеству"""
-        try:
-            # Обновляем данные в базе для регистратуры
-            self.cursor.execute("""
-                UPDATE staff 
-                SET last_name = last_name, first_name = first_name, patronymic = patronymic
-                WHERE position IN ('администратор', 'регистратор')
-            """)
-            self.conn.commit()
-
-            # Перезагружаем данные
-            self.load_employees_data()
-
-            # self.add_message("✅ Регистратура отсортирована")
-            self.show_success_message("Регистратура успешно отсортирована по алфавиту!")
-        except Exception as e:
-            # Перехватываем исключение и показываем сообщение об ошибке
-            self.show_error_message(f"Ошибка при сортировке регистратуры")
-
-    def sort_staff(self):
-        """Сортировка персонала по фамилии, имени, отчеству"""
-        try:
-            # Обновляем данные в базе для персонала
-            self.cursor.execute("""
-                UPDATE staff 
-                SET last_name = last_name, first_name = first_name, patronymic = patronymic
-                WHERE position = 'обслуживающий персонал'
-            """)
-            self.conn.commit()
-
-            # Перезагружаем данные
-            self.load_employees_data()
-
-            # self.add_message("✅ Персонал отсортирован")
-            self.show_success_message("Персонал успешно отсортирован по алфавиту!")
-        except Exception as e:
-            # Перехватываем исключение и показываем сообщение об ошибке
-            self.show_error_message(f"Ошибка при сортировке персонала")
-
     def manage_employees(self):
-        """Управление сотрудниками"""
+        #Управление сотрудниками
         try:
             dialog = EmployeeManagementDialog(self)
             dialog.exec()
             # Обновляем данные после закрытия диалога
             self.load_employees_data()
         except Exception as e:
-            # Перехватываем исключение и показываем сообщение об ошибке
             self.show_error_message(f"Ошибка открытия управления сотрудниками")
 
     def show_employees_list(self):
-        """Показать список работников"""
+        #список работников
         try:
             dialog = EmployeeListDialog(self)
             dialog.exec()
         except Exception as e:
-            # Перехватываем исключение и показываем сообщение об ошибке
             self.show_error_message(f"Ошибка открытия списка сотрудников")
 
-    def contact_registry(self):
-        """Связь с регистратурой"""
-        try:
-            self.cursor.execute("""
-                SELECT id, first_name, last_name 
-                FROM staff 
-                WHERE position IN ('администратор', 'регистратор')
-            """)
-            employees = self.cursor.fetchall()
-
-            if not employees:
-                self.show_error_message("Нет сотрудников в регистратуре!")
-                return
-
-            employee_names = [f"{last_name} {first_name}" for id, first_name, last_name in employees]
-            employee, ok = QtWidgets.QInputDialog.getItem(
-                self, "Связь с регистратурой", "Выберите сотрудника:", employee_names, 0, False
-            )
-
-            if ok and employee:
-                # Добавляем сообщение в БД
-                employee_id = next(id for id, first_name, last_name in employees
-                                   if f"{last_name} {first_name}" == employee)
-                self.cursor.execute('''
-                    INSERT INTO messages (from_user, to_user, text, is_read)
-                    VALUES (?, ?, ?, ?)
-                ''', (1, employee_id, f"Связь с регистратурой: {employee}", 0))
-                self.conn.commit()
-
-                self.add_message(f"📞 Связь с регистратурой: {employee}")
-
-        except Exception as e:
-            self.show_error_message(f"Ошибка связи с регистратурой")
-
-    def contact_staff(self):
-        """Связь с персоналом"""
-        try:
-            self.cursor.execute("""
-                SELECT id, first_name, last_name 
-                FROM staff 
-                WHERE position = 'обслуживающий персонал'
-            """)
-            employees = self.cursor.fetchall()
-
-            if not employees:
-                self.show_error_message("Нет сотрудников в персонале!")
-                return
-
-            employee_names = [f"{last_name} {first_name}" for id, first_name, last_name in employees]
-            employee, ok = QtWidgets.QInputDialog.getItem(
-                self, "Связь с персоналом", "Выберите сотрудника:", employee_names, 0, False
-            )
-
-            if ok and employee:
-                # Добавляем сообщение в БД
-                employee_id = next(id for id, first_name, last_name in employees
-                                   if f"{last_name} {first_name}" == employee)
-                self.cursor.execute('''
-                    INSERT INTO messages (from_user, to_user, text, is_read)
-                    VALUES (?, ?, ?, ?)
-                ''', (1, employee_id, f"Связь с персоналом: {employee}", 0))
-                self.conn.commit()
-
-                self.add_message(f"📞 Связь с персоналом: {employee}")
-
-        except Exception as e:
-            self.show_error_message(f"Ошибка связи с персоналом")
-
     def change_numbers(self):
-        """Изменение номеров"""
+        #Изменение номеров
         try:
             dialog = RoomManagementDialog(self)
             dialog.exec()
         except Exception as e:
-            # Перехватываем исключение и показываем сообщение об ошибке
             self.show_error_message(f"Ошибка открытия управления номерами")
 
     def data_export_import(self):
-        """Выгрузка/загрузка данных"""
+        #Выгрузка данных
         try:
             dialog = DataExportDialog(self)
             dialog.exec()
         except Exception as e:
-            # Перехватываем исключение и показываем сообщение об ошибке
             self.show_error_message(f"Ошибка открытия экспорта данных")
 
+    def logout(self):
+        """Выход из аккаунта"""
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Подтверждение выхода")
+        msg_box.setText("Вы уверены, что хотите выйти из аккаунта?")
+        msg_box.setStandardButtons(
+            QMessageBox.StandardButton.Yes |
+            QMessageBox.StandardButton.No
+        )
+        msg_box.setDefaultButton(QMessageBox.StandardButton.No)
+
+        # Устанавливаем белый фон и черный текст для всего диалога
+        msg_box.setStyleSheet("""
+            QMessageBox {
+                background-color: white;
+            }
+            QMessageBox QLabel {
+                color: black;
+                font-size: 11px;
+            }
+            QMessageBox QPushButton {
+                background-color: #4a6fa5;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-weight: bold;
+                min-width: 70px;
+                font-size: 11px;
+            }
+            QMessageBox QPushButton:hover {
+                background-color: #3a5a80;
+            }
+            QMessageBox QPushButton:pressed {
+                background-color: #2a4a70;
+            }
+        """)
+
+        reply = msg_box.exec()
+
+        if reply == QMessageBox.StandardButton.Yes:
+            self.closed.emit()
+            self.close()
+
     def closeEvent(self, event):
-        """Закрытие соединения с БД при закрытии приложения"""
+        #Закрытие соединения с БД при закрытии приложения
         try:
             if hasattr(self, 'conn'):
                 self.conn.close()
         except:
             pass
         event.accept()
-
-# if __name__ == "__main__":
-#     app = QtWidgets.QApplication(sys.argv)
-#     window = AdminWindow("Ars","Admin")
-#     window.show()
-#     sys.exit(app.exec())

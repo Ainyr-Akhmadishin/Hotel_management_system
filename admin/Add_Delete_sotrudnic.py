@@ -68,31 +68,33 @@ class EmployeeManagementDialog(QDialog):
             self.close()
 
     def create_button_handler(self, button):
-        """Создает обработчик для кнопки сотрудника"""
-
         def handler():
             self.select_employee(button)
 
         return handler
 
     def select_employee(self, button):
-        """Выбор сотрудника"""
+        # Выбор сотрудника
         try:
+            # Проверяем, не является ли кнопка пустой
+            if button.text() == "Пусто":
+                # Сбрасываем выделение у всех кнопок
+                for btn in self.employee_buttons:
+                    btn.setStyleSheet(
+                        "background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;")
+                    btn.setChecked(False)
+
+                # Очищаем выбор
+                self.selected_employee = None
+                self.selected_employee_label.setText("Выбран: нет")
+                self.fire_selected_btn.setEnabled(False)
+                return
+
             # Сбрасываем выделение у всех кнопок
             for btn in self.employee_buttons:
                 btn.setStyleSheet(
                     "background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;")
                 btn.setChecked(False)
-
-            # Если выбрана кнопка "Пусто", выделяем ее и устанавливаем выбор
-            if button.text() == "Пусто":
-                button.setStyleSheet(
-                    "background-color: #4a6fa5; color: white; border: 1px solid #3a5a80; text-align: left; padding: 10px 15px; border-radius: 4px;")
-                button.setChecked(True)
-                self.selected_employee = "Пусто"
-                self.selected_employee_label.setText("Выбран: Пусто")
-                self.fire_selected_btn.setEnabled(True)
-                return
 
             # Выделяем выбранную кнопку с сотрудником
             button.setStyleSheet(
@@ -106,7 +108,7 @@ class EmployeeManagementDialog(QDialog):
             QMessageBox.critical(self, "Ошибка", f"Ошибка выбора сотрудника: {str(e)}")
 
     def load_employees(self):
-        """Загрузка сотрудников из БД"""
+        # Загрузка сотрудников из БД
         try:
             # Очищаем кнопки
             for button in self.employee_buttons:
@@ -141,7 +143,7 @@ class EmployeeManagementDialog(QDialog):
                     full_name += f" {patronymic}"
 
                 if position == 'администратор':
-                    # Администраторы - левая колонка (кнопки 15-21)
+                    # Администраторы (кнопки 15-21)
                     if admin_index < 7:
                         button_index = 14 + admin_index  # 14-20
                         if button_index < len(self.employee_buttons):
@@ -151,7 +153,7 @@ class EmployeeManagementDialog(QDialog):
                                 "background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;")
                             admin_index += 1
                 elif position == 'регистратор':
-                    # Регистраторы - средняя колонка (кнопки 1,3,5,7,9,11,13)
+                    # Регистраторы (кнопки 1,3,5,7,9,11,13)
                     if registry_index < 7:
                         button_index = registry_index * 2  # 0,2,4,6,8,10,12
                         if button_index < len(self.employee_buttons):
@@ -161,7 +163,7 @@ class EmployeeManagementDialog(QDialog):
                                 "background-color: #ffffff; color: #2c3e50; border: 1px solid #e1e5eb; text-align: left; padding: 10px 15px; border-radius: 4px;")
                             registry_index += 1
                 else:
-                    # Персонал - правая колонка (кнопки 2,4,6,8,10,12,14)
+                    # Персонал (кнопки 2,4,6,8,10,12,14)
                     if staff_index < 7:
                         button_index = staff_index * 2 + 1  # 1,3,5,7,9,11,13
                         if button_index < len(self.employee_buttons):
@@ -177,7 +179,7 @@ class EmployeeManagementDialog(QDialog):
             raise DatabaseQueryError(f"Ошибка распределения сотрудников: {str(e)}")
 
     def search_employees(self):
-        """Поиск сотрудников по фамилии"""
+        # Поиск
         try:
             search_text = self.search_edit.text().strip()
 
@@ -252,7 +254,7 @@ class EmployeeManagementDialog(QDialog):
             QMessageBox.critical(self, "Ошибка", f"Ошибка распределения при поиске: {str(e)}")
 
     def validate_name(self, name):
-        """Проверка имени/фамилии/отчества"""
+        # Проверка имени/фамилии/отчества
         if not name:
             raise EmptyFieldError("Поле не может быть пустым")
         if len(name) < 2:
@@ -264,7 +266,7 @@ class EmployeeManagementDialog(QDialog):
         return True
 
     def add_employee(self):
-        """Добавление нового сотрудника"""
+        # Добавление нового сотрудника
         try:
             # Ввод ФИО одним полем
             full_name, ok = QInputDialog.getText(self, "Добавление сотрудника",
@@ -288,14 +290,14 @@ class EmployeeManagementDialog(QDialog):
                 self.validate_name(last_name)
             except (EmptyFieldError, InvalidNameError) as e:
                 QMessageBox.warning(self, "Ошибка фамилии", f"Фамилия:\n{str(e)}")
-                return  # Возвращаемся обратно в диалог, не закрывая его
+                return
 
             # Проверка имени
             try:
                 self.validate_name(first_name)
             except (EmptyFieldError, InvalidNameError) as e:
                 QMessageBox.warning(self, "Ошибка имени", f"Имя:\n{str(e)}")
-                return  # Возвращаемся обратно в диалог, не закрывая его
+                return
 
             # Проверка отчества (если есть)
             if patronymic:
@@ -303,7 +305,7 @@ class EmployeeManagementDialog(QDialog):
                     self.validate_name(patronymic)
                 except (EmptyFieldError, InvalidNameError) as e:
                     QMessageBox.warning(self, "Ошибка отчества", f"Отчество:\n{str(e)}")
-                    return  # Возвращаемся обратно в диалог, не закрывая его
+                    return
 
             # Выбор должности с использованием getItem
             positions = ['администратор', 'регистратор', 'обслуживающий персонал']
@@ -355,15 +357,10 @@ class EmployeeManagementDialog(QDialog):
             QMessageBox.critical(self, "Ошибка", f"Ошибка добавления сотрудника: {str(e)}")
 
     def fire_employee(self):
-        """Увольнение выбранного сотрудника"""
+        # Увольнение выбранного сотрудника
         try:
             if not self.selected_employee:
                 QMessageBox.warning(self, "Ошибка", "Выберите сотрудника для увольнения!")
-                return
-
-            # Проверяем, если выбрано "Пусто"
-            if self.selected_employee == "Пусто":
-                QMessageBox.warning(self, "Ошибка", "Нельзя уволить 'Пусто'! Выберите реального сотрудника.")
                 return
 
             # Извлекаем фамилию и имя из выбранного сотрудника
@@ -404,7 +401,6 @@ class EmployeeManagementDialog(QDialog):
             QMessageBox.critical(self, "Ошибка", f"Ошибка увольнения сотрудника: {str(e)}")
 
     def closeEvent(self, event):
-        """Закрытие соединения с БД"""
         try:
             self.conn.close()
         except:
