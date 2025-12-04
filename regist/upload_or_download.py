@@ -5,6 +5,8 @@ from PyQt6 import uic
 
 from regist.upload import UploadWindow
 from regist.download import DownloadWindow
+from utils import get_resource_path
+
 
 class UDWindow(QDialog):
     closed = pyqtSignal()
@@ -13,7 +15,7 @@ class UDWindow(QDialog):
         super().__init__()
         self.on_data_updated = on_data_updated
 
-        uic.loadUi('UI/Reg/Окно загрузка или выгрузка.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно загрузка или выгрузка.ui'), self)
         self.setWindowTitle(f"Выберите действие")
         self.load_button.clicked.connect(self.show_download)
         self.save_button.clicked.connect(self.show_upload)

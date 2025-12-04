@@ -5,7 +5,7 @@ from PyQt6.QtGui import QPalette, QColor
 import sqlite3
 import sys
 
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 
 # Импортируем модули для каждого функционала
 from admin.Add_Delete_sotrudnic import EmployeeManagementDialog
@@ -72,7 +72,8 @@ class AdminWindow(QMainWindow):
     def get_user_id(self, username):
         #Получение ID по логину
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             cursor.execute('SELECT id FROM staff WHERE login = ?', (username,))
             result = cursor.fetchone()
@@ -91,7 +92,8 @@ class AdminWindow(QMainWindow):
     def init_database(self):
         #Baza dannih
         try:
-            self.conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            self.conn = sqlite3.connect(db_path)
             self.cursor = self.conn.cursor()
         except sqlite3.Error as e:
             QMessageBox.critical(self, "Ошибка БД", f"Не удалось подключиться к базе данных: {str(e)}")

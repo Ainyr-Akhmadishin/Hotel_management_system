@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt, QSize
 from PyQt6 import uic
 import os
 from regist.correction_dialog import CorrectionDialog
+from utils import get_resource_path
 
 
 class DataValidationDialog(QDialog):
@@ -14,7 +15,7 @@ class DataValidationDialog(QDialog):
         self.cancelled_rows = set()
         self.corrected_rows = set()
 
-        uic.loadUi('UI/Reg/Окно ошибок.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно ошибок.ui'), self)
 
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)

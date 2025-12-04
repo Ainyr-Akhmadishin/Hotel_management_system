@@ -7,6 +7,8 @@ from PyQt6.QtWidgets import QMainWindow, QDialog, QTableWidgetItem, QFileDialog,
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6 import uic
 
+from utils import get_database_path, get_resource_path
+
 
 class EmptyPathError(Exception):
     pass
@@ -20,7 +22,7 @@ class UploadCleaningWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        uic.loadUi('UI/Reg/Окно сохранения данных.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно сохранения данных.ui'), self)
         self.setWindowTitle(f"Сохранение данных об уборке")
         self.get_data()
         self.allowed_formats = ['.csv', '.txt']
@@ -235,7 +237,8 @@ class UploadCleaningWindow(QMainWindow):
             else:
                 self.start_date = today - timedelta(days=30)  # По умолчанию месяц
 
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute(self.get_cleaning_data_query(), (self.start_date.strftime('%Y-%m-%d'),))

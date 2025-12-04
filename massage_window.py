@@ -7,7 +7,7 @@ from PyQt6 import uic
 
 
 from bd_manager import YandexDiskUploader
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 
 
 class EmptyRecipientError(Exception):
@@ -74,7 +74,8 @@ class MassageWindow(QDialog):
         try:
             binary_message = pickle.dumps(self.message_text_edit.toPlainText())
 
-            con = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            con = sqlite3.connect(db_path)
             cur = con.cursor()
 
 
@@ -136,7 +137,8 @@ class MassageWindow(QDialog):
 
     def load_staff(self, name):
         try:
-            conn =sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn =sqlite3.connect(db_path)
             cursor = conn.cursor()
             if name and name.strip():
                 search_pattern = f'{name}%'

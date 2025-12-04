@@ -4,6 +4,8 @@ import sqlite3
 from datetime import datetime
 from PyQt6.QtWidgets import QFrame, QVBoxLayout, QLabel, QScrollArea, QWidget, QMessageBox
 from PyQt6.QtCore import QTimer, Qt, QObject, pyqtSignal
+
+from utils import get_database_path
 from view_message_dialog import ViewMessageDialog
 from datetime import datetime, timezone
 
@@ -143,7 +145,7 @@ class SimpleNotificationsManager(QObject):
                 if child.widget():
                     child.widget().deleteLater()
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", str(e))
+            QMessageBox.critical(self.main_window, "Ошибка", str(e))
 
     def safe_load_notifications(self):
         if not self.is_active or not self.is_widget_valid(self.notifications_frame):
@@ -152,11 +154,12 @@ class SimpleNotificationsManager(QObject):
         try:
             self.load_notifications()
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", "Ошибка загрузки уведомлений")
+            QMessageBox.critical(self.main_window, "Ошибка", str(e))
 
     def load_notifications(self):
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('''
@@ -175,7 +178,7 @@ class SimpleNotificationsManager(QObject):
             self.display_notifications(messages)
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", str(e))
+            QMessageBox.critical(self.main_window, "Ошибка", str(e))
 
     def display_notifications(self, messages):
         if not self.is_widget_valid(self.scroll_widget):
@@ -187,7 +190,7 @@ class SimpleNotificationsManager(QObject):
                 if child and child.widget():
                     child.widget().deleteLater()
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", str(e))
+            QMessageBox.critical(self.main_window, "Ошибка", str(e))
             return
 
         self.scroll_layout.addStretch()
@@ -222,7 +225,7 @@ class SimpleNotificationsManager(QObject):
                 self.notification_widgets[msg_id] = notification_widget
 
             except Exception as e:
-                QMessageBox.critical(self, "Ошибка", str(e))
+                QMessageBox.critical(self.main_window, "Ошибка", str(e))
                 continue
 
     def convert_to_display_text(self, data):
@@ -246,7 +249,7 @@ class SimpleNotificationsManager(QObject):
                     decoded_data = decoded_data.decode('utf-8', errors='ignore')
                 decoded_data = str(decoded_data)
             except Exception as e:
-                QMessageBox.critical(self, "Ошибка", "Ошибка декодирования")
+                QMessageBox.critical(self.main_window, "Ошибка", str(e))
                 try:
                     decoded_data = data.decode('utf-8', errors='ignore')
                 except:
@@ -289,7 +292,7 @@ class SimpleNotificationsManager(QObject):
             dialog.exec()
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", "Ошибка открытия диалога сообщения")
+            QMessageBox.critical(self.main_window, "Ошибка", str(e))
 
     def immediately_remove_notification(self, message_id):
 
@@ -306,7 +309,7 @@ class SimpleNotificationsManager(QObject):
 
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", str(e))
+            QMessageBox.critical(self.main_window, "Ошибка", str(e))
             if message_id in self.notification_widgets:
                 del self.notification_widgets[message_id]
 
@@ -345,7 +348,7 @@ class SimpleNotificationsManager(QObject):
                 try:
                     self.immediately_remove_notification(message_data['id'])
                 except Exception as e:
-                    QMessageBox.critical(self, "Ошибка", str(e))
+                    QMessageBox.critical(self.main_window, "Ошибка", str(e))
                 finally:
                     if hasattr(self, 'update_timer') and not self.update_timer.isActive():
                         self.update_timer.start(30000)
@@ -354,6 +357,6 @@ class SimpleNotificationsManager(QObject):
             dialog.exec()
 
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", str(e))
+            QMessageBox.critical(self.main_window, "Ошибка", str(e))
             if hasattr(self, 'update_timer') and not self.update_timer.isActive():
                 self.update_timer.start(30000)

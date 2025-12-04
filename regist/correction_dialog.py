@@ -4,6 +4,7 @@ from PyQt6 import uic
 import sqlite3
 import os
 from regist.regist_exceptions import FIOException, LowerNameError, PassportError, DateError, PhoneError
+from utils import get_database_path
 
 
 class CorrectionDialog(QMainWindow):
@@ -154,7 +155,8 @@ class CorrectionDialog(QMainWindow):
             check_in = self.dateIn.date().toString("yyyy-MM-dd")
             check_out = self.dateOut.date().toString("yyyy-MM-dd")
 
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('''

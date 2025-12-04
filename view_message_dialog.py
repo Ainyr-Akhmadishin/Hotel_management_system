@@ -6,7 +6,7 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6 import uic
 
 from bd_manager import YandexDiskUploader
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 
 
 class ViewMessageDialog(QDialog):
@@ -45,7 +45,8 @@ class ViewMessageDialog(QDialog):
             if self.is_marked_as_read:
                 return
 
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('''
@@ -75,7 +76,8 @@ class ViewMessageDialog(QDialog):
 
             binary_message = pickle.dumps(reply_text)
 
-            con = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            con = sqlite3.connect(db_path)
             cur = con.cursor()
 
             recipient_name = self.message_data['sender_name']

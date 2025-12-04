@@ -7,13 +7,15 @@ from PyQt6.QtWidgets import QMainWindow, QDialog, QTableWidgetItem, QFileDialog,
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6 import uic
 from regist.regist_exceptions import EmptyPathError, InvalidFileFormatError
+from utils import get_database_path, get_resource_path
+
 
 class UploadWindow(QMainWindow):
     closed = pyqtSignal()
     def __init__(self):
         super().__init__()
 
-        uic.loadUi('UI/Reg/Окно сохранения данных.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно сохранения данных.ui'), self)
         self.setWindowTitle(f"Сохранение данных о брони")
         self.get_data()
 
@@ -201,7 +203,9 @@ class UploadWindow(QMainWindow):
                 self.start_date = today - timedelta(days=180)
             elif self.yearRadio.isChecked():
                 self.start_date = today - timedelta(days=365)
-            conn = sqlite3.connect('Hotel_bd.db')
+
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             cursor.execute('''SELECT 
                                          room_number, 

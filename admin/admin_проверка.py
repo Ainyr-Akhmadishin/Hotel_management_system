@@ -5,6 +5,8 @@ import sqlite3
 import sys
 import os
 
+from utils import get_database_path
+
 
 class AdminWindow(QMainWindow):
     def __init__(self, full_name, username):
@@ -118,7 +120,8 @@ class AdminWindow(QMainWindow):
     def init_database(self):
         """Инициализация базы данных"""
         try:
-            self.conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            self.conn = sqlite3.connect(db_path)
             self.cursor = self.conn.cursor()
             print("✅ База данных подключена")
         except Exception as e:

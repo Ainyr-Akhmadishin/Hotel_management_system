@@ -10,6 +10,9 @@ from PyQt6 import uic
 from regist.guest_registration_window import GuestRegistrationWindow
 from regist.regist_exceptions import *
 from regist.validation_dialog import DataValidationDialog
+from utils import get_resource_path, get_database_path
+
+
 # from regist.upload_or_download import UDWindow
 
 
@@ -19,7 +22,7 @@ class DownloadWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        uic.loadUi('UI/Reg/Загрузка данных итог.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Загрузка данных итог.ui'), self)
         self.setWindowTitle(f"Загрузка данных о брони")
         self.browseButton.clicked.connect(self.browse)
         self.loadButton.clicked.connect(self.download)
@@ -112,7 +115,8 @@ class DownloadWindow(QMainWindow):
 
     def RoomNumberCheck(self, room_number):
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('SELECT id FROM rooms WHERE room_number = ?', (room_number,))
@@ -127,7 +131,8 @@ class DownloadWindow(QMainWindow):
 
     def BookingAvailabilityCheck(self, room_number, check_in_str, check_out_str):
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('SELECT id FROM rooms WHERE room_number = ?', (room_number,))
@@ -229,7 +234,8 @@ class DownloadWindow(QMainWindow):
                 pass
         else:
             try:
-                conn = sqlite3.connect('Hotel_bd.db')
+                db_path = get_database_path()
+                conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
                 for i, row in enumerate(self.data):
 

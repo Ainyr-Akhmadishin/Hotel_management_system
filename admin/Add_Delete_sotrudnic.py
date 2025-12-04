@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QMessageBox, QDialog, QInputDialog
 from PyQt6.QtCore import QDate
 import sqlite3
 import hashlib
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 
 
 class EmptyFieldError(Exception):
@@ -40,7 +40,8 @@ class EmployeeManagementDialog(QDialog):
             self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
 
             # Инициализация БД
-            self.conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            self.conn = sqlite3.connect(db_path)
             self.cursor = self.conn.cursor()
 
             # Подключаем кнопки

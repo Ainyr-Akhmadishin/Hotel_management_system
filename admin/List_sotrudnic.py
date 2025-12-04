@@ -6,7 +6,7 @@ from PyQt6.QtGui import QColor
 import sqlite3
 import csv
 import os
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 
 
 class ImportPreviewDialog(QDialog):
@@ -117,7 +117,8 @@ class EmployeeListDialog(QDialog):
         self.current_date_label.setText(QDate.currentDate().toString("dd.MM.yyyy"))
 
         # Инициализация БД
-        self.conn = sqlite3.connect('Hotel_bd.db')
+        db_path = get_database_path()
+        self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
 
         # Настройка таблицы

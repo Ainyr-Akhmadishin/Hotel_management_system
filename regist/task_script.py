@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox
 from PyQt6.QtCore import pyqtSignal
 from PyQt6 import uic
 
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 
 
 class TaskWindow(QDialog):
@@ -24,7 +24,8 @@ class TaskWindow(QDialog):
 
     def create_task(self, user_id):
         try:
-            db_path = get_resource_path('Hotel_bd.db')
+            db_path = get_database_path()
+            db_path = get_resource_path(db_path)
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 

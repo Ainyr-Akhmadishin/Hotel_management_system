@@ -6,7 +6,7 @@ from PyQt6 import uic, QtCore
 import sqlite3
 
 from massage_window import MassageWindow
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 from staff.BD_staff import UploadCleaningWindow
 
 from notifications_manager import SimpleNotificationsManager
@@ -32,7 +32,7 @@ class StaffWindow(QMainWindow):
         self.full_name = full_name
         self.username = username
 
-        uic.loadUi('UI/Staff/Окно обслуживающего персонала.ui', self)
+        uic.loadUi(get_resource_path('UI/Staff/Окно обслуживающего персонала.ui'), self)
         self.setWindowTitle(f"Персонал - {self.full_name}")
         self.upload_button.clicked.connect(self.open_upload)
         self.current_user_id = None
@@ -63,7 +63,8 @@ class StaffWindow(QMainWindow):
     def check_unassigned_tasks_updates(self):
         """Проверяет, изменилось ли количество неназначенных задач"""
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('''
@@ -87,7 +88,8 @@ class StaffWindow(QMainWindow):
 
     def get_current_user_id(self):
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             cursor.execute('SELECT id FROM staff WHERE login = ?', (self.username,))
             result = cursor.fetchone()
@@ -100,7 +102,8 @@ class StaffWindow(QMainWindow):
 
     def load_unassigned_tasks(self):
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('''
@@ -165,7 +168,8 @@ class StaffWindow(QMainWindow):
             if not self.current_user_id:
                 return
 
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('''
@@ -241,7 +245,8 @@ class StaffWindow(QMainWindow):
             if not self.complete_tasks:
                 raise NoTaskSelectedError("Не выполнено ни одной задачи")
 
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             for task_id in self.complete_tasks:
                 cursor.execute('''
@@ -293,7 +298,8 @@ class StaffWindow(QMainWindow):
             if not selected_tasks:
                 raise NoTaskSelectedError("Не выбрано ни одной задачи")
 
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
 

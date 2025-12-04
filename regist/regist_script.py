@@ -429,7 +429,8 @@ class RegistrarWindow(QMainWindow):
             except:
                 current_date_str = self.current_date.strftime('%Y-%m-%d')
 
-            db_path = get_resource_path('Hotel_bd.db')
+
+            db_path = get_database_path()
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 

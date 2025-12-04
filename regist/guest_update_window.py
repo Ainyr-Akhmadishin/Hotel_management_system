@@ -5,7 +5,7 @@ import sqlite3
 from datetime import datetime
 from regist.guest_registration_window import GuestRegistrationWindow
 from bd_manager import YandexDiskUploader
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 from regist.regist_exceptions import LowerNameError, PassportError, FIOException, DateError, PhoneError
 
 class GuestUpdateWindow(GuestRegistrationWindow):
@@ -66,7 +66,8 @@ class GuestUpdateWindow(GuestRegistrationWindow):
             check_in = self.dateIn.date().toString("yyyy-MM-dd")
             check_out = self.dateOut.date().toString("yyyy-MM-dd")
 
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('''
@@ -115,7 +116,8 @@ class GuestUpdateWindow(GuestRegistrationWindow):
             in_date = self.dateIn.date().toString("yyyy-MM-dd")
             out_date = self.dateOut.date().toString("yyyy-MM-dd")
 
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute('''
