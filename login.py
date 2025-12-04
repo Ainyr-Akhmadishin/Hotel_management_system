@@ -13,7 +13,7 @@ from staff.staff_script import StaffWindow
 
 from sync_update import SimpleAutoSync
 
-from utils import get_resource_path
+from utils import get_resource_path, get_database_path
 
 class EmptyCredentialsError(Exception):
     pass
@@ -38,55 +38,39 @@ class LoginWindow(QMainWindow):
         self.load_saved_credentials()
 
     def load_saved_credentials(self):
-        """Загружает сохраненные логин и пароль"""
+
         settings = QSettings("HotelApp", "Login")
 
-        # Проверяем, была ли отмечена "Запомнить меня"
         remember_me = settings.value("remember_me", False, type=bool)
 
         if remember_me:
-            # Загружаем сохраненные данные
             username = settings.value("username", "")
             password = settings.value("password", "")
 
-            # Заполняем поля
             self.lineEdit.setText(username)
             self.lineEdit_3.setText(password)
 
-            # Устанавливаем чекбокс в отмеченное состояние
             self.remember_me_checkbox.setChecked(True)
 
     def save_credentials(self, username, password, remember_me):
-        """Сохраняет или удаляет логин и пароль"""
         settings = QSettings("HotelApp", "Login")
 
         if remember_me:
-            # Сохраняем данные
             settings.setValue("remember_me", True)
             settings.setValue("username", username)
             settings.setValue("password", password)
         else:
-            # Удаляем сохраненные данные
             settings.remove("remember_me")
             settings.remove("username")
             settings.remove("password")
-
-    def start_sync(self):
-        try:
-            self.sync_manager = SimpleAutoSync("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
-            if self.sync_manager.start():
-                print("Фоновая синхронизация запущена")
-            else:
-                print("Синхронизация не запущена, работаем офлайн")
-        except Exception as e:
-            print(f"Ошибка запуска синхронизации: {e}")
 
     def hash_password(self, password):
         return hashlib.sha256(password.encode()).hexdigest()
 
     def verify_credentials(self, username, password):
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_database_path()
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             password_hash = self.hash_password(password)
@@ -120,20 +104,16 @@ class LoginWindow(QMainWindow):
             username = self.lineEdit.text()
             password = self.lineEdit_3.text()
 
-            # Проверка пустых полей
             if not username or not password:
                 raise EmptyCredentialsError("Введите логин и пароль")
 
             user_info = self.verify_credentials(username, password)
 
-            # Проверка валидности учетных данных
             if not user_info:
                 raise InvalidCredentialsError("Неверный логин или пароль")
 
-            # Получаем состояние чекбокса "Запомнить меня"
             remember_me = self.remember_me_checkbox.isChecked()
 
-            # Сохраняем или удаляем данные
             self.save_credentials(username, password, remember_me)
 
             position = user_info['position']

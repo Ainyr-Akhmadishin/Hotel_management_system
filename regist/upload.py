@@ -29,6 +29,37 @@ class UploadWindow(QMainWindow):
         self.exportButton.clicked.connect(self.save)
         self.cancelButton.clicked.connect(self.show_ud_window)
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            self.check_and_close()
+        else:
+            super().keyPressEvent(event)
+
+    def check_and_close(self):
+        current_file_path = self.filePathEdit.text().strip()
+
+        if current_file_path:
+            msg_box = QMessageBox(self)
+            msg_box.setWindowTitle("Подтверждение закрытия")
+            msg_box.setText(f"Вы уже выбрали файл для загрузки:\n\nЧто вы хотите сделать?")
+
+            save_button = msg_box.addButton("Сохранить", QMessageBox.ButtonRole.AcceptRole)
+            close_button = msg_box.addButton("Закрыть", QMessageBox.ButtonRole.DestructiveRole)
+            cancel_button = msg_box.addButton("Отмена", QMessageBox.ButtonRole.RejectRole)
+
+            msg_box.setDefaultButton(cancel_button)
+            msg_box.exec()
+
+            clicked_button = msg_box.clickedButton()
+
+            if clicked_button == save_button:
+                self.save()
+                self.close()
+            elif clicked_button == close_button:
+                self.close()
+        else:
+            self.close()
+
     def validate_file_format(self, file_path):
         file_extension = file_path[file_path.rfind('.'):].lower()
         if file_extension not in self.allowed_formats:

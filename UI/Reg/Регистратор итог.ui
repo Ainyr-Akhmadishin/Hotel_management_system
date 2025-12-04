@@ -7,7 +7,7 @@
    <string>Система управления отелем - Регистратор</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow {
+<string notr="true">QMainWindow {
     background-color: #f8f9fa;
 }
 QPushButton {
@@ -26,6 +26,36 @@ QPushButton:hover {
 QPushButton:pressed {
     background-color: #2a4a70;
 }
+
+/* ДОБАВЬТЕ ЭТОТ КОД ДЛЯ QMessageBox */
+QMessageBox {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+QMessageBox QLabel {
+    color: #333333;
+    font-size: 12px;
+    padding: 10px;
+}
+QMessageBox QPushButton {
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    min-height: 30px;
+    font-size: 11px;
+    min-width: 80px;
+}
+QMessageBox QPushButton:hover {
+    background-color: #3a5a80;
+}
+QMessageBox QPushButton:pressed {
+    background-color: #2a4a70;
+}
+/* КОНЕЦ ДОБАВЛЕНИЯ */
+
 QLineEdit {
     padding: 4px 8px;
     border: 1px solid #e1e5eb;
@@ -107,7 +137,7 @@ QScrollBar::handle:horizontal {
 QScrollBar::handle:horizontal:hover {
     background-color: #a5adba;
 }</string>
-  </property>
+</property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="main_layout">
     <property name="spacing">

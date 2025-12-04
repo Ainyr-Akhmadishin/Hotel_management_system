@@ -5,6 +5,8 @@ from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox
 from PyQt6.QtCore import pyqtSignal
 from PyQt6 import uic
 
+from utils import get_resource_path
+
 
 class TaskWindow(QDialog):
     task_created = pyqtSignal()
@@ -14,7 +16,7 @@ class TaskWindow(QDialog):
         super().__init__()
         self.room_number = room_number
         self.user_id = user_id
-        uic.loadUi('UI/Reg/Окно отправки заданий.ui', self)
+        uic.loadUi(get_resource_path('UI/Reg/Окно отправки заданий.ui'), self)
         self.setWindowTitle("Создание задания на уборку")
         self.room_label.setText(f"Номер комнаты: {room_number}")
         self.send_button.clicked.connect(lambda: self.create_task(user_id))
@@ -22,7 +24,8 @@ class TaskWindow(QDialog):
 
     def create_task(self, user_id):
         try:
-            conn = sqlite3.connect('Hotel_bd.db')
+            db_path = get_resource_path('Hotel_bd.db')
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             comment_text = self.comment_text.toPlainText().strip()

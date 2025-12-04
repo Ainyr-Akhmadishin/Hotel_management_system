@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMainWindow, QDialog
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6 import uic
 
 from regist.upload import UploadWindow
@@ -17,6 +17,12 @@ class UDWindow(QDialog):
         self.setWindowTitle(f"Выберите действие")
         self.load_button.clicked.connect(self.show_download)
         self.save_button.clicked.connect(self.show_upload)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            self.close()
+        else:
+            super().keyPressEvent(event)
 
     def show_download(self):
         self.download_window = DownloadWindow()

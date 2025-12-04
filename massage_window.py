@@ -1,6 +1,7 @@
 import pickle
 import sqlite3
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
 
@@ -30,6 +31,40 @@ class MassageWindow(QDialog):
 
         self.send_button.clicked.connect(self.send_message)
         self.cancel_button.clicked.connect(self.close)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            self.check_and_close()
+        else:
+            super().keyPressEvent(event)
+
+    def check_and_close(self):
+        if hasattr(self, 'recipient') and bool(self.recipient):
+            reply = QMessageBox.question(
+                self,
+                "Подтверждение закрытия",
+                f"Вы уже выбрали получателя. Данные будут потеряны.\n\nЗакрыть окно отправки сообщения?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
+            )
+
+            if reply == QMessageBox.StandardButton.Yes:
+                self.close()
+
+        elif bool(self.message_text_edit.toPlainText().strip()):
+            reply = QMessageBox.question(
+                self,
+                "Подтверждение закрытия",
+                "Вы уже ввели текст сообщения. Данные будут потеряны.\n\nЗакрыть окно отправки сообщения?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
+            )
+
+            if reply == QMessageBox.StandardButton.Yes:
+                self.close()
+
+        else:
+            self.close()
 
     def selected_recipient(self, item):
         self.recipient = item.text()
@@ -83,11 +118,6 @@ class MassageWindow(QDialog):
             QMessageBox.information(self, "Успех",
                                     f"Сообщение отправлено")
             self.close()
-            # uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
-            # if uploader.upload_db():
-            #     print("Изменения загружены на Яндекс Диск")
-            # else:
-            #     print("Не удалось загрузить изменения")
 
         except EmptyRecipientError as e:
             QMessageBox.critical(self, "Ошибка", str(e))

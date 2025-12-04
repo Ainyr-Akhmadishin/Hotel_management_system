@@ -32,9 +32,37 @@ class GuestRegistrationWindow(QMainWindow):
         self.pushButton.clicked.connect(self.register_guest)
         self.setup_enter_handlers()
 
+    def keyPressEvent(self, event):
+        if event.key() == 16777216:
+            self.show_close_confirmation()
+        else:
+            super().keyPressEvent(event)
+
+    def show_close_confirmation(self):
+        fields_filled = any([
+            bool(self.name.text().strip()),
+            bool(self.fam.text().strip()),
+            bool(self.otch.text().strip()),
+            bool(self.pas.text().strip()),
+            bool(self.phone.text().strip() and len(self.phone.text().strip()) >= 16),
+            bool(self.number.currentText())
+        ])
+
+        if fields_filled:
+            reply = QMessageBox.question(
+                self,
+                "Подтверждение закрытия",
+                "Введенные данные будут потеряны. Закрыть окно?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
+            )
+
+            if reply == QMessageBox.StandardButton.Yes:
+                self.close()
+        else:
+            self.close()
     def setup_enter_handlers(self):
         try:
-            # Только для текстовых полей
             self.name.returnPressed.connect(lambda: self.fam.setFocus())
             self.fam.returnPressed.connect(lambda: self.otch.setFocus())
             self.otch.returnPressed.connect(lambda: self.pas.setFocus())
@@ -222,11 +250,7 @@ class GuestRegistrationWindow(QMainWindow):
             self.guest_registered.emit()
 
             self.close()
-            uploader = YandexDiskUploader("y0__xD89tSJBBjblgMg1fC9ihUwhJeqlwgXFM-EwH6GAbo1cJ6dfjDG4_HR0g")
-            if uploader.upload_db():
-                print("Изменения загружены на Яндекс Диск")
-            else:
-                print("Не удалось загрузить изменения")
+
 
         except LowerNameError as e:
             QMessageBox.critical(self, "Ошибка", str(e))

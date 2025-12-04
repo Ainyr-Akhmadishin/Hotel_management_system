@@ -4,12 +4,13 @@ from datetime import datetime
 
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMainWindow, QDialog, QFileDialog, QMessageBox, QTableWidgetItem
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6 import uic
 
 from regist.guest_registration_window import GuestRegistrationWindow
 from regist.regist_exceptions import *
 from regist.validation_dialog import DataValidationDialog
+# from regist.upload_or_download import UDWindow
 
 
 class DownloadWindow(QMainWindow):
@@ -24,8 +25,39 @@ class DownloadWindow(QMainWindow):
         self.loadButton.clicked.connect(self.download)
         self.cancelButton.clicked.connect(self.show_ud_window)
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            self.check_and_close()
+        else:
+            super().keyPressEvent(event)
+
+    def check_and_close(self):
+        current_file_path = self.filePathEdit.text().strip()
+
+        if current_file_path:
+            msg_box = QMessageBox(self)
+            msg_box.setWindowTitle("Подтверждение закрытия")
+            msg_box.setText(f"Вы уже выбрали файл для загрузки\n\nЧто вы хотите сделать?")
+
+            load_button = msg_box.addButton("Загрузить в базу", QMessageBox.ButtonRole.AcceptRole)
+            close_button = msg_box.addButton("Закрыть", QMessageBox.ButtonRole.DestructiveRole)
+            cancel_button = msg_box.addButton("Отмена", QMessageBox.ButtonRole.RejectRole)
+
+            msg_box.setDefaultButton(cancel_button)
+            msg_box.exec()
+
+            clicked_button = msg_box.clickedButton()
+
+            if clicked_button == load_button:
+                self.download()
+                self.show_ud_window()
+            elif clicked_button == close_button:
+                self.show_ud_window()
+        else:
+            self.show_ud_window()
+
     def show_ud_window(self):
-        
+
         from regist.upload_or_download import UDWindow
         self.ud_window = UDWindow()
         self.ud_window.show()
@@ -134,7 +166,6 @@ class DownloadWindow(QMainWindow):
 
                 first_name, last_name, patronymic, passport, phone, check_in, check_out, room_number = row
 
-                # Проверки
                 self.FIOCheck(first_name, "Имя")
                 self.FIOCheck(last_name, "Фамилия")
                 self.FIOCheck(patronymic, "Отчество", required=False)
@@ -229,7 +260,7 @@ class DownloadWindow(QMainWindow):
                 QMessageBox.information(self, "Успех",
                                         "Загруженные данные добавлены в базу данных")
             except Exception as e:
-                print(str(e))
+                QMessageBox.critical(self,"Ошибка","Ошибка загрузки данных")
 
 
 
